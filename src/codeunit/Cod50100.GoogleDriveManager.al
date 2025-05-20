@@ -451,6 +451,255 @@ codeunit 50100 "Google Drive Manager"
         exit(Id);
     end;
 
+    procedure MoveFolder(FolderId: Text; NewParentId: Text): Text
+    var
+        GoogleDrive: Codeunit "Google Drive Manager";
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Inf: Record "Company Information";
+        Url: Text;
+        Json: Text;
+        Body: JsonObject;
+        StatusInfo: JsonObject;
+        Respuesta: Text;
+        JTokO: JsonToken;
+        JTok: JsonToken;
+        Id: Text;
+    begin
+        Ticket := GoogleDrive.Token();
+        Inf.Get;
+        Url := Inf."Url Api GoogleDrive" + move_folder + FolderId;
+
+        Body.Add('addParents', NewParentId);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::patch, Json);
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+
+        If StatusInfo.Get('id', JTokO) Then begin
+            Id := JTokO.AsValue().AsText();
+        end;
+
+        if Id = '' then begin
+            if StatusInfo.Get('error', JTok) then begin
+                Error(JTok.AsValue().AsText());
+            end;
+            Error('Error al mover la carpeta');
+        end;
+
+        exit(Id);
+    end;
+
+    procedure MoveFile(FileId: Text; NewParentId: Text; RemoveOldParent: Boolean): Text
+    var
+        GoogleDrive: Codeunit "Google Drive Manager";
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Inf: Record "Company Information";
+        Url: Text;
+        Json: Text;
+        Body: JsonObject;
+        StatusInfo: JsonObject;
+        Respuesta: Text;
+        JTokO: JsonToken;
+        JTok: JsonToken;
+        Id: Text;
+        ParentsArray: JsonArray;
+    begin
+        Ticket := GoogleDrive.Token();
+        Inf.Get;
+        Url := Inf."Url Api GoogleDrive" + move_folder + FileId;
+
+        // Add new parent
+        Body.Add('addParents', NewParentId);
+
+        // If we want to remove the old parent, we need to get the current parents first
+        if RemoveOldParent then begin
+            // Get current file metadata to find existing parents
+            Url := Inf."Url Api GoogleDrive" + get_metadata + FileId;
+            Respuesta := RestApiToken(Url, Ticket, RequestType::get, Json);
+            StatusInfo.ReadFrom(Respuesta);
+
+            if StatusInfo.Get('parents', JTok) then begin
+                ParentsArray := JTok.AsArray();
+                foreach JTok in ParentsArray do
+                    Body.Add('removeParents', JTok.AsValue().AsText());
+            end;
+        end;
+
+        Body.WriteTo(Json);
+        Url := Inf."Url Api GoogleDrive" + move_folder + FileId;
+        Respuesta := RestApiToken(Url, Ticket, RequestType::patch, Json);
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+
+        If StatusInfo.Get('id', JTokO) Then begin
+            Id := JTokO.AsValue().AsText();
+        end;
+
+        if Id = '' then begin
+            if StatusInfo.Get('error', JTok) then begin
+                Error(JTok.AsValue().AsText());
+            end;
+            Error('Error al mover el archivo');
+        end;
+
+        exit(Id);
+    end;
+
+    procedure CopyFile(FileId: Text; NewParentId: Text): Text
+    var
+        GoogleDrive: Codeunit "Google Drive Manager";
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Inf: Record "Company Information";
+        Url: Text;
+        Json: Text;
+        Body: JsonObject;
+        StatusInfo: JsonObject;
+        Respuesta: Text;
+        JTokO: JsonToken;
+        JTok: JsonToken;
+        Id: Text;
+    begin
+        Ticket := GoogleDrive.Token();
+        Inf.Get;
+        Url := Inf."Url Api GoogleDrive" + move_folder + FileId + '/copy';
+
+        Body.Add('parents', NewParentId);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+
+        If StatusInfo.Get('id', JTokO) Then begin
+            Id := JTokO.AsValue().AsText();
+        end;
+
+        if Id = '' then begin
+            if StatusInfo.Get('error', JTok) then begin
+                Error(JTok.AsValue().AsText());
+            end;
+            Error('Error al copiar el archivo');
+        end;
+
+        exit(Id);
+    end;
+
+    procedure ListFolder(FolderId: Text; var Files: Record "Name/Value Buffer" temporary)
+    var
+        GoogleDrive: Codeunit "Google Drive Manager";
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Inf: Record "Company Information";
+        Url: Text;
+        Json: Text;
+        Body: JsonObject;
+        StatusInfo: JsonObject;
+        Respuesta: Text;
+        JTokO: JsonToken;
+        JTok: JsonToken;
+        JEntries: JsonArray;
+        JEntry: JsonObject;
+        JEntryToken: JsonToken;
+        JEntryTokens: JsonToken;
+        tag: Text;
+        a: Integer;
+    begin
+        Files.DeleteAll();
+        Ticket := GoogleDrive.Token();
+        Inf.Get;
+        Url := Inf."Url Api GoogleDrive" + list_folder;
+
+        Clear(Body);
+        Body.add('q', StrSubstNo('''%1'' in parents and trashed = false', FolderId));
+        Body.add('fields', 'files(id, name, mimeType, size, modifiedTime)');
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, Json);
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+
+        If StatusInfo.Get('files', JTok) Then begin
+            JEntries := JTok.AsArray();
+            foreach JEntryTokens in JEntries do begin
+                JEntry := JEntryTokens.AsObject();
+                If JEntry.Get('mimeType', JEntryToken) Then begin
+                    tag := JEntryToken.AsValue().AsText();
+                end;
+
+                if JEntry.Get('name', JEntryToken) then begin
+                    Files.Init();
+                    a += 1;
+                    Files.ID := a;
+                    Files.Name := JEntryToken.AsValue().AsText();
+
+                    if JEntry.Get('id', JEntryToken) then
+                        Files.Value := JEntryToken.AsValue().AsText();
+
+                    if tag = 'application/vnd.google-apps.folder' then
+                        Files.Value := Files.Value + '|FOLDER'
+                    else
+                        Files.Value := Files.Value + '|FILE';
+
+                    Files.Insert();
+                end;
+            end;
+        end;
+    end;
+
+    procedure DownloadFileB64(FileId: Text; BajarFichero: Boolean): Text
+    var
+        GoogleDrive: Codeunit "Google Drive Manager";
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Inf: Record "Company Information";
+        Url: Text;
+        Json: Text;
+        Body: JsonObject;
+        StatusInfo: JsonObject;
+        Respuesta: Text;
+        JTokO: JsonToken;
+        JTok: JsonToken;
+        Base64Data: Text;
+        TempBlob: Codeunit "Temp Blob";
+        InStream: InStream;
+        OutStream: OutStream;
+        Client: HttpClient;
+        RequestHeaders: HttpHeaders;
+        ResponseMessage: HttpResponseMessage;
+        ResponseText: Text;
+        Convert: Codeunit "Base64 Convert";
+    begin
+        Ticket := GoogleDrive.Token();
+        Inf.Get;
+        Url := Inf."Url Api GoogleDrive" + get_metadata + FileId + '?alt=media';
+
+        RequestHeaders := Client.DefaultRequestHeaders();
+        RequestHeaders.Add('Authorization', StrSubstNo('Bearer %1', Ticket));
+
+        Client.Get(Url, ResponseMessage);
+
+        if not ResponseMessage.IsSuccessStatusCode() then
+            Error('Error downloading file: %1', ResponseMessage.ReasonPhrase());
+
+        TempBlob.CreateInStream(InStream);
+        ResponseMessage.Content().ReadAs(InStream);
+
+        // Convert to Base64
+        TempBlob.CreateOutStream(OutStream);
+        Base64Data := Convert.ToBase64(InStream);
+
+        TempBlob.CreateInStream(InStream);
+        InStream.Read(Base64Data);
+        If BajarFichero Then
+            DownloadFromStream(InStream, 'Guardar', 'C:\Temp', 'ALL Files (*.*)|*.*', FileId);
+
+        exit(Base64Data);
+    end;
+
     procedure RestApiToken(url: Text; Token: Text; RequestType: Option Get,patch,put,post,delete; payload: Text): Text
     var
         Client: HttpClient;
