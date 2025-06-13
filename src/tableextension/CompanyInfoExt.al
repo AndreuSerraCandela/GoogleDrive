@@ -2,7 +2,7 @@ tableextension 50101 "Company Info Ext" extends "Company Information"
 {
     fields
     {
-        field(50100; "Fecha Expiracion Token GoogleDrive"; DateTime)
+        field(50100; "Expiracion Token GoogleDrive"; DateTime)
         {
             Caption = 'Google Drive Token Expiration';
             DataClassification = CustomerContent;
@@ -12,12 +12,12 @@ tableextension 50101 "Company Info Ext" extends "Company Information"
             Caption = 'Google Drive API URL';
             DataClassification = CustomerContent;
         }
-        field(50102; "Token GoogleDrive"; Text[250])
+        field(50102; "Token GoogleDrive"; Text[1024])
         {
             Caption = 'Google Drive Token';
             DataClassification = CustomerContent;
         }
-        field(50103; "Refresh Token GoogleDrive"; Text[250])
+        field(50103; "Refresh Token GoogleDrive"; Text[1024])
         {
             Caption = 'Google Drive Refresh Token';
             DataClassification = CustomerContent;

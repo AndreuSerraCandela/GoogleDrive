@@ -15,6 +15,7 @@ page 50102 "Google Drive Factbox"
                 ShowCaption = false;
                 field(Name; Rec.Name)
                 {
+                    ApplicationArea = All;
                     StyleExpr = Carpetas;
                     trigger OnAssistEdit()
                     var
@@ -66,7 +67,7 @@ page 50102 "Google Drive Factbox"
                                     root := '/'
                                 else if Copystr(root, 1, 1) <> '/' then
                                     root := '/' + root;
-                                Base64Txt := GoogleDrive.DownloadFileB64(Copystr(root, 2) + Rec.Name, true);
+                                Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
                                 Recargar(Copystr(root, 2));
 
                             end;
@@ -155,7 +156,7 @@ page 50102 "Google Drive Factbox"
                         root := '/'
                     else if Copystr(root, 1, 1) <> '/' then
                         root := '/' + root;
-                    Base64Txt := GoogleDrive.DownloadFileB64(Copystr(root, 2) + Rec.Name, true);
+                    Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
                     Recargar(Copystr(root, 2));
                 end;
             }
@@ -233,7 +234,10 @@ page 50102 "Google Drive Factbox"
                         root := '/'
                     else if Copystr(root, 1, 1) <> '/' then
                         root := '/' + root;
-                    GoogleDrive.CreateFolder(Copystr(root, 2) + '/' + Carpeta);
+                    if (root = '/') Or (root = '') then
+                        GoogleDrive.CreateFolder(Carpeta)
+                    else
+                        GoogleDrive.CreateFolder(Copystr(root, 2) + '/' + Carpeta);
                     Recargar(Copystr(root, 2));
                 end;
             }

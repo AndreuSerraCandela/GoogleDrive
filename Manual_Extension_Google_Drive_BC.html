@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - Extensión Google Drive para Business Central</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            font-size: 2.5em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            margin-top: 40px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            margin-top: 30px;
+            font-size: 1.4em;
+        }
+        
+        h4 {
+            color: #34495e;
+            margin-top: 25px;
+            font-size: 1.2em;
+        }
+        
+        .toc {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            color: #495057;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+        }
+        
+        .toc a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: 500;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .highlight {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+        
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .step-list li {
+            counter-increment: step-counter;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #28a745;
+            border-radius: 0 5px 5px 0;
+            position: relative;
+        }
+        
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -20px;
+            top: 15px;
+            background-color: #28a745;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .requirements {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .troubleshooting {
+            background-color: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        @media print {
+            body {
+                font-size: 12pt;
+                line-height: 1.4;
+            }
+            
+            h1 {
+                page-break-before: always;
+                font-size: 18pt;
+            }
+            
+            h2 {
+                page-break-before: always;
+                font-size: 16pt;
+            }
+            
+            h3 {
+                font-size: 14pt;
+            }
+            
+            .toc {
+                page-break-after: always;
+            }
+            
+            pre, table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Manual de Usuario - Extensión Google Drive para Business Central</h1>
+
+    <div class="toc">
+        <h2>Tabla de Contenidos</h2>
+        <ul>
+            <li><a href="#introduccion">1. Introducción</a></li>
+            <li><a href="#requisitos">2. Requisitos Previos</a></li>
+            <li><a href="#configuracion">3. Configuración Inicial</a></li>
+            <li><a href="#funcionalidades">4. Funcionalidades Principales</a></li>
+            <li><a href="#gestion-archivos">5. Gestión de Archivos</a></li>
+            <li><a href="#configuracion-carpetas">6. Configuración de Carpetas</a></li>
+            <li><a href="#integracion-documentos">7. Integración con Documentos Adjuntos</a></li>
+            <li><a href="#casos-uso">8. Casos de Uso Comunes</a></li>
+            <li><a href="#solucion-problemas">9. Solución de Problemas</a></li>
+            <li><a href="#preguntas-frecuentes">10. Preguntas Frecuentes</a></li>
+            <li><a href="#mejores-practicas">11. Mejores Prácticas</a></li>
+            <li><a href="#soporte">12. Soporte y Contacto</a></li>
+        </ul>
+    </div>
+
+    <section id="introduccion">
+        <h2>1. Introducción</h2>
+        <p>La <strong>Extensión Google Drive para Business Central</strong> permite integrar completamente Google Drive con Microsoft Dynamics 365 Business Central, proporcionando capacidades avanzadas de gestión de documentos y archivos directamente desde el ERP.</p>
+
+        <h3>Características Principales</h3>
+        <div class="feature-list">
+            <div class="feature-item">
+                <strong>✅ Navegación completa</strong><br>
+                Por carpetas y archivos de Google Drive
+            </div>
+            <div class="feature-item">
+                <strong>✅ Subida y descarga</strong><br>
+                De archivos con interfaz intuitiva
+            </div>
+            <div class="feature-item">
+                <strong>✅ Creación y eliminación</strong><br>
+                De carpetas directamente desde BC
+            </div>
+            <div class="feature-item">
+                <strong>✅ Movimiento de archivos</strong><br>
+                Entre carpetas con drag & drop
+            </div>
+            <div class="feature-item">
+                <strong>✅ Integración nativa</strong><br>
+                Con el sistema de documentos adjuntos
+            </div>
+            <div class="feature-item">
+                <strong>✅ Configuración automática</strong><br>
+                De carpetas por tipo de documento
+            </div>
+            <div class="feature-item">
+                <strong>✅ Autenticación OAuth2</strong><br>
+                Segura y estándar de Google
+            </div>
+            <div class="feature-item">
+                <strong>✅ Selección múltiple</strong><br>
+                De archivos para operaciones en lote
+            </div>
+        </div>
+    </section>
+
+    <section id="requisitos">
+        <h2>2. Requisitos Previos</h2>
+        
+        <div class="requirements">
+            <h3>Requisitos del Sistema</h3>
+            <ul>
+                <li>Microsoft Dynamics 365 Business Central (versión 18.0 o superior)</li>
+                <li>Cuenta de Google Drive activa</li>
+                <li>Permisos de administrador en Business Central</li>
+                <li>Conexión a Internet estable</li>
+            </ul>
+        </div>
+
+        <h3>Configuración en Google Cloud Console</h3>
+        <p>Antes de usar la extensión, debe configurar un proyecto en Google Cloud Console:</p>
+
+        <ol class="step-list">
+            <li>
+                <strong>Crear un Proyecto en Google Cloud Console</strong><br>
+                Vaya a <a href="https://console.cloud.google.com/">Google Cloud Console</a> y cree un nuevo proyecto o seleccione uno existente
+            </li>
+            <li>
+                <strong>Habilitar la API de Google Drive</strong><br>
+                En el panel de APIs y servicios, busque "Google Drive API" y haga clic en "Habilitar"
+            </li>
+            <li>
+                <strong>Crear Credenciales OAuth2</strong><br>
+                Vaya a "Credenciales" → "Crear credenciales" → "ID de cliente OAuth"<br>
+                Tipo de aplicación: "Aplicación web"<br>
+                Configure las URIs de redirección autorizadas
+            </li>
+            <li>
+                <strong>Obtener Client ID y Client Secret</strong><br>
+                Descargue el archivo JSON con las credenciales<br>
+                Guarde el Client ID y Client Secret para la configuración
+            </li>
+        </ol>
+    </section>
+
+    <section id="configuracion">
+        <h2>3. Configuración Inicial</h2>
+
+        <h3>Paso 1: Configurar Credenciales de Google</h3>
+        <ol class="step-list">
+            <li>
+                <strong>Acceder a Información de la Empresa</strong><br>
+                Navegue a <code>Configuración</code> → <code>Información de la empresa</code><br>
+                Busque la sección "Google Drive Configuration"
+            </li>
+            <li>
+                <strong>Completar los Campos de Configuración</strong><br>
+                <pre>Google Client ID: [Su Client ID de Google]
+Google Client Secret: [Su Client Secret de Google]
+Google Auth URI: https://accounts.google.com/o/oauth2/auth
+Google Token URI: https://oauth2.googleapis.com/token
+Google Drive API URL: https://www.googleapis.com/drive/v3/</pre>
+            </li>
+        </ol>
+
+        <h3>Paso 2: Autenticación OAuth2</h3>
+        <ol class="step-list">
+            <li>
+                <strong>Iniciar el Proceso de Autenticación</strong><br>
+                La primera vez que use cualquier funcionalidad de Google Drive, el sistema le solicitará autenticarse
+            </li>
+            <li>
+                <strong>Completar la Autorización</strong><br>
+                Se abrirá una ventana del navegador<br>
+                Inicie sesión con su cuenta de Google<br>
+                Autorice el acceso a Google Drive<br>
+                Copie el código de autorización proporcionado
+            </li>
+            <li>
+                <strong>Introducir el Código de Autorización</strong><br>
+                Pegue el código en el diálogo de Business Central<br>
+                El sistema obtendrá automáticamente los tokens de acceso
+            </li>
+        </ol>
+
+        <h3>Paso 3: Verificar la Configuración</h3>
+        <div class="highlight success">
+            <strong>Probar la Conexión:</strong> Use la acción "Test Folder Access" en cualquier configuración para verificar que puede listar archivos y carpetas.
+        </div>
+    </section>
+
+    <section id="funcionalidades">
+        <h2>4. Funcionalidades Principales</h2>
+
+        <h3>1. Explorador de Google Drive (Factbox)</h3>
+        <p>El <strong>Google Drive Factbox</strong> proporciona una interfaz similar al explorador de archivos para navegar por Google Drive.</p>
+
+        <h4>Características:</h4>
+        <ul>
+            <li><strong>Navegación por carpetas:</strong> Haga doble clic en una carpeta para abrirla</li>
+            <li><strong>Navegación hacia atrás:</strong> Use el botón "Anterior" o haga clic en ".."</li>
+            <li><strong>Visualización de tipos:</strong> Distingue entre carpetas y archivos</li>
+            <li><strong>Acciones contextuales:</strong> Diferentes acciones según el tipo de elemento</li>
+        </ul>
+
+        <h4>Acciones Disponibles:</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Acción</th>
+                    <th>Descripción</th>
+                    <th>Disponible para</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Anterior</td>
+                    <td>Navegar a la carpeta padre</td>
+                    <td>Siempre</td>
+                </tr>
+                <tr>
+                    <td>Descargar Archivo</td>
+                    <td>Descargar archivos seleccionados</td>
+                    <td>Solo archivos</td>
+                </tr>
+                <tr>
+                    <td>Mover</td>
+                    <td>Mover archivos/carpetas a otra ubicación</td>
+                    <td>Archivos y carpetas</td>
+                </tr>
+                <tr>
+                    <td>Crear Carpeta</td>
+                    <td>Crear nuevas carpetas</td>
+                    <td>Siempre</td>
+                </tr>
+                <tr>
+                    <td>Borrar</td>
+                    <td>Eliminar archivos/carpetas</td>
+                    <td>Archivos y carpetas</td>
+                </tr>
+                <tr>
+                    <td>Subir Archivo</td>
+                    <td>Cargar archivos desde el equipo local</td>
+                    <td>Siempre</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>2. Lista de Google Drive (Selección)</h3>
+        <p>La <strong>Google Drive List</strong> permite seleccionar múltiples archivos para operaciones en lote.</p>
+
+        <h4>Características:</h4>
+        <ul>
+            <li><strong>Selección múltiple:</strong> Marque varios archivos usando checkboxes</li>
+            <li><strong>Selección individual:</strong> Haga clic en un archivo para seleccionarlo</li>
+            <li><strong>Filtrado visual:</strong> Distingue carpetas de archivos</li>
+            <li><strong>Navegación completa:</strong> Misma funcionalidad que el Factbox</li>
+        </ul>
+
+        <h4>Acciones Especiales:</h4>
+        <ul>
+            <li><strong>Seleccionar:</strong> Seleccionar el archivo actual</li>
+            <li><strong>Seleccionar Marcados:</strong> Seleccionar todos los archivos marcados</li>
+            <li><strong>Todas las acciones del Factbox</strong></li>
+        </ul>
+    </section>
+
+    <section id="gestion-archivos">
+        <h2>5. Gestión de Archivos</h2>
+
+        <h3>Subir Archivos</h3>
+        
+        <h4>1. Desde el Explorador</h4>
+        <ol class="step-list">
+            <li>Navegue a la carpeta deseada</li>
+            <li>Haga clic en "Subir Archivo"</li>
+            <li>Seleccione el archivo desde su equipo</li>
+            <li>El archivo se cargará automáticamente</li>
+        </ol>
+
+        <h4>2. Desde Documentos Adjuntos</h4>
+        <ol class="step-list">
+            <li>Use la acción "Cargar archivo desde Google Drive"</li>
+            <li>Seleccione archivos existentes en Google Drive</li>
+            <li>Se vincularán automáticamente al registro</li>
+        </ol>
+
+        <h3>Descargar Archivos</h3>
+        
+        <h4>1. Descarga Individual</h4>
+        <ol class="step-list">
+            <li>Seleccione el archivo</li>
+            <li>Haga clic en "Descargar Archivo"</li>
+            <li>El archivo se descargará a su equipo</li>
+        </ol>
+
+        <h4>2. Descarga Múltiple</h4>
+        <ol class="step-list">
+            <li>Marque varios archivos en la lista</li>
+            <li>Use "Seleccionar Marcados"</li>
+            <li>Procese la descarga en lote</li>
+        </ol>
+
+        <h3>Mover Archivos</h3>
+        <ol class="step-list">
+            <li>
+                <strong>Seleccionar Origen</strong><br>
+                Navegue al archivo/carpeta a mover y haga clic en "Mover"
+            </li>
+            <li>
+                <strong>Seleccionar Destino</strong><br>
+                El sistema mostrará las carpetas disponibles<br>
+                Seleccione la carpeta de destino y confirme la operación
+            </li>
+        </ol>
+
+        <h3>Crear Carpetas</h3>
+        <ol class="step-list">
+            <li>
+                <strong>Navegación</strong><br>
+                Vaya a la ubicación donde crear la carpeta
+            </li>
+            <li>
+                <strong>Creación</strong><br>
+                Haga clic en "Crear Carpeta"<br>
+                Introduzca el nombre de la carpeta y confirme
+            </li>
+        </ol>
+
+        <h3>Eliminar Elementos</h3>
+        <div class="highlight warning">
+            <strong>⚠️ Advertencia:</strong> Los elementos eliminados se moverán a la papelera de Google Drive y pueden ser recuperados desde allí.
+        </div>
+        <ol class="step-list">
+            <li>Seleccione el archivo/carpeta a eliminar</li>
+            <li>Haga clic en "Borrar"</li>
+            <li>Confirme la eliminación</li>
+        </ol>
+    </section>
+
+    <section id="configuracion-carpetas">
+        <h2>6. Configuración de Carpetas</h2>
+
+        <h3>Google Drive Folder Mapping</h3>
+        <p>Esta funcionalidad permite configurar carpetas específicas de Google Drive para diferentes tipos de documentos en Business Central.</p>
+
+        <h4>Acceso a la Configuración</h4>
+        <p>Navegue a <code>Configuración</code> → <code>Google Drive Folder Mapping</code></p>
+
+        <h4>Campos de Configuración</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Campo</th>
+                    <th>Descripción</th>
+                    <th>Ejemplo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Table ID</strong></td>
+                    <td>ID de la tabla de BC</td>
+                    <td>18 (Customer)</td>
+                </tr>
+                <tr>
+                    <td><strong>Table Name</strong></td>
+                    <td>Nombre de la tabla</td>
+                    <td>Customer</td>
+                </tr>
+                <tr>
+                    <td><strong>Default Folder Name</strong></td>
+                    <td>Nombre de referencia</td>
+                    <td>Clientes</td>
+                </tr>
+                <tr>
+                    <td><strong>Default Folder ID</strong></td>
+                    <td>ID de carpeta en Google Drive</td>
+                    <td>1BxY...xyz</td>
+                </tr>
+                <tr>
+                    <td><strong>Auto Create Subfolders</strong></td>
+                    <td>Crear subcarpetas automáticamente</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td><strong>Subfolder Pattern</strong></td>
+                    <td>Patrón para subcarpetas</td>
+                    <td>{YEAR}/{DOCNO}</td>
+                </tr>
+                <tr>
+                    <td><strong>Active</strong></td>
+                    <td>Configuración activa</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td><strong>Description</strong></td>
+                    <td>Descripción opcional</td>
+                    <td>Documentos de clientes</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>Patrones de Subcarpetas</h4>
+        <p>Puede usar los siguientes tokens en el patrón de subcarpetas:</p>
+        <ul>
+            <li><code>{DOCNO}</code>: Número de documento</li>
+            <li><code>{YEAR}</code>: Año actual</li>
+            <li><code>{MONTH}</code>: Mes actual (01-12)</li>
+            <li><code>{DAY}</code>: Día actual (01-31)</li>
+            <li><code>{CUSTOMERNO}</code>: Número de cliente (si aplica)</li>
+            <li><code>{VENDORNO}</code>: Número de proveedor (si aplica)</li>
+        </ul>
+
+        <h4>Ejemplos de Configuración</h4>
+        
+        <div class="highlight info">
+            <strong>Para Facturas de Venta:</strong><br>
+            <pre>Table ID: 112
+Default Folder Name: Facturas de Venta
+Subfolder Pattern: {YEAR}/Facturas/{DOCNO}</pre>
+        </div>
+
+        <div class="highlight info">
+            <strong>Para Documentos de Cliente:</strong><br>
+            <pre>Table ID: 18
+Default Folder Name: Clientes
+Subfolder Pattern: {CUSTOMERNO}/{YEAR}</pre>
+        </div>
+
+        <h4>Acciones Disponibles</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Acción</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Configurar Mapeos por Defecto</td>
+                    <td>Crea configuraciones predeterminadas para tablas comunes</td>
+                </tr>
+                <tr>
+                    <td>Explorar Carpeta Google Drive</td>
+                    <td>Abre el explorador para seleccionar carpetas</td>
+                </tr>
+                <tr>
+                    <td>Recuperar ID de Carpeta</td>
+                    <td>Busca automáticamente el ID basado en el nombre</td>
+                </tr>
+                <tr>
+                    <td>Probar Acceso a Carpeta</td>
+                    <td>Verifica que la configuración funciona correctamente</td>
+                </tr>
+                <tr>
+                    <td>Crear Subcarpeta de Prueba</td>
+                    <td>Crea una subcarpeta usando el patrón configurado</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="integracion-documentos">
+        <h2>7. Integración con Documentos Adjuntos</h2>
+
+        <h3>Configuración de Documentos Adjuntos</h3>
+        <p>La extensión modifica el comportamiento estándar de los documentos adjuntos para usar Google Drive como almacenamiento.</p>
+
+        <h4>Campos Adicionales</h4>
+        <p>En cualquier lista de documentos adjuntos, encontrará:</p>
+        <ul>
+            <li><strong>Store in Google Drive:</strong> Checkbox para habilitar almacenamiento en Google Drive</li>
+            <li><strong>Google Drive ID:</strong> ID del archivo en Google Drive (solo lectura)</li>
+        </ul>
+
+        <h4>Funcionalidades Mejoradas</h4>
+        <ol class="step-list">
+            <li>
+                <strong>Carga Automática</strong><br>
+                Los archivos marcados como "Store in Google Drive" se suben automáticamente<br>
+                Se almacena el ID de Google Drive en lugar del contenido en BC
+            </li>
+            <li>
+                <strong>Descarga Transparente</strong><br>
+                Al abrir un archivo almacenado en Google Drive<br>
+                Se descarga automáticamente desde Google Drive
+            </li>
+            <li>
+                <strong>Gestión de Tipos de Archivo</strong><br>
+                Reconocimiento automático de tipos de archivo<br>
+                Configuración de iconos y comportamientos específicos
+            </li>
+        </ol>
+
+        <h3>Cargar Archivos desde Google Drive</h3>
+
+        <h4>Proceso Paso a Paso</h4>
+        <ol class="step-list">
+            <li>
+                <strong>Acceder a Documentos Adjuntos</strong><br>
+                Abra cualquier registro que soporte documentos adjuntos<br>
+                Vaya a la sección "Documentos Adjuntos"
+            </li>
+            <li>
+                <strong>Usar la Acción Especial</strong><br>
+                Haga clic en "Cargar archivo desde Google Drive"<br>
+                Se abrirá el explorador de Google Drive
+            </li>
+            <li>
+                <strong>Navegar y Seleccionar</strong><br>
+                Navegue por las carpetas de Google Drive<br>
+                Seleccione uno o múltiples archivos<br>
+                Use "Seleccionar Marcados" para selección múltiple
+            </li>
+            <li>
+                <strong>Confirmación</strong><br>
+                Los archivos se vincularán automáticamente al registro<br>
+                Se crearán entradas de documentos adjuntos<br>
+                Los archivos permanecen en Google Drive
+            </li>
+        </ol>
+
+        <h4>Ventajas de esta Integración</h4>
+        <div class="feature-list">
+            <div class="feature-item">
+                <strong>💾 Ahorro de Espacio</strong><br>
+                Los archivos no se duplican en BC
+            </div>
+            <div class="feature-item">
+                <strong>🔄 Sincronización</strong><br>
+                Cambios en Google Drive se reflejan automáticamente
+            </div>
+            <div class="feature-item">
+                <strong>👥 Colaboración</strong><br>
+                Múltiples usuarios pueden acceder a los mismos archivos
+            </div>
+            <div class="feature-item">
+                <strong>📝 Versionado</strong><br>
+                Google Drive mantiene el historial de versiones
+            </div>
+        </div>
+    </section>
+
+    <section id="casos-uso">
+        <h2>8. Casos de Uso Comunes</h2>
+
+        <h3>1. Gestión de Documentos de Cliente</h3>
+        <div class="highlight info">
+            <strong>Escenario:</strong> Almacenar contratos, facturas y correspondencia de clientes.
+            <br><br>
+            <strong>Configuración:</strong>
+            <pre>Table ID: 18 (Customer)
+Default Folder Name: Clientes
+Subfolder Pattern: {CUSTOMERNO}/{YEAR}
+Auto Create Subfolders: ✓</pre>
+            <strong>Flujo de Trabajo:</strong>
+            <ol>
+                <li>Al adjuntar un documento a un cliente</li>
+                <li>Se crea automáticamente la carpeta "Clientes/CUST001/2024"</li>
+                <li>El documento se almacena en Google Drive</li>
+                <li>Se mantiene la referencia en Business Central</li>
+            </ol>
+        </div>
+
+        <h3>2. Archivo de Facturas</h3>
+        <div class="highlight info">
+            <strong>Escenario:</strong> Organizar facturas por año y número.
+            <br><br>
+            <strong>Configuración:</strong>
+            <pre>Table ID: 112 (Sales Invoice Header)
+Default Folder Name: Facturas
+Subfolder Pattern: {YEAR}/Facturas/{DOCNO}
+Auto Create Subfolders: ✓</pre>
+            <strong>Resultado:</strong> Estructura como "Facturas/2024/Facturas/FAC-001"
+        </div>
+
+        <h3>3. Documentos de Productos</h3>
+        <div class="highlight info">
+            <strong>Escenario:</strong> Manuales, especificaciones técnicas, imágenes.
+            <br><br>
+            <strong>Configuración:</strong>
+            <pre>Table ID: 27 (Item)
+Default Folder Name: Productos
+Subfolder Pattern: {ITEMNO}/Documentos
+Auto Create Subfolders: ✓</pre>
+        </div>
+
+        <h3>4. Gestión de Proyectos</h3>
+        <div class="highlight info">
+            <strong>Escenario:</strong> Documentos relacionados con proyectos específicos.
+            <br><br>
+            <strong>Configuración:</strong>
+            <pre>Table ID: 167 (Job)
+Default Folder Name: Proyectos
+Subfolder Pattern: {JOBNO}/{YEAR}
+Auto Create Subfolders: ✓</pre>
+        </div>
+    </section>
+
+    <section id="solucion-problemas">
+        <h2>9. Solución de Problemas</h2>
+
+        <div class="troubleshooting">
+            <h3>Problemas de Autenticación</h3>
+            
+            <h4>Error: "Token Expired"</h4>
+            <p><strong>Causa:</strong> El token de acceso ha expirado.</p>
+            <p><strong>Solución:</strong></p>
+            <ol>
+                <li>El sistema intentará renovar automáticamente el token</li>
+                <li>Si falla, vuelva a autenticarse desde la configuración</li>
+                <li>Verifique que el Refresh Token sea válido</li>
+            </ol>
+
+            <h4>Error: "Invalid Client ID"</h4>
+            <p><strong>Causa:</strong> Credenciales incorrectas o proyecto de Google Cloud mal configurado.</p>
+            <p><strong>Solución:</strong></p>
+            <ol>
+                <li>Verifique el Client ID y Client Secret</li>
+                <li>Confirme que la API de Google Drive está habilitada</li>
+                <li>Revise las URIs de redirección en Google Cloud Console</li>
+            </ol>
+        </div>
+
+        <div class="troubleshooting">
+            <h3>Problemas de Conectividad</h3>
+            
+            <h4>Error: "Cannot Connect to Google Drive"</h4>
+            <p><strong>Causa:</strong> Problemas de red o configuración de proxy.</p>
+            <p><strong>Solución:</strong></p>
+            <ol>
+                <li>Verifique la conexión a Internet</li>
+                <li>Confirme que no hay bloqueos de firewall</li>
+                <li>Revise la configuración de proxy si aplica</li>
+            </ol>
+
+            <h4>Error: "Folder Not Found"</h4>
+            <p><strong>Causa:</strong> ID de carpeta incorrecto o carpeta eliminada.</p>
+            <p><strong>Solución:</strong></p>
+            <ol>
+                <li>Verifique que la carpeta existe en Google Drive</li>
+                <li>Confirme que tiene permisos de acceso</li>
+                <li>Use "Recuperar ID de Carpeta" para obtener el ID correcto</li>
+            </ol>
+        </div>
+
+        <div class="troubleshooting">
+            <h3>Problemas de Permisos</h3>
+            
+            <h4>Error: "Access Denied"</h4>
+            <p><strong>Causa:</strong> Permisos insuficientes en Google Drive.</p>
+            <p><strong>Solución:</strong></p>
+            <ol>
+                <li>Verifique que tiene permisos de escritura en la carpeta</li>
+                <li>Confirme que la carpeta no está restringida</li>
+                <li>Revise los permisos de compartir en Google Drive</li>
+            </ol>
+
+            <h4>Error: "Quota Exceeded"</h4>
+            <p><strong>Causa:</strong> Límite de almacenamiento de Google Drive alcanzado.</p>
+            <p><strong>Solución:</strong></p>
+            <ol>
+                <li>Libere espacio en Google Drive</li>
+                <li>Considere actualizar su plan de almacenamiento</li>
+                <li>Archive archivos antiguos</li>
+            </ol>
+        </div>
+    </section>
+
+    <section id="preguntas-frecuentes">
+        <h2>10. Preguntas Frecuentes</h2>
+
+        <h3>General</h3>
+        <div class="highlight">
+            <p><strong>P: ¿Puedo usar múltiples cuentas de Google Drive?</strong></p>
+            <p>R: Actualmente, la extensión soporta una cuenta de Google Drive por empresa en Business Central.</p>
+        </div>
+
+        <div class="highlight">
+            <p><strong>P: ¿Los archivos se sincronizan automáticamente?</strong></p>
+            <p>R: Los archivos se almacenan directamente en Google Drive. Los cambios realizados en Google Drive se reflejan inmediatamente en Business Central.</p>
+        </div>
+
+        <div class="highlight">
+            <p><strong>P: ¿Qué pasa si elimino un archivo en Google Drive?</strong></p>
+            <p>R: El enlace en Business Central seguirá existiendo, pero el archivo no estará disponible. Se mostrará un error al intentar acceder.</p>
+        </div>
+
+        <h3>Seguridad</h3>
+        <div class="highlight">
+            <p><strong>P: ¿Es segura la integración?</strong></p>
+            <p>R: Sí, utiliza OAuth2 estándar de Google y no almacena credenciales sensibles en Business Central.</p>
+        </div>
+
+        <div class="highlight">
+            <p><strong>P: ¿Puedo controlar quién accede a los archivos?</strong></p>
+            <p>R: Los permisos se gestionan desde Google Drive. Puede configurar permisos específicos para cada carpeta y archivo.</p>
+        </div>
+
+        <h3>Técnicas</h3>
+        <div class="highlight">
+            <p><strong>P: ¿Hay límites de tamaño de archivo?</strong></p>
+            <p>R: Los límites son los mismos que Google Drive (15 GB por archivo para cuentas gratuitas).</p>
+        </div>
+
+        <div class="highlight">
+            <p><strong>P: ¿Funciona con Business Central On-Premises?</strong></p>
+            <p>R: Sí, siempre que tenga conexión a Internet para acceder a Google Drive.</p>
+        </div>
+    </section>
+
+    <section id="mejores-practicas">
+        <h2>11. Mejores Prácticas</h2>
+
+        <h3>Organización de Carpetas</h3>
+        <ol class="step-list">
+            <li>
+                <strong>Estructura Jerárquica Clara</strong><br>
+                Use una estructura lógica y consistente<br>
+                Evite carpetas demasiado profundas (máximo 5 niveles)<br>
+                Use nombres descriptivos y estándares
+            </li>
+            <li>
+                <strong>Convenciones de Nomenclatura</strong><br>
+                Establezca convenciones claras para nombres de archivos<br>
+                Use fechas en formato YYYY-MM-DD<br>
+                Incluya identificadores únicos cuando sea necesario
+            </li>
+            <li>
+                <strong>Gestión de Permisos</strong><br>
+                Configure permisos a nivel de carpeta principal<br>
+                Use grupos de Google para gestionar accesos<br>
+                Revise permisos regularmente
+            </li>
+        </ol>
+
+        <h3>Configuración de Mapeos</h3>
+        <ol class="step-list">
+            <li>
+                <strong>Planificación Previa</strong><br>
+                Diseñe la estructura de carpetas antes de configurar<br>
+                Considere el crecimiento futuro<br>
+                Documente las decisiones tomadas
+            </li>
+            <li>
+                <strong>Patrones Consistentes</strong><br>
+                Use patrones similares para tablas relacionadas<br>
+                Evite patrones demasiado complejos<br>
+                Pruebe los patrones antes de implementar
+            </li>
+        </ol>
+
+        <h3>Rendimiento</h3>
+        <ol class="step-list">
+            <li>
+                <strong>Optimización de Consultas</strong><br>
+                Limite el número de archivos por carpeta<br>
+                Use subcarpetas para organizar grandes volúmenes<br>
+                Evite consultas innecesarias
+            </li>
+            <li>
+                <strong>Gestión de Cache</strong><br>
+                Permita que el sistema mantenga tokens en cache<br>
+                No fuerce renovaciones innecesarias<br>
+                Monitoree el uso de la API
+            </li>
+        </ol>
+    </section>
+
+    <section id="soporte">
+        <h2>12. Soporte y Contacto</h2>
+
+        <h3>Recursos Adicionales</h3>
+        <ul>
+            <li><strong>Documentación de Google Drive API:</strong> <a href="https://developers.google.com/drive">developers.google.com/drive</a></li>
+            <li><strong>Business Central Documentation:</strong> <a href="https://docs.microsoft.com/dynamics365/business-central">docs.microsoft.com/dynamics365/business-central</a></li>
+            <li><strong>OAuth2 Documentation:</strong> <a href="https://oauth.net/2/">oauth.net/2/</a></li>
+        </ul>
+
+        <h3>Información de Versión</h3>
+        <table>
+            <tr>
+                <td><strong>Versión de la Extensión:</strong></td>
+                <td>1.0.0</td>
+            </tr>
+            <tr>
+                <td><strong>Compatibilidad:</strong></td>
+                <td>Business Central 18.0+</td>
+            </tr>
+            <tr>
+                <td><strong>Última Actualización:</strong></td>
+                <td>2024</td>
+            </tr>
+            <tr>
+                <td><strong>Autor:</strong></td>
+                <td>[Información del desarrollador]</td>
+            </tr>
+        </table>
+
+        <div class="highlight info">
+            <p><strong>📝 Nota:</strong> Este manual está sujeto a actualizaciones. Consulte la documentación más reciente para obtener información actualizada sobre nuevas funcionalidades y cambios.</p>
+        </div>
+    </section>
+
+    <footer style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #dee2e6; text-align: center; color: #6c757d;">
+        <p>Manual de Usuario - Extensión Google Drive para Business Central</p>
+        <p>Generado el: <script>document.write(new Date().toLocaleDateString('es-ES'));</script></p>
+    </footer>
+</body>
+</html> 

@@ -39,27 +39,7 @@ codeunit 50101 "Doc. Attachment Mgmt. GDrive"
         exit(true);
     end;
 
-    procedure DownloadAttachment(var DocumentAttachment: Record "Document Attachment"; ShowFileDialog: Boolean): Text
-    var
-        TempBlob: Codeunit "Temp Blob";
-        FileName: Text;
-    begin
-        // Only override if "Store in Google Drive" is true
-        if not DocumentAttachment."Store in Google Drive" then
-            exit(''); // We can't call the original method directly
 
-        // Download from Google Drive
-        if not GoogleDriveManager.DownloadFile(DocumentAttachment, TempBlob) then
-            exit('');
-
-        // In a real implementation, we would handle the file download differently for BC Cloud
-        // This is a simplified example showing the concept
-        FileName := DocumentAttachment."File Name";
-        if ShowFileDialog then
-            Message('File "%1" would be downloaded from Google Drive', FileName);
-
-        exit(FileName);
-    end;
 
     procedure DeleteAttachment(var DocumentAttachment: Record "Document Attachment"): Boolean
     begin
@@ -99,10 +79,17 @@ codeunit 50101 "Doc. Attachment Mgmt. GDrive"
         exit(GoogleDriveManager.UploadFile(DocumentAttachment, TempBlob));
     end;
 
-    local procedure SetDocumentAttachmentFileType(var DocumentAttachment: Record "Document Attachment"; FileExtension: Text)
+    procedure SetDocumentAttachmentFileType(var DocumentAttachment: Record "Document Attachment"; FileExtension: Text)
     var
         FileType: Enum "Document Attachment File Type";
     begin
+        if FileExtension = '' then begin
+            if StrPos(DocumentAttachment."File Name", '.') > 0 then
+                FileExtension := CopyStr(DocumentAttachment."File Name", StrLen(DocumentAttachment."File Name") - 3, 4);
+            if StrPos(FileExtension, '.') > 0 then
+                FileExtension := CopyStr(FileExtension, StrPos(FileExtension, '.') + 1, 3);
+            FileExtension := '.' + FileExtension;
+        end;
         case LowerCase(FileExtension) of
             '.pdf':
                 FileType := FileType::PDF;
@@ -118,5 +105,38 @@ codeunit 50101 "Doc. Attachment Mgmt. GDrive"
                 FileType := FileType::Other;
         end;
         DocumentAttachment."File Type" := FileType;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeHasContent', '', true, true)]
+    local procedure OnBeforeHasContent(var DocumentAttachment: Record "Document Attachment"; var AttachmentIsAvailable: Boolean; var IsHandled: Boolean)
+    begin
+        if DocumentAttachment."Store in Google Drive" then begin
+            AttachmentIsAvailable := true;
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeExport', '', true, true)]
+    local procedure OnBeforeExport(var DocumentAttachment: Record "Document Attachment"; var IsHandled: Boolean; ShowFileDialog: Boolean)
+    begin
+        if DocumentAttachment."Store in Google Drive" then begin
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeGetAsTempBlob', '', true, true)]
+    local procedure OnBeforeGetAsTempBlob(var DocumentAttachment: Record "Document Attachment"; var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
+    var
+        GoogleDriveManager: Codeunit "Google Drive Manager";
+        Base64Data: Text;
+        OutStream: OutStream;
+        Base64: Codeunit "Base64 Convert";
+    begin
+        if DocumentAttachment."Store in Google Drive" then begin
+            Base64Data := GoogleDriveManager.DownloadFileB64(DocumentAttachment."Google Drive ID", DocumentAttachment."File Name", false);
+            TempBlob.CreateOutStream(OutStream);
+            Base64.FromBase64(Base64Data, OutStream);
+            IsHandled := true;
+        end;
     end;
 }
