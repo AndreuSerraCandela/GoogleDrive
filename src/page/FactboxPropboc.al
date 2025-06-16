@@ -1,85 +1,57 @@
-page 95102 "Google Drive Factbox"
+page 95100 "Google Drive Factbox"
 {
-    Caption = 'Google Drive';
-    Editable = false;
     PageType = ListPart;
+    ApplicationArea = All;
+    UsageCategory = Administration;
     SourceTable = "Name/Value Buffer";
     SourceTableTemporary = true;
 
     layout
     {
-        area(content)
+        area(Content)
         {
-            repeater(Control1000)
+            repeater(GroupName)
             {
-                ShowCaption = false;
                 field(Name; Rec.Name)
                 {
                     ApplicationArea = All;
-                    StyleExpr = Carpetas;
-                    trigger OnAssistEdit()
-                    var
-                        Base64Txt: Text;
-                        Barra: Integer;
-                        UltimaBarra: Text;
+                    Caption = 'Nombre';
+                    DrillDown = true;
+                    StyleExpr = Stilo;
+                    trigger OnDrillDown()
                     begin
                         Nombre := Rec.Name;
                         If Nombre = '..' Then begin
+                            // Subir al nivel anterior
                             Accion := Accion::Anterior;
+                            Indice := Indice - 1;
+                            if Indice < 1 then
+                                Indice := 1;
                             Rec.Value := 'Carpeta';
-                            If (root = CarpetaPrincipal) Or (root = '/' + CarpetaPrincipal) Or
-                                ('/' + root = CarpetaPrincipal) then
-                                exit;
-                            Rec.Name := root;
-                            root := CarpetaPrincipal;
-                            If StrPos(Rec.Name, '/') > 0 then begin
-                                repeat
-                                    Barra += 1;
-
-                                    UltimaBarra := CopyStr(Rec.Name, barra);
-
-                                until StrPos(UltimaBarra, '/') = 0;
-                                Rec.Name := CopyStr(Rec.Name, 1, barra - 2);
-                            end;
-                            root := Rec.Name;
-                            if StrLen(root) = 0 then
-                                root := '/'
-                            else if Copystr(root, 1, 1) <> '/' then
-                                root := '/' + root;
-
-                            Recargar(Copystr(root, 2));
+                            Rec."Google Drive ID" := root;
+                            if Indice = 1 then
+                                Recargar(CarpetaAnterior[Indice + 1], CarpetaAnterior[Indice], Indice)
+                            else
+                                Recargar(CarpetaAnterior[Indice], CarpetaAnterior[Indice - 1], Indice - 1);
                         end else begin
                             if Rec.Value = 'Carpeta' then begin
+                                // Navegar a la subcarpeta
                                 Accion := Accion::" ";
-                                if StrLen(root) = 0 then
-                                    root := '/'
-                                else if Copystr(root, 1, 1) <> '/' then
-                                    root := '/' + root;
-                                If root = '/' then
-                                    root := root + Rec.Name
-                                else
-                                    root := root + '/' + Rec.Name;
-                                Recargar(Copystr(root, 2));
-
+                                Indice := Indice + 1;
+                                Recargar(Rec."Google Drive ID", Rec."Google Drive Parent ID", Indice);
                             end else begin
+                                // Descargar archivo
                                 Accion := Accion::"Descargar Archivo";
-                                if StrLen(root) = 0 then
-                                    root := '/'
-                                else if Copystr(root, 1, 1) <> '/' then
-                                    root := '/' + root;
                                 Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
-                                Recargar(Copystr(root, 2));
-
+                                Recargar(root, CarpetaAnterior[Indice], Indice);
                             end;
                         end;
                     end;
                 }
-                field(Tipo; Rec.Value)
+                field(Value; Rec.Value)
                 {
+                    ApplicationArea = All;
                     Caption = 'Tipo';
-                    Visible = false;
-                    ApplicationArea = Invoicing, Basic, Suite;
-                    ToolTip = 'Specifies the value.';
                 }
             }
         }
@@ -89,57 +61,6 @@ page 95102 "Google Drive Factbox"
     {
         area(Processing)
         {
-            // action("Seleccionar")
-            // {
-            //     ApplicationArea = All;
-            //     Visible = (Not Mueve);
-            //     Image = SelectChart;
-            //     Scope=Repeater;
-            //     trigger OnAction()
-            //     begin
-            //         Nombre := Rec.Name;
-            //         Accion := Accion::"Seleccionar";
-            //         CurrPage.Close();
-            //     end;
-            // }
-            action("Anterior")
-            {
-                ApplicationArea = All;
-                Visible = true;
-                Image = PreviousRecord;
-                Scope = Repeater;
-                trigger OnAction()
-                var
-                    Barra: Integer;
-                    UltimaBarra: Text;
-                begin
-                    Nombre := 'Anterior';
-                    Rec.Value := 'Carpeta';
-                    Accion := Accion::Anterior;
-                    if not Mueve then
-                        Accion := Accion::Anterior;
-                    If (root = CarpetaPrincipal) Or (root = '/' + CarpetaPrincipal) Or
-                        ('/' + root = CarpetaPrincipal) then
-                        exit;
-                    Rec.Name := root;
-                    root := CarpetaPrincipal;
-                    If StrPos(Rec.Name, '/') > 0 then begin
-                        repeat
-                            Barra += 1;
-
-                            UltimaBarra := CopyStr(Rec.Name, barra);
-
-                        until StrPos(UltimaBarra, '/') = 0;
-                        Rec.Name := CopyStr(Rec.Name, 1, barra - 2);
-                    end;
-                    root := Rec.Name;
-                    if StrLen(root) = 0 then
-                        root := '/'
-                    else if Copystr(root, 1, 1) <> '/' then
-                        root := '/' + root;
-                    Recargar(Copystr(root, 2));
-                end;
-            }
             action("Descargar Archivo")
             {
                 ApplicationArea = All;
@@ -152,12 +73,8 @@ page 95102 "Google Drive Factbox"
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::"Descargar Archivo";
-                    if StrLen(root) = 0 then
-                        root := '/'
-                    else if Copystr(root, 1, 1) <> '/' then
-                        root := '/' + root;
                     Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
-                    Recargar(Copystr(root, 2));
+                    Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }
             action("M&over")
@@ -194,24 +111,10 @@ page 95102 "Google Drive Factbox"
                         else
                             GoogleDrive.Movefile(Copystr(root, 2), Destino, true);
                         root := destino;
-                        Recargar(Copystr(root, 2));
+                        Recargar(root, CarpetaAnterior[Indice], Indice);
                     end;
                 end;
             }
-            // action("Seleccionar Destino")
-            // {
-            //     ApplicationArea = All;
-            //     Visible = Mueve;
-            //     Image = Select;
-            //     trigger OnAction()
-            //     begin
-            //         Nombre := Rec.Name;
-            //         Accion := Accion::"Seleccionar Destino";
-            //         Mueve := False;
-            //         //Rec.Value := 'Seleccionada';
-            //         CurrPage.Close();
-            //     end;
-            // }
             action("Crear Carpeta")
             {
                 ApplicationArea = All;
@@ -230,15 +133,11 @@ page 95102 "Google Drive Factbox"
                     Ventana.GetTexto(Carpeta);
                     Nombre := Carpeta;
                     Accion := Accion::"Crear Carpeta";
-                    if StrLen(root) = 0 then
-                        root := '/'
-                    else if Copystr(root, 1, 1) <> '/' then
-                        root := '/' + root;
-                    if (root = '/') Or (root = '') then
-                        GoogleDrive.CreateFolder(Carpeta)
+                    If CarpetaAnterior[Indice] = '' then
+                        GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal)
                     else
-                        GoogleDrive.CreateFolder(Copystr(root, 2) + '/' + Carpeta);
-                    Recargar(Copystr(root, 2));
+                        GoogleDrive.CreateFolder(Carpeta, CarpetaAnterior[Indice]);
+                    Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }
             action(Borrar)
@@ -251,12 +150,8 @@ page 95102 "Google Drive Factbox"
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::Borrar;
-                    if StrLen(root) = 0 then
-                        root := '/'
-                    else if Copystr(root, 1, 1) <> '/' then
-                        root := '/' + root;
-                    GoogleDrive.DeleteFolder(Copystr(root, 2) + '/' + Rec.Name, false);
-                    Recargar(Copystr(root, 2));
+                    GoogleDrive.DeleteFolder(Rec."Google Drive ID", false);
+                    Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }
             action("Subir Archivo")
@@ -274,135 +169,82 @@ page 95102 "Google Drive Factbox"
                     Nombre := Rec.Name;
                     Accion := Accion::"Subir Archivo";
                     Rec.Value := 'Carpeta';
-                    if StrLen(root) = 0 then
-                        root := '/'
-                    else if Copystr(root, 1, 1) <> '/' then
-                        root := '/' + root;
                     UPLOADINTOSTREAM('Import', '', ' All Files (*.*)|*.*', Filename, NVInStream);
                     FileExtension := FileMgt.GetExtension(FileName);
-                    GoogleDrive.UploadFileB64(Copystr(root, 2), NVInStream, Filename, FileExtension);
-                    Recargar(Copystr(root, 2));
+                    GoogleDrive.UploadFileB64(root, NVInStream, Filename, FileExtension);
+                    Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }
         }
-        // area(Promoted)
-        // {
-        //     actionref(Seleccionar_Ref; "Seleccionar") { }
-        //     actionref(Anterior_Ref; Anterior) { }
-        //     actionref(Mover_Ref; "Mover") { }
-        //     actionref(DescargarArchivo_Ref; "Descargar Archivo") { }
-        //     actionref(CrearCarpeta_Ref; "Crear Carpeta") { }
-        //     actionref(Borrar_Ref; Borrar) { }
-        //     actionref(SubirArchivo_Ref; "Subir Archivo") { }
-
-        //     // actionref(SeleccionarDestino_Ref; "Seleccionar Destino") { }
-        // }
     }
-    procedure Navegar(root: Text)
-    begin
-        Caption := root;
-        Acciones := True;
-        Nombre := '-';
-    end;
 
     var
-        Acciones: Boolean;
         GoogleDrive: Codeunit "Google Drive Manager";
-        Nombre: Text;
-        Carpeta: Boolean;
-        Archivo: Boolean;
-        Mueve: Boolean;
-        Accion: Option " ","Seleccionar","Anterior","Descargar Archivo","Mover","Crear Carpeta",Borrar,"Subir Archivo";
-        root: Text;
+        Base64Txt: Text;
+        CarpetaAnterior: array[10] of Text;
+        Indice: Integer;
         CarpetaPrincipal: Text;
-        Carpetas: Text;
-        CarpetaPrincipalSeteada: Boolean;
+        root: Text;
+        Nombre: Text;
+        Accion: Option " ","Descargar Archivo",Anterior,Mover,"Crear Carpeta",Borrar,"Subir Archivo";
+        Mueve: Boolean;
+        Stilo: Text;
+        Archivo: Boolean;
 
-    Procedure GetNombre(Var Nom: Text; Var Valor: Text; Var pAccion: Option "  ","Seleccionar","Anterior","Descargar Archivo","Mover","Crear Carpeta",Borrar,"Subir Archivo")
+    procedure SetRecords(FolderId: Text; var Files: Record "Name/Value Buffer" temporary)
     begin
-        Nom := Nombre;
-        If Accion in [Accion::Anterior, Accion::"Crear Carpeta"] then
-            Valor := 'Carpeta'
-        else
-            Valor := Rec.Value;
-        // if Mueve then
-        //   pAccion := Accion::Mover;
-        pAccion := Accion;
+        Rec.Copy(Files, true);
+        root := FolderId;
+        Indice := 1;
+        CarpetaPrincipal := FolderId;
     end;
 
     trigger OnAfterGetRecord()
     begin
-
-        if Rec.Value = 'Carpeta' then begin
-            Carpeta := True;
-            Carpetas := 'StrongAccent';
-            Archivo := False;
-        end
-        else begin
-            Carpeta := False;
-            Carpetas := 'Standard';
-            Archivo := True;
-        end;
-
-    end;
-
-    procedure Mover()
-    begin
-        Mueve := True;
-        Rec.SetRange(Value, 'Carpeta');
-    end;
-
-    procedure AddItem(ItemName: Text[250]; ItemValue: Text[250])
-    var
-        NextID: Integer;
-    begin
-        Rec.LockTable();
-        Rec.SetCurrentKey("ID");
-        if Rec.FindLast() then
-            NextID := Rec.ID + 1
+        if Rec.Value = 'Carpeta' then
+            Stilo := 'Strong'
         else
-            NextID := 1;
+            Stilo := 'Standard';
 
-        Rec.Init();
-        Rec.ID := NextID;
-        Rec.Name := ItemName;
-        Rec.Value := ItemValue;
-        If Rec.Insert() Then;
     end;
 
-    procedure Recargar(Carpeta: Text)
-    var
-        Tipo: Text;
-        Accion: Option " ","Seleccionar","Anterior","Descargar Archivo","Mover","Seleccionar Destino","Crear Carpeta",Borrar,"Subir Archivo",Base64;
-        Pfiles: Record "Name/Value Buffer" temporary;
+    procedure GetSelectionFilter(var Files: Record "Name/Value Buffer" temporary)
     begin
-        if not CarpetaPrincipalSeteada then begin
-            CarpetaPrincipal := Carpeta;
-            CarpetaPrincipalSeteada := true;
-        end;
-        root := Carpeta;
-        GoogleDrive.Carpetas(Carpeta, Pfiles);
-        Rec.Reset();
-        Rec.DeleteAll();
-        Pfiles.Reset();
-        Rec.ID := -99;
-        Rec.Value := 'Carpeta';
-        Rec.Name := '..';
-        If Rec.Insert() Then;
-        if Pfiles.FindSet() then
-            repeat
-                If Rec.Get(Pfiles.ID) then begin
-                    Rec.Name := Pfiles.Name;
-                    Rec.Value := Pfiles.Value;
-                end else begin
-                    Rec.Init();
-                    Rec := Pfiles;
-                    if Rec.Insert() Then;
-                end;
-            until Pfiles.Next() = 0;
-        if Rec.FindFirst() then;
-        CurrPage.Update(false);
+        Files.Copy(Rec, true);
     end;
 
+    procedure Recargar(FolderId: Text; ParentId: Text; IndiceActual: Integer)
+    var
+        Files: Record "Name/Value Buffer" temporary;
+    begin
+        GoogleDrive.Carpetas(FolderId, Files);
+        Rec.DeleteAll();
 
+        // Agregar la carpeta ".." al inicio
+        Rec.Init();
+        Rec.ID := -99;
+        Rec.Name := '..';
+        Rec.Value := 'Carpeta';
+        Rec."Google Drive ID" := FolderId;
+        Rec."Google Drive Parent ID" := ParentId;
+        Rec.Insert();
+
+        // Copiar el resto de los archivos y carpetas
+        if Files.FindSet() then
+            repeat
+                Rec.Init();
+                Rec := Files;
+                Rec.Insert();
+            until Files.Next() = 0;
+
+        Indice := IndiceActual;
+        root := FolderId;
+        CarpetaAnterior[Indice] := ParentId;
+        if Indice = 1 then
+            CarpetaPrincipal := FolderId;
+        if Rec.FindLast() then
+            rec.FindFirst();
+
+
+    end;
 }

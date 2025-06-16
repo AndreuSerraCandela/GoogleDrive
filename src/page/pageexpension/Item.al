@@ -1,4 +1,4 @@
-pageextension 95102 VendorExt extends "Vendor Card"
+pageextension 95104 ItemExt extends "Item Card"
 {
     layout
     {
@@ -8,8 +8,6 @@ pageextension 95102 VendorExt extends "Vendor Card"
             {
                 Caption = 'Archivos de Google Drive';
                 ApplicationArea = All;
-
-                //SubPageLink = "Vendor No." = field("No.");
             }
         }
     }
@@ -21,25 +19,21 @@ pageextension 95102 VendorExt extends "Vendor Card"
         AutoCreateSubFolder: Boolean;
         SubFolder: Text;
     begin
-        if Proveedor = Rec."No." then
+        if Articulo = Rec."No." then
             exit;
-        Proveedor := Rec."No.";
-        GoogleDriveManager.GetFolderMapping(Database::Vendor, Id);
-        SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, rEC."No.", 0D);
+        Articulo := Rec."No.";
+        GoogleDriveManager.GetFolderMapping(Database::Item, Id);
+        SubFolder := FolderMapping.CreateSubfolderPath(Database::Item, Rec."No.", 0D);
         IF SubFolder <> '' then
             Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
         CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1);
-
     end;
 
     trigger OnOpenPage()
     begin
-        Proveedor := '';
+        Articulo := '';
     end;
 
     var
-        Proveedor: Text;
-
-
+        Articulo: Text;
 }
-

@@ -102,13 +102,13 @@ table 95100 "Google Drive Folder Mapping"
         "Modified Date" := CurrentDateTime;
     end;
 
-    procedure RecuperarIdFolder(Folder: Text): Text
+    procedure RecuperarIdFolder(Folder: Text; Crear: Boolean): Text
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
         Files: Record "Name/Value Buffer" temporary;
         Id: Text;
     begin
-        exit(GoogleDriveManager.RecuperaIdFolder(Id, Folder, Files));
+        exit(GoogleDriveManager.RecuperaIdFolder(Id, Folder, Files, Crear));
 
     end;
 
@@ -142,19 +142,17 @@ table 95100 "Google Drive Folder Mapping"
 
         // Replace patterns
         if StrPos(SubfolderPath, '{DOCNO}') > 0 then
-            SubfolderPath := StrSubstNo(SubfolderPath, '{DOCNO}', DocumentNo);
+            SubfolderPath := DocumentNo;
         if DocumentDate = 0D then
             exit(SubfolderPath);
         if StrPos(SubfolderPath, '{YEAR}') > 0 then begin
             Year := Format(Date2DMY(DocumentDate, 3));
-            SubfolderPath := StrSubstNo(SubfolderPath, '{YEAR}', Year);
+            SubfolderPath := Year;
         end;
 
         if StrPos(SubfolderPath, '{MONTH}') > 0 then begin
-            Month := Format(Date2DMY(DocumentDate, 2));
-            if StrLen(Month) = 1 then
-                Month := '0' + Month;
-            SubfolderPath := StrSubstNo(SubfolderPath, '{MONTH}', Month);
+            Month := Format(DocumentDate, 0, '<Month Text>');
+            SubfolderPath := Month;
         end;
 
         exit(SubfolderPath);

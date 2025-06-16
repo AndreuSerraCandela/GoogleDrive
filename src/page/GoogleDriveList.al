@@ -227,9 +227,9 @@ page 95105 "Google Drive List"
                     else if Copystr(root, 1, 1) <> '/' then
                         root := '/' + root;
                     if (root = '/') Or (root = '') then
-                        GoogleDrive.CreateFolder(Carpeta)
+                        GoogleDrive.CreateFolder(Carpeta, '')
                     else
-                        GoogleDrive.CreateFolder(Copystr(root, 2) + '/' + Carpeta);
+                        GoogleDrive.CreateFolder(Carpeta, root);
                     Recargar(Copystr(root, 2));
                 end;
             }

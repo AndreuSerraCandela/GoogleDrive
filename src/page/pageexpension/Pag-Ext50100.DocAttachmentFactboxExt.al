@@ -24,7 +24,6 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     GoogleDriveManager: Codeunit "Google Drive Manager";
                 begin
                     GoogleDriveManager.OpenFileInBrowser(Rec."Google Drive ID");
-
                 end;
             }
         }
@@ -34,7 +33,6 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
     {
         addafter(AttachmentsUpload)
         {
-            //Cargar archivo a Google Drive
             action(UploadToGoogleDrive)
             {
                 ApplicationArea = All;
@@ -55,7 +53,6 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     FilesSelected: Page "Google Drive List";
                     Id: Integer;
                 begin
-
                     IdTable := Rec."Table ID";
                     if IdTable = 0 then
                         IdTableFilter := Rec.GetFilter("Table ID");
@@ -83,9 +80,80 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     end;
                 end;
             }
+            action(MoveToGoogleDrive)
+            {
+                ApplicationArea = All;
+                Caption = 'Mover a Google Drive';
+                Image = SendTo;
+                ToolTip = 'Mueve los documentos seleccionados a Google Drive y los elimina del almacenamiento local.';
+                trigger OnAction()
+                var
+                    DocumentAttachment: Record "Document Attachment";
+                    DocumentAttachment2: Record "Document Attachment" temporary;
+                    TempBlob: Codeunit "Temp Blob";
+                    GoogleDriveManager: Codeunit "Google Drive Manager";
+                    FileId: Text;
+                    ConfirmMsg: Label '¿Está seguro de que desea mover los documentos seleccionados a Google Drive? Los documentos se eliminarán del almacenamiento local.';
+                    SuccessMsg: Label 'Documentos movidos correctamente a Google Drive.';
+                    ErrorMsg: Label 'Error al mover los documentos: %1';
+                    FullFileName: Text;
+                    DocumentStream: OutStream;
+                    GoogleDriveFolderMapping: Record "Google Drive Folder Mapping";
+                    GoogleDrive: Codeunit "Google Drive Manager";
+                    Id: Text;
+                    SubFolder: Text;
+                    InStream: InStream;
+                    TenantMedia: Record "Tenant Media";
+                begin
+                    if not Confirm(ConfirmMsg) then
+                        exit;
 
+                    DocumentAttachment.CopyFilters(Rec);
+                    if DocumentAttachment.FindSet() then
+                        repeat
+                            if not DocumentAttachment."Store in Google Drive" then begin
+                                FullFileName := DocumentAttachment."File Name" + '.' + DocumentAttachment."File Extension";
+                                Clear(DocumentStream);
+                                TempBlob.CreateOutStream(DocumentStream);
+                                GoogleDrive.GetFolderMapping(DocumentAttachment."Table ID", Id);
+                                SubFolder := GoogleDrive.CreateFolderStructure(Id, DocumentAttachment."No.");
+                                if SubFolder <> '' then
+                                    Id := GoogleDrive.CreateFolderStructure(Id, SubFolder);
+                                DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
+                                TempBlob.CreateInStream(InStream);
+                                FileId := GoogleDriveManager.UploadFileB64(Id, InStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                                if FileId = '' then
+                                    Message(ErrorMsg, DocumentAttachment."File Name")
+                                else begin
+                                    DocumentAttachment."Store in Google Drive" := true;
+                                    DocumentAttachment."Google Drive ID" := FileId;
+                                    DocumentAttachment2.ID := DocumentAttachment.ID;
+                                    DocumentAttachment2."Table ID" := DocumentAttachment."Table ID";
+                                    DocumentAttachment2."No." := DocumentAttachment."No.";
+                                    DocumentAttachment2."Attached By" := DocumentAttachment."Attached By";
+                                    DocumentAttachment2."File Name" := DocumentAttachment."File Name";
+                                    DocumentAttachment2."File Extension" := DocumentAttachment."File Extension";
+                                    DocumentAttachment2."Attached Date" := DocumentAttachment."Attached Date";
+                                    DocumentAttachment2."File Type" := DocumentAttachment."File Type";
+                                    DocumentAttachment2."Document Flow Production" := DocumentAttachment."Document Flow Production";
+                                    DocumentAttachment2."Document Flow Purchase" := DocumentAttachment."Document Flow Purchase";
+                                    DocumentAttachment2."Document Flow Sales" := DocumentAttachment."Document Flow Sales";
+                                    DocumentAttachment2."Document Type" := DocumentAttachment."Document Type";
+                                    DocumentAttachment2."Google Drive ID" := FileId;
+                                    DocumentAttachment2."Line No." := DocumentAttachment."Line No.";
+                                    DocumentAttachment2."Store in Google Drive" := true;
+                                    DocumentAttachment2.User := DocumentAttachment.User;
+                                    DocumentAttachment.Delete(true);
+                                    DocumentAttachment.Insert();
+                                end;
+                            end;
+                        until DocumentAttachment.Next() = 0;
+
+                    Message(SuccessMsg);
+                    CurrPage.Update();
+                end;
+            }
         }
-
     }
 
     // Add triggers

@@ -141,7 +141,7 @@ page 95104 "Google Drive Folder Mapping"
                 var
 
                 begin
-                    Rec."Default Folder ID" := Rec.RecuperarIdFolder(Rec."Default Folder Name");
+                    Rec."Default Folder ID" := Rec.RecuperarIdFolder(Rec."Default Folder Name", true);
                     Rec.Modify();
                 end;
             }
@@ -206,7 +206,7 @@ page 95104 "Google Drive Folder Mapping"
                     end;
 
                     GoogleDriveManager.Initialize();
-                    FolderId := GoogleDriveManager.CreateFolder('TEST-' + Format(CurrentDateTime, 0, '<Year4><Month,2><Day,2>-<Hours24><Minutes,2>'));
+                    FolderId := GoogleDriveManager.CreateFolder('TEST-' + Format(CurrentDateTime, 0, '<Year4><Month,2><Day,2>-<Hours24><Minutes,2>'), '');
 
                     if FolderId <> '' then
                         Message('✅ Subcarpeta de prueba creada exitosamente.\ID de carpeta: %1', FolderId)

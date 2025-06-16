@@ -693,6 +693,36 @@ codeunit 95100 "Google Drive Manager"
         exit('https://businesscentral.dynamics.com/OAuthLanding.htm');
     end;
 
+    local procedure GetMimeType(FileExtension: Text): Text
+    begin
+        case FileExtension of
+            'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'ico', 'webp':
+                exit('image/jpeg');
+            'pdf':
+                exit('application/pdf');
+            'doc', 'docx':
+                exit('application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+            'xls', 'xlsx':
+                exit('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            'ppt', 'pptx':
+                exit('application/vnd.openxmlformats-officedocument.presentationml.presentation');
+            'txt':
+                exit('text/plain');
+            'csv':
+                exit('text/csv');
+            'zip', 'rar', '7z':
+                exit('application/zip');
+            'mp3', 'wav', 'ogg', 'm4a', 'aac':
+                exit('audio/mpeg');
+            'mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv':
+                exit('video/mp4');
+            'mpg', 'mpeg', 'm4v', '3gp', '3g2':
+                exit('video/mp4');
+            else
+                exit('application/octet-stream');
+        end;
+    end;
+
     procedure Token(): Text
     var
         CompanyInfo: Record "Company Information";
@@ -709,7 +739,7 @@ codeunit 95100 "Google Drive Manager"
         exit(CompanyInfo.GetTokenGoogleDrive());
     end;
 
-    procedure RecuperaIdFolder(IdCarpeta: Text; Carpeta: Text; Var Files: Record "Name/Value Buffer" temporary) Id: Text;
+    procedure RecuperaIdFolder(IdCarpeta: Text; Carpeta: Text; Var Files: Record "Name/Value Buffer" temporary; Crear: Boolean) Id: Text;
     var
         CompanyInfo: Record "Company Information";
         Ticket: Text;
@@ -733,7 +763,10 @@ codeunit 95100 "Google Drive Manager"
         a: Integer;
     begin
         Files.DeleteAll();
-        Ticket := GoogleDrive.Token();
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := AccessToken;
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + list_folder;
         //https://www.googleapis.com/drive/v3/files?q='1YCipBu7tEY2n2enB5RGxy1XXYtjID4oe'+in+parents&fields=files(id%2Cname%2CmimeType)
@@ -775,6 +808,9 @@ codeunit 95100 "Google Drive Manager"
                 end;
             end;
         end;
+        if Crear then begin
+            Id := CreateFolder(Carpeta, IdCarpeta);
+        end;
     end;
 
     procedure Carpetas(IdCarpeta: Text; Var Files: Record "Name/Value Buffer" temporary)
@@ -800,10 +836,14 @@ codeunit 95100 "Google Drive Manager"
         Cursor: Text;
         HasMore: Boolean;
         a: Integer;
+        FilesTemp: Record "Name/Value Buffer" temporary;
         C: Label '''';
     begin
         Files.DeleteAll();
-        Ticket := GoogleDrive.Token();
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := AccessToken;
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + list_folder;
         //https://www.googleapis.com/drive/v3/files?q=%27FOLDER_ID%27+in+parents&fields=files(id%2Cname%2CmimeType)
@@ -824,30 +864,49 @@ codeunit 95100 "Google Drive Manager"
 
                 if JEntry.Get('name', JEntryToken) then begin
                     if tag = 'application/vnd.google-apps.folder' then begin
-                        Files.Init();
+                        FilesTemp.Init();
                         a += 1;
-                        Files.ID := a;
-                        Files.Name := JEntryToken.AsValue().AsText();
-                        Files.Value := 'Carpeta';
+                        FilesTemp.ID := a;
+                        FilesTemp.Name := JEntryToken.AsValue().AsText();
+                        FilesTemp.Value := 'Carpeta';
                         if JEntry.Get('id', JId) then
-                            Files."Google Drive ID" := JId.AsValue().AsText();
-                        Files.Insert();
+                            FilesTemp."Google Drive ID" := JId.AsValue().AsText();
+                        FilesTemp."Google Drive Parent ID" := IdCarpeta;
+                        FilesTemp.Insert();
                     end else begin
-                        Files.Init();
+                        FilesTemp.Init();
                         a += 1;
-                        Files.ID := a;
-                        Files.Name := JEntryToken.AsValue().AsText();
-                        Files.Value := '';
+                        FilesTemp.ID := a;
+                        FilesTemp.Name := JEntryToken.AsValue().AsText();
+                        FilesTemp.Value := '';
                         if JEntry.Get('id', JId) then
-                            Files."Google Drive ID" := JId.AsValue().AsText();
-                        Files.Insert();
+                            FilesTemp."Google Drive ID" := JId.AsValue().AsText();
+                        FilesTemp."Google Drive Parent ID" := IdCarpeta;
+                        FilesTemp.Insert();
                     end;
                 end;
             end;
         end;
+        a := 0;
+        FilesTemp.SetRange(Value, 'Carpeta');
+        if FilesTemp.FindSet() then
+            repeat
+                a += 1;
+                Files := FilesTemp;
+                Files.ID := a;
+                Files.Insert();
+            until FilesTemp.Next() = 0;
+        FilesTemp.SetRange(Value, '');
+        if FilesTemp.FindSet() then
+            repeat
+                a += 1;
+                Files := FilesTemp;
+                Files.ID := a;
+                Files.Insert();
+            until FilesTemp.Next() = 0;
     end;
 
-    procedure CreateFolder(Carpeta: Text): Text
+    procedure CreateFolder(Carpeta: Text; ParentId: Text): Text
     var
         GoogleDrive: Codeunit "Google Drive Manager";
         Ticket: Text;
@@ -861,13 +920,26 @@ codeunit 95100 "Google Drive Manager"
         JTokO: JsonToken;
         JTok: JsonToken;
         Id: Text;
+        ParentsArray: JsonArray;
     begin
-        Ticket := GoogleDrive.Token();
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := AccessToken;
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + create_folder;
 
+        If CopyStr(ParentId, 1, 1) = '/' then
+            ParentId := CopyStr(ParentId, 2);
+
         Body.Add('name', Carpeta);
         Body.add('mimeType', 'application/vnd.google-apps.folder');
+
+        if ParentId <> '' then begin
+            ParentsArray.Add(ParentId);
+            Body.Add('parents', ParentsArray);
+        end;
+
         Body.WriteTo(Json);
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
@@ -901,8 +973,6 @@ codeunit 95100 "Google Drive Manager"
         JTokenLink: JsonToken;
         Respuesta: Text;
         Id: Text;
-        Convert: Codeunit "Base64 Convert";
-        B64Data: Text;
         ContentText: Text;
         Boundary: Text;
         CrLf: CHAR;
@@ -916,67 +986,42 @@ codeunit 95100 "Google Drive Manager"
         ResponseText: Text;
         JResponse: JsonObject;
         ContentHeaders: HttpHeaders;
+        Base64Txt: Text;
+        Convert: Codeunit "Base64 Convert";
+        JCarpetas: JsonArray;
     begin
-        //if FileExtension <> '' then
-        //  Filename := Filename + '.' + FileExtension;
-        FileContent := Convert.ToBase64(Base64Data);
-        CrLf := 13;
-        CrLf2 := 10;
-        if not Authenticate() then
-            Error('Error al autenticar');
+        // {
+        // "fileName":"Coala.PNG",
+        // "fileType":"image/png",
+        // "token":"ya29.a0AW4XtxheaEHve3qk_cW7e-WOxVJ4SrDaqDwtqT_KTQN--3L0EzC-DCweVNexcHXPuNlw1S9aL8X-r2qaAyY_wiNv2AuYVNpYDb8vc824-l9prBBlMpeDM20LzKUVm1YuJdC2E21FvTfisekyzti3SOR14NVugfyJEroSUrfwDwaCgYKAbMSARQSFQHGX2MiXjgAogKDapJRVJ6l2avXwQ0177",
+        // "base64Data":""
 
-        // Get file data from TempBlob
-
-        // Prepare the upload request
-        Request.Method := 'POST';
-        URL := StrSubstNo('%1?uploadType=multipart', GoogleDriveUploadURL);
-        Request.SetRequestUri(URL);
-
-        Request.GetHeaders(RequestHeaders);
-        RequestHeaders.Add('Authorization', StrSubstNo('Bearer %1', AccessToken));
-
-        // Set up multipart content
-        Content.GetHeaders(ContentHeaders);
-        ContentHeaders.Clear();
-        ContentHeaders.Add('Content-Type', 'multipart/related; boundary=boundary_123456');
-        Boundary := 'boundary_123456';
-        ContentText := '--' + Boundary + CrLf;
-        ContentText += 'Content-Disposition: form-data; name="metadata"' + CrLf;
-        ContentText += 'Content-Type: application/json' + CrLf + CrLf2;
-        ContentText += '{"name": "' + Filename + '"}' + CrLf;
-        ContentText += '--' + Boundary + CrLf;
-        ContentText += 'Content-Encoding: base64' + CrLf;
-        case FileExtension of
-            'pdf':
-                ContentText += 'Content-Type: application/pdf' + CrLf;
-            'doc', 'docx':
-                ContentText += 'Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document' + CrLf;
-            'xls', 'xlsx':
-                ContentText += 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' + CrLf;
-            'ppt', 'pptx':
-                ContentText += 'Content-Type: application/vnd.openxmlformats-officedocument.presentationml.presentation' + CrLf;
-            'txt':
-                ContentText += 'Content-Type: text/plain' + CrLf;
-            'csv':
-                ContentText += 'Content-Type: text/csv' + CrLf;
-            else
-                ContentText += 'Content-Type: application/octet-stream' + CrLf + CrLf2;
+        // }
+        //https://api-drive.app.elingenierojefe.es/upload
+        If Not Authenticate() Then
+            Error('No se pudo obtener el token');
+        Url := 'https://api-drive.app.elingenierojefe.es/upload';
+        Body.Add('fileName', Filename);
+        Body.Add('fileType', GetMimeType(FileExtension));
+        Body.Add('token', Token());
+        if Carpeta <> '' then begin
+            JCarpetas.Add(Carpeta);
+            Body.Add('parents', JCarpetas);
         end;
-        ContentText += FileContent + CrLf;
-        ContentText += '--' + Boundary + '--';
-        Content.WriteFrom(ContentText);
-        Request.Content := Content;
 
-        //In a real implementation, send the request and handle the response
-        Client.Send(Request, Response);
-        Response.Content.ReadAs(Respuesta);
+        Base64Txt := Convert.ToBase64(Base64Data);
+        Body.Add('base64Data', Base64Txt);
+        Body.WriteTo(Json);
+        Respuesta := RestApiToken(Url, AccessToken, RequestType::post, Json);
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
-
-        If StatusInfo.Get('id', JTokenLink) Then begin
+        if StatusInfo.Get('fileId', JTokenLink) Then begin
             Id := JTokenLink.AsValue().AsText();
-        end else
-            error(Respuesta);
+        end;
+
+        if Id = '' then begin
+            Error('Error al subir el archivo');
+        end;
         exit(Id);
     end;
 
@@ -1487,7 +1532,7 @@ codeunit 95100 "Google Drive Manager"
             exit(FolderId);
 
         // Folder doesn't exist, create it
-        exit(CreateFolder(FolderName));
+        exit(CreateFolder(FolderName, ParentFolderId));
     end;
 
     procedure UploadFileToConfiguredFolder(var DocumentAttachment: Record "Document Attachment"; TempBlob: Codeunit "Temp Blob"; TableID: Integer; DocumentNo: Text; DocumentDate: Date): Boolean
@@ -1620,7 +1665,6 @@ codeunit 95100 "Google Drive Manager"
 
     internal procedure OpenFileInBrowser(GoogleDriveID: Text[250]): Text
     var
-        Ticket: Text[250];
         Inf: Record "Company Information";
         Url: Text[250];
         RequestHeaders: HttpHeaders;
@@ -1631,21 +1675,40 @@ codeunit 95100 "Google Drive Manager"
         Json: Text;
         RequestType: Option get,patch,put,post,delete;
         JToken: JsonToken;
+        Link: Text;
+        ErrorMessage: Text;
     begin
-        //https://docs.google.com/spreadsheets/d/16W0j7cgr4tNPVX4KWEnOzPOBNGVBzOT_/edit?usp=drivesdk&ouid=103026372975265379006&rtpof=true&sd=true
-        Ticket := GoogleDrive.Token();
-        Inf.Get;
-        Url := Inf."Url Api GoogleDrive" + GoogleDriveID + '?fields=webViewLink,webContentLink';
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
 
-        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+
+        Inf.Get;
+        Url := Inf."Url Api GoogleDrive" + get_metadata + GoogleDriveID + '?fields=webViewLink,webContentLink';
+
+        Respuesta := RestApiToken(Url, AccessToken, RequestType::get, '');
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de Google Drive.');
+
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
-        // {
-        // "webViewLink": "https://docs.google.com/spreadsheets/d/16W0j7cgr4tNPVX4KWEnOzPOBNGVBzOT_/edit?usp=drivesdk&ouid=103026372975265379006&rtpof=true&sd=true", 
-        // "webContentLink": "https://drive.google.com/uc?id=16W0j7cgr4tNPVX4KWEnOzPOBNGVBzOT_&export=download"
-        // }
-        if StatusInfo.Get('webViewLink', JToken) then
-            exit(JToken.AsValue().AsText());
 
+        // Verificar si hay error en la respuesta
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
+        end;
+
+        if StatusInfo.Get('webViewLink', JToken) then begin
+            Link := JToken.AsValue().AsText();
+            Hyperlink(Link);
+        end else if StatusInfo.Get('webContentLink', JToken) then begin
+            Link := JToken.AsValue().AsText();
+            Hyperlink(Link);
+        end else begin
+            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+        end;
+
+        exit('');
     end;
 }
