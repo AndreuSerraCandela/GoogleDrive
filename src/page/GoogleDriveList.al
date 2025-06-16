@@ -1,4 +1,4 @@
-page 50105 "Google Drive List"
+page 95105 "Google Drive List"
 {
     Caption = 'Google Drive';
     Editable = false;
@@ -260,6 +260,8 @@ page 50105 "Google Drive List"
                 var
                     NVInStream: InStream;
                     Filename: Text;
+                    FileExtension: Text;
+                    FileMgt: Codeunit "File Management";
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::"Subir Archivo";
@@ -269,7 +271,8 @@ page 50105 "Google Drive List"
                     else if Copystr(root, 1, 1) <> '/' then
                         root := '/' + root;
                     UPLOADINTOSTREAM('Import', '', ' All Files (*.*)|*.*', Filename, NVInStream);
-                    GoogleDrive.UploadFileB64(Copystr(root, 2), NVInStream, Filename);
+                    FileExtension := FileMgt.GetExtension(FileName);
+                    GoogleDrive.UploadFileB64(Copystr(root, 2), NVInStream, Filename, FileExtension);
                     Recargar(Copystr(root, 2));
                 end;
             }

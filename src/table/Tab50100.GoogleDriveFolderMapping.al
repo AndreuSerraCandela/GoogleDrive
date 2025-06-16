@@ -1,4 +1,4 @@
-table 50100 "Google Drive Folder Mapping"
+table 95100 "Google Drive Folder Mapping"
 {
     Caption = 'Google Drive Folder Mapping';
     DataClassification = CustomerContent;

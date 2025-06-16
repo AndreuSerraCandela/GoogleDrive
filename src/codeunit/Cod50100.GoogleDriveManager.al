@@ -1,4 +1,4 @@
-codeunit 50100 "Google Drive Manager"
+codeunit 95100 "Google Drive Manager"
 {
     // Codeunit to handle Google Drive operations
 
@@ -22,7 +22,7 @@ codeunit 50100 "Google Drive Manager"
         grant_type_refresh_token: Label 'refresh_token';
         oauth2_token: Label 'oauth2/v4/token';
         get_temporary_link: Label 'files/';
-        Upload: Label 'upload/drive/v3/files';
+        Upload: Label 'upload/drive/v3/files?uploadType=multipart';
         JObjectPDFToMerge: JsonObject;
         JArrayPDFToMerge: JsonArray;
         JObjectPDF: JsonObject;
@@ -649,8 +649,6 @@ codeunit 50100 "Google Drive Manager"
         exit(true);
     end;
 
-
-
     procedure ExtractFileIdFromUrl(GoogleDriveUrl: Text): Text
     var
         Pos: Integer;
@@ -740,7 +738,6 @@ codeunit 50100 "Google Drive Manager"
         Url := Inf."Url Api GoogleDrive" + list_folder;
         //https://www.googleapis.com/drive/v3/files?q='1YCipBu7tEY2n2enB5RGxy1XXYtjID4oe'+in+parents&fields=files(id%2Cname%2CmimeType)
 
-
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
@@ -779,7 +776,6 @@ codeunit 50100 "Google Drive Manager"
             end;
         end;
     end;
-
 
     procedure Carpetas(IdCarpeta: Text; Var Files: Record "Name/Value Buffer" temporary)
     var
@@ -892,7 +888,7 @@ codeunit 50100 "Google Drive Manager"
         exit(Id);
     end;
 
-    procedure UploadFileB64(Carpeta: Text; Base64Data: InStream; Filename: Text): Text
+    procedure UploadFileB64(Carpeta: Text; Base64Data: InStream; Filename: Text; FileExtension: Text): Text
     var
         Inf: Record "Company Information";
         RequestType: Option Get,patch,put,post,;
@@ -905,17 +901,75 @@ codeunit 50100 "Google Drive Manager"
         JTokenLink: JsonToken;
         Respuesta: Text;
         Id: Text;
+        Convert: Codeunit "Base64 Convert";
+        B64Data: Text;
+        ContentText: Text;
+        Boundary: Text;
+        CrLf: CHAR;
+        CrLf2: cHAR;
+        FileContent: Text;
+        Content: HttpContent;
+        Request: HttpRequestMessage;
+        Response: HttpResponseMessage;
+        Client: HttpClient;
+        RequestHeaders: HttpHeaders;
+        ResponseText: Text;
+        JResponse: JsonObject;
+        ContentHeaders: HttpHeaders;
     begin
-        Inf.Get;
-        Ticket := GoogleDrive.Token();
-        Url := Inf."Url Api GoogleDrive" + Upload;
+        //if FileExtension <> '' then
+        //  Filename := Filename + '.' + FileExtension;
+        FileContent := Convert.ToBase64(Base64Data);
+        CrLf := 13;
+        CrLf2 := 10;
+        if not Authenticate() then
+            Error('Error al autenticar');
 
-        Body.Add('name', Filename);
-        if Carpeta <> '' then
-            Body.Add('parents', Carpeta);
-        Body.WriteTo(Json);
+        // Get file data from TempBlob
 
-        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Base64Data);
+        // Prepare the upload request
+        Request.Method := 'POST';
+        URL := StrSubstNo('%1?uploadType=multipart', GoogleDriveUploadURL);
+        Request.SetRequestUri(URL);
+
+        Request.GetHeaders(RequestHeaders);
+        RequestHeaders.Add('Authorization', StrSubstNo('Bearer %1', AccessToken));
+
+        // Set up multipart content
+        Content.GetHeaders(ContentHeaders);
+        ContentHeaders.Clear();
+        ContentHeaders.Add('Content-Type', 'multipart/related; boundary=boundary_123456');
+        Boundary := 'boundary_123456';
+        ContentText := '--' + Boundary + CrLf;
+        ContentText += 'Content-Disposition: form-data; name="metadata"' + CrLf;
+        ContentText += 'Content-Type: application/json' + CrLf + CrLf2;
+        ContentText += '{"name": "' + Filename + '"}' + CrLf;
+        ContentText += '--' + Boundary + CrLf;
+        ContentText += 'Content-Encoding: base64' + CrLf;
+        case FileExtension of
+            'pdf':
+                ContentText += 'Content-Type: application/pdf' + CrLf;
+            'doc', 'docx':
+                ContentText += 'Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document' + CrLf;
+            'xls', 'xlsx':
+                ContentText += 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' + CrLf;
+            'ppt', 'pptx':
+                ContentText += 'Content-Type: application/vnd.openxmlformats-officedocument.presentationml.presentation' + CrLf;
+            'txt':
+                ContentText += 'Content-Type: text/plain' + CrLf;
+            'csv':
+                ContentText += 'Content-Type: text/csv' + CrLf;
+            else
+                ContentText += 'Content-Type: application/octet-stream' + CrLf + CrLf2;
+        end;
+        ContentText += FileContent + CrLf;
+        ContentText += '--' + Boundary + '--';
+        Content.WriteFrom(ContentText);
+        Request.Content := Content;
+
+        //In a real implementation, send the request and handle the response
+        Client.Send(Request, Response);
+        Response.Content.ReadAs(Respuesta);
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
 
@@ -923,7 +977,6 @@ codeunit 50100 "Google Drive Manager"
             Id := JTokenLink.AsValue().AsText();
         end else
             error(Respuesta);
-
         exit(Id);
     end;
 
@@ -1484,8 +1537,8 @@ codeunit 50100 "Google Drive Manager"
         FileContent: Text;
         Convert: Codeunit "Base64 Convert";
     begin
-        CrLf := Format(13) + Format(10);
-        Boundary := 'boundary_' + Format(CreateGuid());
+        Boundary := 'foo_bar_baz';
+        CrLf := FORMAT(13) + FORMAT(10);
 
         // Get file content as Base64
         TempBlob.CreateInStream(InStream);

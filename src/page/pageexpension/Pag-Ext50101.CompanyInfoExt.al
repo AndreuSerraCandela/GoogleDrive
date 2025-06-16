@@ -1,4 +1,4 @@
-pageextension 50101 "Company Info Ext" extends "Company Information"
+pageextension 95101 "Company Info Ext" extends "Company Information"
 {
     layout
     {

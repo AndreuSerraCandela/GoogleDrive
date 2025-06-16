@@ -1,8 +1,8 @@
-pageextension 50100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List Factbox"
+pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List Factbox"
 {
     layout
     {
-        addlast(Content)
+        addbefore("File Extension")
         {
             field("Store in Google Drive"; Rec."Store in Google Drive")
             {

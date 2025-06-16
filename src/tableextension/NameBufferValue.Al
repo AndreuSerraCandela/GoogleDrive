@@ -1,8 +1,8 @@
-tableextension 50102 NameBufferValue extends "Name/Value Buffer"
+tableextension 95102 NameBufferValue extends "Name/Value Buffer"
 {
     fields
     {
-        field(50100; "Google Drive ID"; Text[250])
+        field(95100; "Google Drive ID"; Text[250])
         {
             Caption = 'Google Drive ID';
             DataClassification = CustomerContent;

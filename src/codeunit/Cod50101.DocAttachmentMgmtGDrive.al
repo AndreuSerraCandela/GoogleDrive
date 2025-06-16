@@ -1,10 +1,23 @@
-codeunit 50101 "Doc. Attachment Mgmt. GDrive"
+codeunit 95101 "Doc. Attachment Mgmt. GDrive"
 {
     // This codeunit overrides the standard Document Attachment Management functionality
     // to use Google Drive instead of storing files in the tenant media
 
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
+
+    [EventSubscriber(ObjectType::Table, Database::"Document Attachment", OnInsertAttachmentOnBeforeImportStream, '', false, false)]
+    local procedure OnInsertAttachmentOnBeforeImportStream(var DocumentAttachment: Record "Document Attachment"; DocInStream: InStream; FileName: Text; var IsHandled: Boolean)
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        Folder: Text;
+    begin
+        DocumentAttachment."Store in Google Drive" := true;
+        FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+        if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
+        DocumentAttachment."Google Drive ID" := GoogleDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+
+    end;
 
     procedure UploadAttachment(var DocumentAttachment: Record "Document Attachment"; FileName: Text; FileExtension: Text): Boolean
     var
@@ -121,6 +134,7 @@ codeunit 50101 "Doc. Attachment Mgmt. GDrive"
     begin
         if DocumentAttachment."Store in Google Drive" then begin
             IsHandled := true;
+            GoogleDriveManager.OpenFileInBrowser(DocumentAttachment."Google Drive ID");
         end;
     end;
 

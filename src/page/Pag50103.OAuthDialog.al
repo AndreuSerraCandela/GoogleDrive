@@ -1,4 +1,4 @@
-page 50103 "OAuth Completion Dialog"
+page 95103 "OAuth Completion Dialog"
 {
     PageType = StandardDialog;
     Caption = 'Completar Autenticación OAuth';

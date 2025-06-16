@@ -1,53 +1,53 @@
-tableextension 50101 "Company Info Ext" extends "Company Information"
+tableextension 95101 "Company Info Ext" extends "Company Information"
 {
     fields
     {
-        field(50100; "Expiracion Token GoogleDrive"; DateTime)
+        field(95100; "Expiracion Token GoogleDrive"; DateTime)
         {
             Caption = 'Google Drive Token Expiration';
             DataClassification = CustomerContent;
         }
-        field(50101; "Url Api GoogleDrive"; Text[250])
+        field(95101; "Url Api GoogleDrive"; Text[250])
         {
             Caption = 'Google Drive API URL';
             DataClassification = CustomerContent;
         }
-        field(50102; "Token GoogleDrive"; Text[1024])
+        field(95102; "Token GoogleDrive"; Text[1024])
         {
             Caption = 'Google Drive Token';
             DataClassification = CustomerContent;
         }
-        field(50103; "Refresh Token GoogleDrive"; Text[1024])
+        field(95103; "Refresh Token GoogleDrive"; Text[1024])
         {
             Caption = 'Google Drive Refresh Token';
             DataClassification = CustomerContent;
         }
-        field(50104; "Google Client ID"; Text[250])
+        field(95104; "Google Client ID"; Text[250])
         {
             Caption = 'Google Client ID';
             DataClassification = CustomerContent;
         }
-        field(50105; "Google Client Secret"; Text[250])
+        field(95105; "Google Client Secret"; Text[250])
         {
             Caption = 'Google Client Secret';
             DataClassification = CustomerContent;
         }
-        field(50106; "Google Project ID"; Text[250])
+        field(95106; "Google Project ID"; Text[250])
         {
             Caption = 'Google Project ID';
             DataClassification = CustomerContent;
         }
-        field(50107; "Google Auth URI"; Text[250])
+        field(95107; "Google Auth URI"; Text[250])
         {
             Caption = 'Google Auth URI';
             DataClassification = CustomerContent;
         }
-        field(50108; "Google Token URI"; Text[250])
+        field(95108; "Google Token URI"; Text[250])
         {
             Caption = 'Google Token URI';
             DataClassification = CustomerContent;
         }
-        field(50109; "Google Auth Provider Cert URL"; Text[250])
+        field(95109; "Google Auth Provider Cert URL"; Text[250])
         {
             Caption = 'Google Auth Provider Cert URL';
             DataClassification = CustomerContent;

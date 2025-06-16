@@ -162,16 +162,16 @@ Use estos marcadores en **Subfolder Pattern**:
 ```
 src/
 ├── table/
-│   └── Tab50100.GoogleDriveFolderMapping.al
+│   └── Tab95100.GoogleDriveFolderMapping.al
 ├── tableextension/
 │   └── CompanyInfoExt.al
 ├── page/
-│   ├── Pag50103.OAuthDialog.al
-│   └── Pag50104.GoogleDriveFolderMapping.al
+│   ├── Pag95103.OAuthDialog.al
+│   └── Pag95104.GoogleDriveFolderMapping.al
 ├── page-ext/
-│   └── Pag-Ext50101.CompanyInfoExt.al
+│   └── Pag-Ext95101.CompanyInfoExt.al
 └── codeunit/
-    └── Cod50100.GoogleDriveManager.al
+    └── Cod95100.GoogleDriveManager.al
 ```
 
 ### Extender Funcionalidad

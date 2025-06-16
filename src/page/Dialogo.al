@@ -1,7 +1,7 @@
 /// <summary>
 /// Page Dialogo (ID 50015).
 /// </summary>
-page 50101 "Dialogo Google Drive"
+page 95101 "Dialogo Google Drive"
 {
     PageType = StandardDialog;
     layout
