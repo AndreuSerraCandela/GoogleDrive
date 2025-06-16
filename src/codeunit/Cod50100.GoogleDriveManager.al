@@ -990,13 +990,7 @@ codeunit 95100 "Google Drive Manager"
         Convert: Codeunit "Base64 Convert";
         JCarpetas: JsonArray;
     begin
-        // {
-        // "fileName":"Coala.PNG",
-        // "fileType":"image/png",
-        // "token":"ya29.a0AW4XtxheaEHve3qk_cW7e-WOxVJ4SrDaqDwtqT_KTQN--3L0EzC-DCweVNexcHXPuNlw1S9aL8X-r2qaAyY_wiNv2AuYVNpYDb8vc824-l9prBBlMpeDM20LzKUVm1YuJdC2E21FvTfisekyzti3SOR14NVugfyJEroSUrfwDwaCgYKAbMSARQSFQHGX2MiXjgAogKDapJRVJ6l2avXwQ0177",
-        // "base64Data":""
 
-        // }
         //https://api-drive.app.elingenierojefe.es/upload
         If Not Authenticate() Then
             Error('No se pudo obtener el token');
