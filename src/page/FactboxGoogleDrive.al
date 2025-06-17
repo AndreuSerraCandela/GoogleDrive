@@ -5,6 +5,7 @@ page 95100 "Google Drive Factbox"
     UsageCategory = Administration;
     SourceTable = "Name/Value Buffer";
     SourceTableTemporary = true;
+    DeleteAllowed = false;
 
     layout
     {
@@ -88,29 +89,56 @@ page 95100 "Google Drive Factbox"
                 var
                     destino: Text;
                     TempFiles: Record "Name/Value Buffer" temporary;
+                    GoogleDriveList: Page "Google Drive List";
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::Mover;
-                    if StrLen(root) = 0 then
-                        root := '/'
-                    else if Copystr(root, 1, 1) <> '/' then
-                        root := '/' + root;
+
 
                     // Get folder list
-                    GoogleDrive.ListFolder(Copystr(root, 2), TempFiles);
-
+                    GoogleDrive.ListFolder(root, TempFiles, false);
+                    GoogleDriveList.SetRecords(root, TempFiles, true);
+                    GoogleDriveList.RunModal();
+                    GoogleDriveList.GetDestino(destino);
                     // Here we would need to implement a folder selection dialog using TempFiles
                     // For now, we'll use a placeholder solution
-                    destino := '/'; // Default destination
 
-                    if destino = '-' then
+                    if destino = '' then
                         Message('no ha elegido destino')
                     else begin
                         If Rec.Value = 'Carpeta' then
-                            GoogleDrive.MoveFolder(CopyStr(root, 2) + '/' + Rec.Name, destino + '/' + Rec.Name)
+                            GoogleDrive.MoveFolder(Rec."Google Drive ID", destino)
                         else
-                            GoogleDrive.Movefile(Copystr(root, 2), Destino, true);
-                        root := destino;
+                            GoogleDrive.Movefile(Rec."Google Drive ID", Destino, root);
+                        Recargar(root, CarpetaAnterior[Indice], Indice);
+                    end;
+                end;
+            }
+            action("Copiar Archivo")
+            {
+                ApplicationArea = All;
+                Image = Copy;
+                Visible = not Mueve;
+                Scope = Repeater;
+                trigger OnAction()
+                var
+                    destino: Text;
+                    TempFiles: Record "Name/Value Buffer" temporary;
+                    GoogleDriveList: Page "Google Drive List";
+                begin
+                    Nombre := Rec.Name;
+                    Accion := Accion::Copiar;
+                    // Get folder list
+                    GoogleDrive.ListFolder(root, TempFiles, false);
+                    GoogleDriveList.SetRecords(root, TempFiles, true);
+                    GoogleDriveList.RunModal();
+                    GoogleDriveList.GetDestino(destino);
+                    // Here we would need to implement a folder selection dialog using TempFiles
+                    // For now, we'll use a placeholder solution
+                    if destino = '' then
+                        Message('no ha elegido destino')
+                    else begin
+                    GoogleDrive.CopyFile(Rec."Google Drive ID", destino);
                         Recargar(root, CarpetaAnterior[Indice], Indice);
                     end;
                 end;
@@ -136,7 +164,7 @@ page 95100 "Google Drive Factbox"
                     If CarpetaAnterior[Indice] = '' then
                         GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal)
                     else
-                        GoogleDrive.CreateFolder(Carpeta, CarpetaAnterior[Indice]);
+                        GoogleDrive.CreateFolder(Carpeta, root);
                     Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }
@@ -150,7 +178,10 @@ page 95100 "Google Drive Factbox"
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::Borrar;
-                    GoogleDrive.DeleteFolder(Rec."Google Drive ID", false);
+                    If Rec.Value = 'Carpeta' then
+                        GoogleDrive.DeleteFolder(Rec."Google Drive ID", false)
+                    else
+                        GoogleDrive.DeleteFile(Rec."Google Drive ID");
                     Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }
@@ -186,7 +217,7 @@ page 95100 "Google Drive Factbox"
         CarpetaPrincipal: Text;
         root: Text;
         Nombre: Text;
-        Accion: Option " ","Descargar Archivo",Anterior,Mover,"Crear Carpeta",Borrar,"Subir Archivo";
+        Accion: Option " ","Descargar Archivo",Anterior,Mover,"Crear Carpeta",Borrar,"Subir Archivo","Copiar";
         Mueve: Boolean;
         Stilo: Text;
         Archivo: Boolean;
@@ -244,7 +275,7 @@ page 95100 "Google Drive Factbox"
             CarpetaPrincipal := FolderId;
         if Rec.FindLast() then
             rec.FindFirst();
-
+        CurrPage.Update(false);
 
     end;
 }

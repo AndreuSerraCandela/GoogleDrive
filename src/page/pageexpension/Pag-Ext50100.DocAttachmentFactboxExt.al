@@ -62,7 +62,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     TargetFolderId := GoogleDriveManager.GetTargetFolderForDocument(IdTable, No, 0D);
                     GoogleDriveManager.Carpetas(TargetFolderId, Files);
                     CurrPage.Update();
-                    FilesSelected.SetRecords(TargetFolderId, Files);
+                    FilesSelected.SetRecords(TargetFolderId, Files, true);
                     If FilesSelected.RunModal() = Action::OK then begin
                         FilesSelected.SetSelectionFilter(Files);
                         GetRefTable(RecRef, Rec);

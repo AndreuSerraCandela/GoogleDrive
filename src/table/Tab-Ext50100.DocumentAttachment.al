@@ -21,4 +21,27 @@ tableextension 95100 "Doc. Attachment GoogleDrive" extends "Document Attachment"
             DataClassification = CustomerContent;
         }
     }
+    procedure Url(): Text[2048]
+    var
+        GogleeDive: Codeunit "Google Drive Manager";
+    begin
+        exit(GogleeDive.GetUrl(Rec."Google Drive ID"));
+    end;
+
+    procedure ToBase64StringOcr(bUrl: Text): Text
+    var
+        GeneralLedgerSetup: Record 98;
+        JsonObj: JsonObject;
+        Json: Text;
+        RestapiC: Codeunit "Google Drive Manager";
+        RequestType: Option Get,patch,put,post,delete;
+        base64Token: JsonToken;
+        base64: Text;
+    begin
+        exit(RestapiC.DownloadFileB64(bUrl, base64, false));
+
+
+    end;
+
+
 }

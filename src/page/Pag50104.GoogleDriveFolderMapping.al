@@ -165,7 +165,7 @@ page 95104 "Google Drive Folder Mapping"
                     end;
 
                     GoogleDriveManager.Initialize();
-                    GoogleDriveManager.ListFolder(Rec."Default Folder ID", Files);
+                    GoogleDriveManager.ListFolder(Rec."Default Folder ID", Files, false);
 
                     if Files.FindFirst() then
                         Message('✅ Acceso exitoso a la carpeta. Se encontraron %1 elementos.', Files.Count)

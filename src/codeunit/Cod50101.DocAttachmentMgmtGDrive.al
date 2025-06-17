@@ -11,12 +11,24 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
     var
         FolderMapping: Record "Google Drive Folder Mapping";
         Folder: Text;
+        SubFolder: Text;
     begin
         DocumentAttachment."Store in Google Drive" := true;
         FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
         if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
+        SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, DocumentAttachment."No.", 0D);
+        IF SubFolder <> '' then
+            Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
         DocumentAttachment."Google Drive ID" := GoogleDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
 
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Document Attachment", OnAfterDeleteEvent, '', false, false)]
+    local procedure OnAfterDeleteEvent(var Rec: Record "Document Attachment")
+    begin
+        if Rec.IsTemporary then exit;
+        If Confirm('¿Desea eliminar el archivo de Google Drive?', false) then
+            GoogleDriveManager.DeleteFile(Rec."Google Drive ID");
     end;
 
     procedure UploadAttachment(var DocumentAttachment: Record "Document Attachment"; FileName: Text; FileExtension: Text): Boolean

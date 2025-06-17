@@ -761,6 +761,7 @@ codeunit 95100 "Google Drive Manager"
         Cursor: Text;
         HasMore: Boolean;
         a: Integer;
+        Borrado: Boolean;
     begin
         Files.DeleteAll();
         if not Authenticate() then
@@ -769,6 +770,7 @@ codeunit 95100 "Google Drive Manager"
         Ticket := AccessToken;
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + list_folder;
+        Url := Url + '?q=trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         //https://www.googleapis.com/drive/v3/files?q='1YCipBu7tEY2n2enB5RGxy1XXYtjID4oe'+in+parents&fields=files(id%2Cname%2CmimeType)
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
@@ -782,7 +784,11 @@ codeunit 95100 "Google Drive Manager"
                 If JEntry.Get('mimeType', JEntryToken) Then begin
                     tag := JEntryToken.AsValue().AsText();
                 end;
-
+                Borrado := false;
+                if JEntry.Get('trashed', JEntryToken) Then begin
+                    if JEntryToken.AsValue().AsBoolean() then
+                        Borrado := JEntryToken.AsValue().AsBoolean();
+                end;
                 if JEntry.Get('name', JEntryToken) then begin
                     if JEntryToken.AsValue().AsText() = Carpeta then begin
                         if JEntry.Get('id', JEntryToken) then begin
@@ -796,14 +802,16 @@ codeunit 95100 "Google Drive Manager"
                         Files.ID := a;
                         Files.Name := JEntryToken.AsValue().AsText();
                         Files.Value := 'Carpeta';
-                        Files.Insert();
+                        if not Borrado then
+                            Files.Insert();
                     end else begin
                         Files.Init();
                         a += 1;
                         Files.ID := a;
                         Files.Name := JEntryToken.AsValue().AsText();
                         Files.Value := '';
-                        Files.Insert();
+                        if not Borrado then
+                            Files.Insert();
                     end;
                 end;
             end;
@@ -838,6 +846,7 @@ codeunit 95100 "Google Drive Manager"
         a: Integer;
         FilesTemp: Record "Name/Value Buffer" temporary;
         C: Label '''';
+        Borrado: Boolean;
     begin
         Files.DeleteAll();
         if not Authenticate() then
@@ -847,8 +856,7 @@ codeunit 95100 "Google Drive Manager"
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + list_folder;
         //https://www.googleapis.com/drive/v3/files?q=%27FOLDER_ID%27+in+parents&fields=files(id%2Cname%2CmimeType)
-        If IdCarpeta <> '' Then
-            Url := Url + '?q=' + C + IdCarpeta + C + '+in+parents&fields=files(id%2Cname%2CmimeType)';
+        Url := Url + '?q=' + C + IdCarpeta + C + '+in+parents&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
         StatusInfo.ReadFrom(Respuesta);
@@ -861,7 +869,11 @@ codeunit 95100 "Google Drive Manager"
                 If JEntry.Get('mimeType', JEntryToken) Then begin
                     tag := JEntryToken.AsValue().AsText();
                 end;
-
+                Borrado := false;
+                if JEntry.Get('trashed', JEntryToken) Then begin
+                    if JEntryToken.AsValue().AsBoolean() then
+                        Borrado := JEntryToken.AsValue().AsBoolean();
+                end;
                 if JEntry.Get('name', JEntryToken) then begin
                     if tag = 'application/vnd.google-apps.folder' then begin
                         FilesTemp.Init();
@@ -872,7 +884,8 @@ codeunit 95100 "Google Drive Manager"
                         if JEntry.Get('id', JId) then
                             FilesTemp."Google Drive ID" := JId.AsValue().AsText();
                         FilesTemp."Google Drive Parent ID" := IdCarpeta;
-                        FilesTemp.Insert();
+                        if not Borrado then
+                            FilesTemp.Insert();
                     end else begin
                         FilesTemp.Init();
                         a += 1;
@@ -882,7 +895,8 @@ codeunit 95100 "Google Drive Manager"
                         if JEntry.Get('id', JId) then
                             FilesTemp."Google Drive ID" := JId.AsValue().AsText();
                         FilesTemp."Google Drive Parent ID" := IdCarpeta;
-                        FilesTemp.Insert();
+                        if not Borrado then
+                            FilesTemp.Insert();
                     end;
                 end;
             end;
@@ -1042,22 +1056,9 @@ codeunit 95100 "Google Drive Manager"
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + delete + Carpeta;
 
-        Respuesta := RestApiToken(Url, Ticket, RequestType::delete, Json);
-        StatusInfo.ReadFrom(Respuesta);
-        StatusInfo.WriteTo(Json);
+        Respuesta := RestApiToken(Url, Ticket, RequestType::delete, '');
 
-        If StatusInfo.Get('id', JTokO) Then begin
-            Id := JTokO.AsValue().AsText();
-        end;
-
-        if Id = '' then begin
-            if StatusInfo.Get('error', JTok) then begin
-                Error(JTok.AsValue().AsText());
-            end;
-            Error('Error al eliminar la carpeta');
-        end;
-
-        exit(Id);
+        exit('');
     end;
 
     procedure MoveFolder(FolderId: Text; NewParentId: Text): Text
@@ -1100,7 +1101,7 @@ codeunit 95100 "Google Drive Manager"
         exit(Id);
     end;
 
-    procedure MoveFile(FileId: Text; NewParentId: Text; RemoveOldParent: Boolean): Text
+    procedure MoveFile(FileId: Text; NewParentId: Text; OldParent: Text): Text
     var
         GoogleDrive: Codeunit "Google Drive Manager";
         Ticket: Text;
@@ -1114,32 +1115,19 @@ codeunit 95100 "Google Drive Manager"
         JTokO: JsonToken;
         JTok: JsonToken;
         Id: Text;
-        ParentsArray: JsonArray;
     begin
         Ticket := GoogleDrive.Token();
         Inf.Get;
-        Url := Inf."Url Api GoogleDrive" + move_folder + FileId;
 
-        // Add new parent
-        Body.Add('addParents', NewParentId);
+        // Construir la URL con los parámetros addParents y removeParents
+        Url := Inf."Url Api GoogleDrive" + move_folder + FileId +
+               '?addParents=' + NewParentId +
+               '&removeParents=' + OldParent;
 
-        // If we want to remove the old parent, we need to get the current parents first
-        if RemoveOldParent then begin
-            // Get current file metadata to find existing parents
-            Url := Inf."Url Api GoogleDrive" + get_metadata + FileId;
-            Respuesta := RestApiToken(Url, Ticket, RequestType::get, Json);
-            StatusInfo.ReadFrom(Respuesta);
-
-            if StatusInfo.Get('parents', JTok) then begin
-                ParentsArray := JTok.AsArray();
-                foreach JTok in ParentsArray do
-                    Body.Add('removeParents', JTok.AsValue().AsText());
-            end;
-        end;
-
+        // La API de Google Drive espera un cuerpo vacío para esta operación
         Body.WriteTo(Json);
-        Url := Inf."Url Api GoogleDrive" + move_folder + FileId;
-        Respuesta := RestApiToken(Url, Ticket, RequestType::patch, Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::patch, '');
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
 
@@ -1171,12 +1159,14 @@ codeunit 95100 "Google Drive Manager"
         JTokO: JsonToken;
         JTok: JsonToken;
         Id: Text;
+        ParentsArray: JsonArray;
     begin
         Ticket := GoogleDrive.Token();
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + move_folder + FileId + '/copy';
-
-        Body.Add('parents', NewParentId);
+        //NewParentId es un array
+        ParentsArray.Add(NewParentId);
+        Body.Add('parents', ParentsArray);
         Body.WriteTo(Json);
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
@@ -1197,7 +1187,7 @@ codeunit 95100 "Google Drive Manager"
         exit(Id);
     end;
 
-    procedure ListFolder(FolderId: Text; var Files: Record "Name/Value Buffer" temporary)
+    procedure ListFolder(FolderId: Text; var Files: Record "Name/Value Buffer" temporary; SoloSubfolder: Boolean)
     var
         GoogleDrive: Codeunit "Google Drive Manager";
         Ticket: Text;
@@ -1216,17 +1206,24 @@ codeunit 95100 "Google Drive Manager"
         JEntryTokens: JsonToken;
         tag: Text;
         a: Integer;
+        C: Label '''';
+        FilesTemp: Record "Name/Value Buffer" temporary;
+        Borrado: Boolean;
+
     begin
         Files.DeleteAll();
         Ticket := GoogleDrive.Token();
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + list_folder;
 
-        Clear(Body);
-        Body.add('q', StrSubstNo('''%1'' in parents and trashed = false', FolderId));
-        Body.add('fields', 'files(id, name, mimeType, size, modifiedTime)');
-        Body.WriteTo(Json);
+        if SoloSubfolder then begin
+            If FolderId <> '' Then
+                Url := Url + '?q=' + C + FolderId + C + '+in+parents&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
+            else
+                Url := Url + '?q=&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
 
+        end else
+            Url := Url + '?q=' + C + 'root' + C + '+in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, Json);
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
@@ -1238,25 +1235,47 @@ codeunit 95100 "Google Drive Manager"
                 If JEntry.Get('mimeType', JEntryToken) Then begin
                     tag := JEntryToken.AsValue().AsText();
                 end;
+                Borrado := false;
+                if JEntry.Get('trashed', JEntryToken) Then begin
+                    if JEntryToken.AsValue().AsBoolean() then
+                        Borrado := JEntryToken.AsValue().AsBoolean();
+                end;
 
                 if JEntry.Get('name', JEntryToken) then begin
-                    Files.Init();
+                    FilesTemp.Init();
                     a += 1;
-                    Files.ID := a;
-                    Files.Name := JEntryToken.AsValue().AsText();
+                    FilesTemp.ID := a;
+                    FilesTemp.Name := JEntryToken.AsValue().AsText();
 
                     if JEntry.Get('id', JEntryToken) then
-                        Files.Value := JEntryToken.AsValue().AsText();
+                        FilesTemp."Google Drive ID" := JEntryToken.AsValue().AsText();
 
                     if tag = 'application/vnd.google-apps.folder' then
-                        Files.Value := Files.Value + '|FOLDER'
+                        FilesTemp.Value := 'Carpeta'
                     else
-                        Files.Value := Files.Value + '|FILE';
-
-                    Files.Insert();
+                        FilesTemp.Value := '';
+                    if not Borrado then
+                        FilesTemp.Insert();
                 end;
             end;
         end;
+        a := 0;
+        FilesTemp.SetRange(Value, 'Carpeta');
+        if FilesTemp.FindSet() then
+            repeat
+                a += 1;
+                Files := FilesTemp;
+                Files.ID := a;
+                Files.Insert();
+            until FilesTemp.Next() = 0;
+        FilesTemp.SetRange(Value, '');
+        if FilesTemp.FindSet() then
+            repeat
+                a += 1;
+                Files := FilesTemp;
+                Files.ID := a;
+                Files.Insert();
+            until FilesTemp.Next() = 0;
     end;
 
     procedure DownloadFileB64(FileId: Text; FileName: Text; BajarFichero: Boolean): Text
@@ -1333,6 +1352,14 @@ codeunit 95100 "Google Drive Manager"
                 end;
             RequestType::delete:
                 Client.Delete(URL, ResponseMessage);
+            RequestType::patch:
+                begin
+                    RequestContent.WriteFrom(payload);
+                    RequestContent.GetHeaders(contentHeaders);
+                    contentHeaders.Clear();
+                    contentHeaders.Add('Content-Type', 'application/json');
+                    Client.Patch(URL, RequestContent, ResponseMessage);
+                end;
         end;
 
         ResponseMessage.Content().ReadAs(ResponseText);
@@ -1491,7 +1518,7 @@ codeunit 95100 "Google Drive Manager"
             FolderName := PathParts.Get(i);
             if FolderName <> '' then begin
                 // Check if folder already exists
-                NewFolderId := FindOrCreateSubfolder(CurrentFolderId, FolderName);
+                NewFolderId := FindOrCreateSubfolder(CurrentFolderId, FolderName, true);
                 if NewFolderId <> '' then
                     CurrentFolderId := NewFolderId
                 else
@@ -1502,21 +1529,21 @@ codeunit 95100 "Google Drive Manager"
         exit(CurrentFolderId);
     end;
 
-    procedure FindOrCreateSubfolder(ParentFolderId: Text; FolderName: Text): Text
+    procedure FindOrCreateSubfolder(ParentFolderId: Text; FolderName: Text; SoloSubfolder: Boolean): Text
     var
         Files: Record "Name/Value Buffer" temporary;
         FolderId: Text;
         FoundFolder: Boolean;
     begin
         // First, try to find existing folder
-        ListFolder(ParentFolderId, Files);
+        ListFolder(ParentFolderId, Files, SoloSubfolder);
 
         Files.Reset();
         if Files.FindSet() then begin
             repeat
-                if (Files.Name = FolderName) and (StrPos(Files.Value, '|FOLDER') > 0) then begin
+                if (Files.Name = FolderName) and (Files.Value = 'Carpeta') then begin
                     // Extract folder ID from Value field
-                    FolderId := CopyStr(Files.Value, 1, StrPos(Files.Value, '|') - 1);
+                    FolderId := Files."Google Drive ID";
                     FoundFolder := true;
                 end;
             until (Files.Next() = 0) or FoundFolder;
@@ -1705,4 +1732,134 @@ codeunit 95100 "Google Drive Manager"
 
         exit('');
     end;
+
+    internal procedure GetUrl(GoogleDriveID: Text[250]): Text
+    var
+        Inf: Record "Company Information";
+        Url: Text[250];
+        RequestHeaders: HttpHeaders;
+        ResponseMessage: HttpResponseMessage;
+        GoogleDrive: Codeunit "Google Drive Manager";
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        Json: Text;
+        RequestType: Option get,patch,put,post,delete;
+        JToken: JsonToken;
+        Link: Text;
+        ErrorMessage: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+
+        Inf.Get;
+        Url := Inf."Url Api GoogleDrive" + get_metadata + GoogleDriveID + '?fields=webViewLink,webContentLink';
+
+        Respuesta := RestApiToken(Url, AccessToken, RequestType::get, '');
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de Google Drive.');
+
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+
+        // Verificar si hay error en la respuesta
+        if StatusInfo.Get('error', JToken) then begin
+            exit('');
+        end;
+
+        if StatusInfo.Get('webViewLink', JToken) then begin
+            Link := JToken.AsValue().AsText();
+            exit(Link);
+        end else if StatusInfo.Get('webContentLink', JToken) then begin
+            Link := JToken.AsValue().AsText();
+            exit(Link);
+        end else begin
+            exit('');
+        end;
+
+        exit('');
+    end;
+
+    internal procedure DeleteFile(GoogleDriveID: Text[250])
+    var
+        Client: HttpClient;
+        RequestContent: HttpContent;
+        ResponseMessage: HttpResponseMessage;
+        ResponseText: Text;
+        JResponse: JsonObject;
+        JToken: JsonToken;
+        RequestHeaders: HttpHeaders;
+        Inf: Record "Company Information";
+        Url: Text[250];
+        RequestType: Option get,patch,put,post,delete;
+        Respuesta: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Inf.Get;
+        Url := Inf."Url Api GoogleDrive" + get_metadata + GoogleDriveID;
+
+        Respuesta := RestApiToken(Url, AccessToken, RequestType::delete, '');
+    end;
+
+    procedure RestApi(url: Text; RequestType: Option Get,patch,put,post,delete; payload: Text): Text
+    var
+        Ok: Boolean;
+        Respuesta: Text;
+        Client: HttpClient;
+        RequestHeaders: HttpHeaders;
+        RequestContent: HttpContent;
+        ResponseMessage: HttpResponseMessage;
+        RequestMessage: HttpRequestMessage;
+        ResponseText: Text;
+        contentHeaders: HttpHeaders;
+    begin
+        RequestHeaders := Client.DefaultRequestHeaders();
+        //RequestHeaders.Add('Authorization', CreateBasicAuthHeader(Username, Password));
+
+        case RequestType of
+            RequestType::Get:
+                Client.Get(URL, ResponseMessage);
+            RequestType::patch:
+                begin
+                    RequestContent.WriteFrom(payload);
+
+                    RequestContent.GetHeaders(contentHeaders);
+                    contentHeaders.Clear();
+                    contentHeaders.Add('Content-Type', 'application/json-patch+json');
+
+                    RequestMessage.Content := RequestContent;
+
+                    RequestMessage.SetRequestUri(URL);
+                    RequestMessage.Method := 'PATCH';
+
+                    client.Send(RequestMessage, ResponseMessage);
+                end;
+            RequestType::post:
+                begin
+                    RequestContent.WriteFrom(payload);
+
+                    RequestContent.GetHeaders(contentHeaders);
+                    contentHeaders.Clear();
+                    contentHeaders.Add('Content-Type', 'application/json');
+
+                    Client.Post(URL, RequestContent, ResponseMessage);
+                end;
+            RequestType::delete:
+                begin
+
+
+                    Client.Delete(URL, ResponseMessage);
+                end;
+        end;
+
+        ResponseMessage.Content().ReadAs(ResponseText);
+        exit(ResponseText);
+
+    end;
+
+
+
 }
