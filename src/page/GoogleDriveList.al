@@ -52,6 +52,13 @@ page 95105 "Google Drive List"
                 {
                     ApplicationArea = All;
                     Caption = 'Tipo';
+                    Visible = false;
+                }
+                field("File Extension"; Rec."File Extension")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Extensión';
+                    Visible = true;
                 }
             }
         }
@@ -89,7 +96,7 @@ page 95105 "Google Drive List"
                     Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }
-              action("M&over")
+            action("M&over")
             {
                 Caption = 'Mover';
                 ApplicationArea = All;
@@ -108,7 +115,7 @@ page 95105 "Google Drive List"
 
                     // Get folder list
                     GoogleDrive.ListFolder(root, TempFiles, false);
-                    GoogleDriveList.SetRecords(root, TempFiles,true);
+                    GoogleDriveList.SetRecords(root, TempFiles, true);
                     GoogleDriveList.RunModal();
                     GoogleDriveList.GetDestino(destino);
                     // Here we would need to implement a folder selection dialog using TempFiles
@@ -141,7 +148,7 @@ page 95105 "Google Drive List"
                     Accion := Accion::Copiar;
                     // Get folder list
                     GoogleDrive.ListFolder(root, TempFiles, false);
-                    GoogleDriveList.SetRecords(root, TempFiles,true);
+                    GoogleDriveList.SetRecords(root, TempFiles, true);
                     GoogleDriveList.RunModal();
                     GoogleDriveList.GetDestino(destino);
                     // Here we would need to implement a folder selection dialog using TempFiles
@@ -149,7 +156,7 @@ page 95105 "Google Drive List"
                     if destino = '' then
                         Message('no ha elegido destino')
                     else begin
-                    GoogleDrive.CopyFile(Rec."Google Drive ID", destino);
+                        GoogleDrive.CopyFile(Rec."Google Drive ID", destino);
                         Recargar(root, CarpetaAnterior[Indice], Indice);
                     end;
                 end;
@@ -173,9 +180,9 @@ page 95105 "Google Drive List"
                     Nombre := Carpeta;
                     Accion := Accion::"Crear Carpeta";
                     If CarpetaAnterior[Indice] = '' then
-                        GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal)
+                        GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal, false)
                     else
-                        GoogleDrive.CreateFolder(Carpeta, root);
+                        GoogleDrive.CreateFolder(Carpeta, root, false);
                     Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }
@@ -234,7 +241,7 @@ page 95105 "Google Drive List"
         wdestino: Text;
         Archivo: Boolean;
 
-    procedure SetRecords(FolderId: Text; var Files: Record "Name/Value Buffer" temporary;Moviendo: Boolean)
+    procedure SetRecords(FolderId: Text; var Files: Record "Name/Value Buffer" temporary; Moviendo: Boolean)
     begin
         Rec.Copy(Files, true);
         root := FolderId;

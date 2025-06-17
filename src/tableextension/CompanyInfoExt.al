@@ -52,6 +52,34 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'Google Auth Provider Cert URL';
             DataClassification = CustomerContent;
         }
+        field(95110; "Google Drive Root Folder"; Text[250])
+        {
+
+            Caption = 'Google Drive Root Folder';
+            DataClassification = CustomerContent;
+            trigger OnValidate()
+            var
+                GoogleMapping: Record "Google Drive Folder Mapping";
+            begin
+                if "Google Drive Root Folder" <> '' then
+                    "Google Drive Root Folder ID" := GoogleMapping.RecuperarIdFolder("Google Drive Root Folder", true, true);
+            end;
+        }
+        field(95111; "Google Drive Root Folder ID"; Text[250])
+        {
+            Caption = 'Google Drive Root Folder ID';
+            DataClassification = CustomerContent;
+        }
+        field(95112; "Google Drive Manual"; Blob)
+        {
+            Caption = 'Google Drive Manual';
+            DataClassification = CustomerContent;
+        }
+        field(95113; "Google Drive Manual Last Update"; DateTime)
+        {
+            Caption = 'Google Drive Manual Last Update';
+            DataClassification = CustomerContent;
+        }
     }
 
     procedure GetTokenGoogleDrive(): Text

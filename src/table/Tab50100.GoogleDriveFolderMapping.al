@@ -102,13 +102,13 @@ table 95100 "Google Drive Folder Mapping"
         "Modified Date" := CurrentDateTime;
     end;
 
-    procedure RecuperarIdFolder(Folder: Text; Crear: Boolean): Text
+    procedure RecuperarIdFolder(Folder: Text; Crear: Boolean; RootFolder: Boolean): Text
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
         Files: Record "Name/Value Buffer" temporary;
         Id: Text;
     begin
-        exit(GoogleDriveManager.RecuperaIdFolder(Id, Folder, Files, Crear));
+        exit(GoogleDriveManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
 
     end;
 

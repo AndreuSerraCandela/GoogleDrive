@@ -20,6 +20,8 @@ page 95100 "Google Drive Factbox"
                     DrillDown = true;
                     StyleExpr = Stilo;
                     trigger OnDrillDown()
+                    var
+                        GoogleDriveManager: Codeunit "Google Drive Manager";
                     begin
                         Nombre := Rec.Name;
                         If Nombre = '..' Then begin
@@ -43,7 +45,8 @@ page 95100 "Google Drive Factbox"
                             end else begin
                                 // Descargar archivo
                                 Accion := Accion::"Descargar Archivo";
-                                Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
+                                //Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
+                                GoogleDriveManager.OpenFileInBrowser(Rec."Google Drive ID");
                                 Recargar(root, CarpetaAnterior[Indice], Indice);
                             end;
                         end;
@@ -53,6 +56,13 @@ page 95100 "Google Drive Factbox"
                 {
                     ApplicationArea = All;
                     Caption = 'Tipo';
+                    Visible = false;
+                }
+                field("File Extension"; Rec."File Extension")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Extensión';
+                    Visible = true;
                 }
             }
         }
@@ -138,7 +148,7 @@ page 95100 "Google Drive Factbox"
                     if destino = '' then
                         Message('no ha elegido destino')
                     else begin
-                    GoogleDrive.CopyFile(Rec."Google Drive ID", destino);
+                        GoogleDrive.CopyFile(Rec."Google Drive ID", destino);
                         Recargar(root, CarpetaAnterior[Indice], Indice);
                     end;
                 end;
@@ -162,9 +172,9 @@ page 95100 "Google Drive Factbox"
                     Nombre := Carpeta;
                     Accion := Accion::"Crear Carpeta";
                     If CarpetaAnterior[Indice] = '' then
-                        GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal)
+                        GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal, false)
                     else
-                        GoogleDrive.CreateFolder(Carpeta, root);
+                        GoogleDrive.CreateFolder(Carpeta, root, false);
                     Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }

@@ -12,5 +12,10 @@ tableextension 95102 NameBufferValue extends "Name/Value Buffer"
             Caption = 'Google Drive Parent ID';
             DataClassification = CustomerContent;
         }
+        field(95102; "File Extension"; Text[30])
+        {
+            Caption = 'File Extension';
+            DataClassification = CustomerContent;
+        }
     }
 }

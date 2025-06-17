@@ -50,6 +50,12 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     ApplicationArea = All;
                     ToolTip = 'Especifica la URL base de la API de Google Drive.';
                 }
+                field("Google Drive Root Folder"; Rec."Google Drive Root Folder")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica la carpeta raíz de Google Drive.';
+                }
+
             }
 
             group("Google Drive Tokens")
@@ -95,6 +101,24 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
             group("Google Drive")
             {
                 Caption = 'Google Drive';
+
+                action("Show Manual")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Mostrar Manual';
+                    ToolTip = 'Muestra el manual de usuario de Google Drive.';
+                    Image = Help;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+
+                    trigger OnAction()
+                    var
+                        GoogleDriveManualViewer: Page "Google Drive Manual Viewer";
+                    begin
+                        GoogleDriveManualViewer.Run();
+                    end;
+                }
 
                 action("Configure Default Settings")
                 {
@@ -252,11 +276,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
 
                     trigger OnAction()
                     begin
-                        TokenFieldsEditable := not TokenFieldsEditable;
-                        if TokenFieldsEditable then
-                            Message('Campos de tokens habilitados para edición manual.')
-                        else
-                            Message('Campos de tokens bloqueados.');
+                        TokenFieldsEditable := true;
                         CurrPage.Update();
                     end;
                 }

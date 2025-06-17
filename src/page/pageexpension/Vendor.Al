@@ -44,7 +44,6 @@ pageextension 95102 VendorExt extends "Vendor Card"
     trigger OnAfterGetCurrRecord()
     begin
         CurrPage.Visor.Page.Update(false);
-        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1);
         CurrPage.GoogleDriveFiles.Page.Update(false);
     end;
 

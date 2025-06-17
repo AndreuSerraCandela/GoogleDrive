@@ -723,6 +723,39 @@ codeunit 95100 "Google Drive Manager"
         end;
     end;
 
+    local procedure FileExtension(Name: Text[250]): Text[30]
+    var
+        FileMgt: Codeunit "File Management";
+        Extension: Text;
+    begin
+        Extension := FileMgt.GetExtension(Name);
+        case Extension of
+            'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'ico', 'webp':
+                exit('jpeg');
+            'pdf':
+                exit('pdf');
+            'doc', 'docx':
+                exit('word');
+            'xls', 'xlsx':
+                exit('excel');
+            'ppt', 'pptx':
+                exit('powerpoint');
+            'txt':
+                exit('text');
+            'csv':
+                exit('csv');
+            'zip', 'rar', '7z':
+                exit('zip');
+            'mp3', 'wav', 'ogg', 'm4a', 'aac':
+                exit('audio');
+            'mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv':
+                exit('video');
+            else
+                exit(Extension);
+        end;
+        exit(Extension);
+    end;
+
     procedure Token(): Text
     var
         CompanyInfo: Record "Company Information";
@@ -739,7 +772,7 @@ codeunit 95100 "Google Drive Manager"
         exit(CompanyInfo.GetTokenGoogleDrive());
     end;
 
-    procedure RecuperaIdFolder(IdCarpeta: Text; Carpeta: Text; Var Files: Record "Name/Value Buffer" temporary; Crear: Boolean) Id: Text;
+    procedure RecuperaIdFolder(IdCarpeta: Text; Carpeta: Text; Var Files: Record "Name/Value Buffer" temporary; Crear: Boolean; RootFolder: Boolean) Id: Text;
     var
         CompanyInfo: Record "Company Information";
         Ticket: Text;
@@ -762,6 +795,8 @@ codeunit 95100 "Google Drive Manager"
         HasMore: Boolean;
         a: Integer;
         Borrado: Boolean;
+        RootFolderId: Text;
+        C: Label '''';
     begin
         Files.DeleteAll();
         if not Authenticate() then
@@ -769,8 +804,12 @@ codeunit 95100 "Google Drive Manager"
 
         Ticket := AccessToken;
         Inf.Get;
+        RootFolderId := Inf."Google Drive Root Folder ID";
         Url := Inf."Url Api GoogleDrive" + list_folder;
-        Url := Url + '?q=trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
+        if RootFolder = false then
+            Url := Url + '?q=' + C + RootFolderId + C + 'in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
+        else
+            Url := Url + '?q=trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         //https://www.googleapis.com/drive/v3/files?q='1YCipBu7tEY2n2enB5RGxy1XXYtjID4oe'+in+parents&fields=files(id%2Cname%2CmimeType)
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
@@ -810,6 +849,7 @@ codeunit 95100 "Google Drive Manager"
                         Files.ID := a;
                         Files.Name := JEntryToken.AsValue().AsText();
                         Files.Value := '';
+                        Files."File Extension" := FileExtension(Files.Name);
                         if not Borrado then
                             Files.Insert();
                     end;
@@ -817,7 +857,7 @@ codeunit 95100 "Google Drive Manager"
             end;
         end;
         if Crear then begin
-            Id := CreateFolder(Carpeta, IdCarpeta);
+            Id := CreateFolder(Carpeta, IdCarpeta, RootFolder);
         end;
     end;
 
@@ -892,6 +932,7 @@ codeunit 95100 "Google Drive Manager"
                         FilesTemp.ID := a;
                         FilesTemp.Name := JEntryToken.AsValue().AsText();
                         FilesTemp.Value := '';
+                        FilesTemp."File Extension" := FileExtension(FilesTemp.Name);
                         if JEntry.Get('id', JId) then
                             FilesTemp."Google Drive ID" := JId.AsValue().AsText();
                         FilesTemp."Google Drive Parent ID" := IdCarpeta;
@@ -920,7 +961,7 @@ codeunit 95100 "Google Drive Manager"
             until FilesTemp.Next() = 0;
     end;
 
-    procedure CreateFolder(Carpeta: Text; ParentId: Text): Text
+    procedure CreateFolder(Carpeta: Text; ParentId: Text; RootFolder: Boolean): Text
     var
         GoogleDrive: Codeunit "Google Drive Manager";
         Ticket: Text;
@@ -945,6 +986,8 @@ codeunit 95100 "Google Drive Manager"
 
         If CopyStr(ParentId, 1, 1) = '/' then
             ParentId := CopyStr(ParentId, 2);
+        if (ParentId = '') and (not RootFolder) then
+            ParentId := Inf."Google Drive Root Folder ID";
 
         Body.Add('name', Carpeta);
         Body.add('mimeType', 'application/vnd.google-apps.folder');
@@ -1220,10 +1263,10 @@ codeunit 95100 "Google Drive Manager"
             If FolderId <> '' Then
                 Url := Url + '?q=' + C + FolderId + C + '+in+parents&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
             else
-                Url := Url + '?q=&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
+                Url := Url + '?q=' + C + Inf."Google Drive Root Folder ID" + C + '+in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
 
         end else
-            Url := Url + '?q=' + C + 'root' + C + '+in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
+            Url := Url + '?q=' + C + Inf."Google Drive Root Folder ID" + C + '+in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, Json);
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
@@ -1252,8 +1295,10 @@ codeunit 95100 "Google Drive Manager"
 
                     if tag = 'application/vnd.google-apps.folder' then
                         FilesTemp.Value := 'Carpeta'
-                    else
+                    else begin
                         FilesTemp.Value := '';
+                        FilesTemp."File Extension" := FileExtension(FilesTemp.Name);
+                    end;
                     if not Borrado then
                         FilesTemp.Insert();
                 end;
@@ -1553,7 +1598,7 @@ codeunit 95100 "Google Drive Manager"
             exit(FolderId);
 
         // Folder doesn't exist, create it
-        exit(CreateFolder(FolderName, ParentFolderId));
+        exit(CreateFolder(FolderName, ParentFolderId, false));
     end;
 
     procedure UploadFileToConfiguredFolder(var DocumentAttachment: Record "Document Attachment"; TempBlob: Codeunit "Temp Blob"; TableID: Integer; DocumentNo: Text; DocumentDate: Date): Boolean

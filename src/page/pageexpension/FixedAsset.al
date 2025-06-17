@@ -36,7 +36,6 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
     trigger OnAfterGetCurrRecord()
     begin
         CurrPage.Visor.Page.Update(false);
-        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1);
         CurrPage.GoogleDriveFiles.Page.Update(false);
     end;
 
