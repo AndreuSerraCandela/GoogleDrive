@@ -20,7 +20,7 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
     }
     trigger OnAfterGetRecord()
     var
-
+        RecRef: RecordRef;
     begin
         if ActivoFijo = Rec."No." then
             exit;
@@ -29,7 +29,8 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
         SubFolder := FolderMapping.CreateSubfolderPath(Database::"Fixed Asset", Rec."No.", 0D);
         IF SubFolder <> '' then
             Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
-        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1);
+        RecRef.GetTable(Rec);
+        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
         CurrPage.Visor.Page.SetRecord(Rec.RecordId);
     end;
 

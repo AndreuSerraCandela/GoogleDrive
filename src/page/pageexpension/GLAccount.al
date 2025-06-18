@@ -20,7 +20,7 @@ pageextension 95107 GLAccountExt extends "G/L Account Card"
     }
     trigger OnAfterGetRecord()
     var
-
+        RecRef: RecordRef;
     begin
         if CuentaContable = Rec."No." then
             exit;
@@ -29,7 +29,8 @@ pageextension 95107 GLAccountExt extends "G/L Account Card"
         SubFolder := FolderMapping.CreateSubfolderPath(Database::"G/L Account", Rec."No.", 0D);
         IF SubFolder <> '' then
             Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
-        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1);
+        RecRef.GetTable(Rec);
+        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
         CurrPage.Visor.Page.SetRecord(Rec.RecordId);
     end;
 

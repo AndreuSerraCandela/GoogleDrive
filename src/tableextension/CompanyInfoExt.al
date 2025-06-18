@@ -75,7 +75,7 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'Google Drive Manual';
             DataClassification = CustomerContent;
         }
-        field(95113; "Google Drive Manual Last Update"; DateTime)
+        field(95113; "Google Manual Last Update"; DateTime)
         {
             Caption = 'Google Drive Manual Last Update';
             DataClassification = CustomerContent;

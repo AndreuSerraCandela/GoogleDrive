@@ -895,9 +895,11 @@ codeunit 95100 "Google Drive Manager"
         Ticket := AccessToken;
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + list_folder;
+        if IdCarpeta = '' then IdCarpeta := Inf."Google Drive Root Folder ID";
         //https://www.googleapis.com/drive/v3/files?q=%27FOLDER_ID%27+in+parents&fields=files(id%2Cname%2CmimeType)
         Url := Url + '?q=' + C + IdCarpeta + C + '+in+parents&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
-
+        if IdCarpeta = '' then
+            Url := Url + '?q=trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
@@ -1289,6 +1291,7 @@ codeunit 95100 "Google Drive Manager"
                     a += 1;
                     FilesTemp.ID := a;
                     FilesTemp.Name := JEntryToken.AsValue().AsText();
+                    FilesTemp."Google Drive Parent ID" := FolderId;
 
                     if JEntry.Get('id', JEntryToken) then
                         FilesTemp."Google Drive ID" := JEntryToken.AsValue().AsText();

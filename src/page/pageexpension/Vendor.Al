@@ -25,7 +25,7 @@ pageextension 95102 VendorExt extends "Vendor Card"
     }
     trigger OnAfterGetRecord()
     var
-
+        RecRef: RecordRef;
 
     begin
         if Proveedor = Rec."No." then
@@ -35,7 +35,8 @@ pageextension 95102 VendorExt extends "Vendor Card"
         SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, rEC."No.", 0D);
         IF SubFolder <> '' then
             Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
-        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1);
+        RecRef.GetTable(Rec);
+        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
         CurrPage.Visor.Page.SetRecord(Rec.RecordId);
         CurrPage.Visor.Page.Update(false);
         CurrPage.GoogleDriveFiles.Page.Update(false);

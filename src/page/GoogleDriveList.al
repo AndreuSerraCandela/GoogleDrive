@@ -19,20 +19,27 @@ page 95105 "Google Drive List"
                     DrillDown = true;
                     StyleExpr = Stilo;
                     trigger OnDrillDown()
+                    var
+                        GoogleDriveManager: Codeunit "Google Drive Manager";
+                        a: Integer;
                     begin
                         Nombre := Rec.Name;
                         If Nombre = '..' Then begin
                             // Subir al nivel anterior
                             Accion := Accion::Anterior;
                             Indice := Indice - 1;
-                            if Indice < 1 then
+                            if Indice < 1 then begin
                                 Indice := 1;
+                                Message('No se puede subir al nivel anterior, esta en la raiz para esta ficha');
+                            end;
                             Rec.Value := 'Carpeta';
                             Rec."Google Drive ID" := root;
+                            a := Indice;
                             if Indice = 1 then
-                                Recargar(CarpetaAnterior[Indice + 1], CarpetaAnterior[Indice], Indice)
+                                Recargar('', '', Indice)
                             else
                                 Recargar(CarpetaAnterior[Indice], CarpetaAnterior[Indice - 1], Indice - 1);
+                            Indice := a;
                         end else begin
                             if Rec.Value = 'Carpeta' then begin
                                 // Navegar a la subcarpeta
@@ -42,7 +49,8 @@ page 95105 "Google Drive List"
                             end else begin
                                 // Descargar archivo
                                 Accion := Accion::"Descargar Archivo";
-                                Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
+                                //Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
+                                GoogleDriveManager.OpenFileInBrowser(Rec."Google Drive ID");
                                 Recargar(root, CarpetaAnterior[Indice], Indice);
                             end;
                         end;
@@ -267,10 +275,15 @@ page 95105 "Google Drive List"
     procedure Recargar(FolderId: Text; ParentId: Text; IndiceActual: Integer)
     var
         Files: Record "Name/Value Buffer" temporary;
+        Inf: Record "Company Information";
+        RootFolder: Text;
+        i: Integer;
     begin
+        if FolderId = '' then FolderId := CarpetaPrincipal;
         GoogleDrive.Carpetas(FolderId, Files);
         Rec.DeleteAll();
-
+        Inf.Get();
+        RootFolder := Inf."Google Drive Root Folder";
         // Agregar la carpeta ".." al inicio
         Rec.Init();
         Rec.ID := -99;

@@ -48,8 +48,8 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                             If Not pdfstoraget.findlast() then exit;
                             a := PDFStoraget.Count;
                         end;
-                        if PDFStorageT.Url <> '' then
-                            SetPDFDocumentUrl(PDFStorageT.Url, 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
+                        if PDFStorageT."Google Drive ID" <> '' then
+                            SetPDFDocumentUrl(PDFStorageT."Google Drive ID", 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
                         else
                             SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF));
 
@@ -62,8 +62,8 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                             pdfstoraget.findfirst();
                             a := 1;
                         end;
-                        if PDFStorageT.Url <> '' then
-                            SetPDFDocumentUrl(PDFStorageT.Url, 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
+                        if PDFStorageT."Google Drive ID" <> '' then
+                            SetPDFDocumentUrl(PDFStorageT."Google Drive ID", 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
                         else
                             SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF));
 

@@ -22,32 +22,37 @@ page 95100 "Google Drive Factbox"
                     trigger OnDrillDown()
                     var
                         GoogleDriveManager: Codeunit "Google Drive Manager";
+                        a: Integer;
                     begin
                         Nombre := Rec.Name;
                         If Nombre = '..' Then begin
                             // Subir al nivel anterior
                             Accion := Accion::Anterior;
                             Indice := Indice - 1;
-                            if Indice < 1 then
+                            if Indice < 1 then begin
                                 Indice := 1;
+                                Message('No se puede subir al nivel anterior, esta en la raiz para esta ficha');
+                            end;
                             Rec.Value := 'Carpeta';
                             Rec."Google Drive ID" := root;
+                            a := Indice;
                             if Indice = 1 then
-                                Recargar(CarpetaAnterior[Indice + 1], CarpetaAnterior[Indice], Indice)
+                                Recargar('', '', Indice, GRecRef)
                             else
-                                Recargar(CarpetaAnterior[Indice], CarpetaAnterior[Indice - 1], Indice - 1);
+                                Recargar(CarpetaAnterior[Indice], CarpetaAnterior[Indice - 1], Indice - 1, GRecRef);
+                            Indice := a;
                         end else begin
                             if Rec.Value = 'Carpeta' then begin
                                 // Navegar a la subcarpeta
                                 Accion := Accion::" ";
                                 Indice := Indice + 1;
-                                Recargar(Rec."Google Drive ID", Rec."Google Drive Parent ID", Indice);
+                                Recargar(Rec."Google Drive ID", Rec."Google Drive Parent ID", Indice, GRecRef);
                             end else begin
                                 // Descargar archivo
                                 Accion := Accion::"Descargar Archivo";
                                 //Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
                                 GoogleDriveManager.OpenFileInBrowser(Rec."Google Drive ID");
-                                Recargar(root, CarpetaAnterior[Indice], Indice);
+                                Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                             end;
                         end;
                     end;
@@ -85,7 +90,7 @@ page 95100 "Google Drive Factbox"
                     Nombre := Rec.Name;
                     Accion := Accion::"Descargar Archivo";
                     Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
-                    Recargar(root, CarpetaAnterior[Indice], Indice);
+                    Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                 end;
             }
             action("M&over")
@@ -100,14 +105,16 @@ page 95100 "Google Drive Factbox"
                     destino: Text;
                     TempFiles: Record "Name/Value Buffer" temporary;
                     GoogleDriveList: Page "Google Drive List";
+                    Inf: Record "Company Information";
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::Mover;
 
 
                     // Get folder list
-                    GoogleDrive.ListFolder(root, TempFiles, false);
-                    GoogleDriveList.SetRecords(root, TempFiles, true);
+                    Inf.Get();
+                    GoogleDrive.ListFolder(Inf."Google Drive Root Folder ID", TempFiles, false);
+                    GoogleDriveList.SetRecords(Inf."Google Drive Root Folder ID", TempFiles, true);
                     GoogleDriveList.RunModal();
                     GoogleDriveList.GetDestino(destino);
                     // Here we would need to implement a folder selection dialog using TempFiles
@@ -120,7 +127,7 @@ page 95100 "Google Drive Factbox"
                             GoogleDrive.MoveFolder(Rec."Google Drive ID", destino)
                         else
                             GoogleDrive.Movefile(Rec."Google Drive ID", Destino, root);
-                        Recargar(root, CarpetaAnterior[Indice], Indice);
+                        Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                     end;
                 end;
             }
@@ -149,7 +156,7 @@ page 95100 "Google Drive Factbox"
                         Message('no ha elegido destino')
                     else begin
                         GoogleDrive.CopyFile(Rec."Google Drive ID", destino);
-                        Recargar(root, CarpetaAnterior[Indice], Indice);
+                        Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                     end;
                 end;
             }
@@ -175,7 +182,7 @@ page 95100 "Google Drive Factbox"
                         GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal, false)
                     else
                         GoogleDrive.CreateFolder(Carpeta, root, false);
-                    Recargar(root, CarpetaAnterior[Indice], Indice);
+                    Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                 end;
             }
             action(Borrar)
@@ -185,14 +192,20 @@ page 95100 "Google Drive Factbox"
                 Visible = not Mueve;
                 Scope = Repeater;
                 trigger OnAction()
+                var
+                    Doc: Record "Document Attachment";
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::Borrar;
                     If Rec.Value = 'Carpeta' then
                         GoogleDrive.DeleteFolder(Rec."Google Drive ID", false)
-                    else
+                    else begin
                         GoogleDrive.DeleteFile(Rec."Google Drive ID");
-                    Recargar(root, CarpetaAnterior[Indice], Indice);
+                        Doc.SetRange("Google Drive ID", Rec."Google Drive ID");
+                        If Doc.FindFirst Then
+                            Doc.Delete;
+                    end;
+                    Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                 end;
             }
             action("Subir Archivo")
@@ -206,14 +219,26 @@ page 95100 "Google Drive Factbox"
                     Filename: Text;
                     FileExtension: Text;
                     FileMgt: Codeunit "File Management";
+                    Id: Text;
+                    Doc: Record "Document Attachment";
+                    a: Integer;
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::"Subir Archivo";
                     Rec.Value := 'Carpeta';
                     UPLOADINTOSTREAM('Import', '', ' All Files (*.*)|*.*', Filename, NVInStream);
                     FileExtension := FileMgt.GetExtension(FileName);
-                    GoogleDrive.UploadFileB64(root, NVInStream, Filename, FileExtension);
-                    Recargar(root, CarpetaAnterior[Indice], Indice);
+                    Id := GoogleDrive.UploadFileB64(root, NVInStream, Filename, FileExtension);
+                    Doc.SetRange("Table ID", GRecRef.Number);
+                    If Doc.Findlast Then a := Doc.ID + 1;
+                    Doc.InitFieldsFromRecRef(GRecRef);
+                    Doc.ID := a;
+                    Doc."Google Drive ID" := Id;
+                    doc."File Name" := Filename;
+                    doc."File Extension" := FileExtension;
+                    Doc."Store in Google Drive" := true;
+                    Doc.Insert();
+                    Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                 end;
             }
         }
@@ -231,6 +256,7 @@ page 95100 "Google Drive Factbox"
         Mueve: Boolean;
         Stilo: Text;
         Archivo: Boolean;
+        GRecRef: Recordref;
 
     procedure SetRecords(FolderId: Text; var Files: Record "Name/Value Buffer" temporary)
     begin
@@ -254,13 +280,19 @@ page 95100 "Google Drive Factbox"
         Files.Copy(Rec, true);
     end;
 
-    procedure Recargar(FolderId: Text; ParentId: Text; IndiceActual: Integer)
+    procedure Recargar(FolderId: Text; ParentId: Text; IndiceActual: Integer; RecRef: RecordRef)
     var
         Files: Record "Name/Value Buffer" temporary;
+        Inf: Record "Company Information";
+        RootFolder: Text;
+        i: Integer;
     begin
+        GRecRef := RecRef;
+        if FolderId = '' then FolderId := CarpetaPrincipal;
         GoogleDrive.Carpetas(FolderId, Files);
         Rec.DeleteAll();
-
+        Inf.Get();
+        RootFolder := Inf."Google Drive Root Folder";
         // Agregar la carpeta ".." al inicio
         Rec.Init();
         Rec.ID := -99;
