@@ -31,12 +31,30 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
     actions
     {
+        modify(OpenInOneDrive)
+        {
+            Visible = false;
+        }
+        modify(ShareWithOneDrive)
+        {
+            Visible = false;
+        }
+        modify(EditInOneDrive)
+        {
+            Visible = false;
+        }
+        modify(DownloadInRepeater)
+        {
+            Visible = false;
+        }
+
+
         addafter(AttachmentsUpload)
         {
             action(UploadToGoogleDrive)
             {
                 ApplicationArea = All;
-                Caption = 'Cargar archivo desde Google Drive';
+                Caption = 'Cargar archivo desde el drive';
                 Image = FileContract;
                 trigger OnAction()
                 var
@@ -44,6 +62,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     DocAttachmentGrDriveMgmt: Codeunit "Doc. Attachment Mgmt. GDrive";
                     DocumentMgmt: Codeunit "Document Attachment Mgmt";
                     GoogleDriveManager: Codeunit "Google Drive Manager";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
                     RecRef: RecordRef;
                     IdTable: Integer;
                     IdTableFilter: Text;
@@ -52,15 +73,41 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     TargetFolderId: Text;
                     FilesSelected: Page "Google Drive List";
                     Id: Integer;
+                    CompanyInfo: Record "Company Information";
                 begin
+                    CompanyInfo.Get();
+
                     IdTable := Rec."Table ID";
                     if IdTable = 0 then
                         IdTableFilter := Rec.GetFilter("Table ID");
                     if IdTable = 0 then
                         Evaluate(IdTable, IdTableFilter);
                     No := Rec."No.";
-                    TargetFolderId := GoogleDriveManager.GetTargetFolderForDocument(IdTable, No, 0D);
-                    GoogleDriveManager.Carpetas(TargetFolderId, Files);
+
+                    // Obtener la carpeta objetivo según el proveedor configurado
+                    case CompanyInfo."Data Storage Provider" of
+                        CompanyInfo."Data Storage Provider"::"Google Drive":
+                            begin
+                                TargetFolderId := GoogleDriveManager.GetTargetFolderForDocument(IdTable, No, 0D);
+                                GoogleDriveManager.Carpetas(TargetFolderId, Files);
+                            end;
+                        CompanyInfo."Data Storage Provider"::OneDrive:
+                            begin
+                                // Para OneDrive, usar la carpeta raíz por defecto
+                                OneDriveManager.ListFolder('', Files, false);
+                            end;
+                        CompanyInfo."Data Storage Provider"::DropBox:
+                            begin
+                                // Para DropBox, usar la carpeta raíz por defecto
+                                DropBoxManager.ListFolder('', Files, false);
+                            end;
+                        CompanyInfo."Data Storage Provider"::Strapi:
+                            begin
+                                // Para Strapi, listar todos los archivos
+                                StrapiManager.ListFolder('', Files, false);
+                            end;
+                    end;
+
                     CurrPage.Update();
                     FilesSelected.SetRecords(TargetFolderId, Files, true);
                     If FilesSelected.RunModal() = Action::OK then begin
@@ -71,8 +118,32 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 Rec.Init();
                                 Rec.ID := 0;
                                 Rec.InitFieldsFromRecRef(RecRef);
-                                Rec."Store in Google Drive" := true;
-                                Rec."Google Drive ID" := Files."Google Drive ID";
+                                Rec."Storage Provider" := CompanyInfo."Data Storage Provider";
+
+                                // Asignar el ID según el proveedor
+                                case CompanyInfo."Data Storage Provider" of
+                                    CompanyInfo."Data Storage Provider"::"Google Drive":
+                                        begin
+                                            Rec."Store in Google Drive" := true;
+                                            Rec."Google Drive ID" := Files."Google Drive ID";
+                                        end;
+                                    CompanyInfo."Data Storage Provider"::OneDrive:
+                                        begin
+                                            Rec."Store in OneDrive" := true;
+                                            Rec."OneDrive ID" := Files."Google Drive ID"; // Reutilizamos el campo
+                                        end;
+                                    CompanyInfo."Data Storage Provider"::DropBox:
+                                        begin
+                                            Rec."Store in DropBox" := true;
+                                            Rec."DropBox ID" := Files."Google Drive ID"; // Reutilizamos el campo
+                                        end;
+                                    CompanyInfo."Data Storage Provider"::Strapi:
+                                        begin
+                                            Rec."Store in Strapi" := true;
+                                            Rec."Strapi ID" := Files."Google Drive ID"; // Reutilizamos el campo
+                                        end;
+                                end;
+
                                 Rec."File Name" := Files.Name;
                                 DocAttachmentGrDriveMgmt.SetDocumentAttachmentFileType(Rec, '');
                                 Rec.Insert(true);
@@ -153,6 +224,290 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     CurrPage.Update();
                 end;
             }
+        }
+
+        addafter(MoveToGoogleDrive)
+        {
+            action(DownloadFile)
+            {
+                ApplicationArea = All;
+                Caption = 'Descargar Archivo';
+                Image = Download;
+                ToolTip = 'Descarga el archivo desde el almacenamiento en la nube.';
+                trigger OnAction()
+                var
+                    Base64Txt: Text;
+                    GoogleDriveManager: Codeunit "Google Drive Manager";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
+                begin
+                    case Rec."Storage Provider" of
+                        Rec."Storage Provider"::"Google Drive":
+                            Base64Txt := GoogleDriveManager.DownloadFileB64(Rec.GetDocumentID(), Rec."File Name", true);
+                        Rec."Storage Provider"::OneDrive:
+                            Base64Txt := OneDriveManager.DownloadFileB64('', Base64Txt, Rec."File Name", true);
+                        Rec."Storage Provider"::DropBox:
+                            Base64Txt := DropBoxManager.DownloadFileB64('', Base64Txt, Rec."File Name", true);
+                        Rec."Storage Provider"::Strapi:
+                            Base64Txt := StrapiManager.DownloadFileB64('', Base64Txt, Rec."File Name", true);
+                    end;
+                end;
+            }
+
+            action(MoveFile)
+            {
+                ApplicationArea = All;
+                Caption = 'Mover';
+                Image = Change;
+                ToolTip = 'Mueve el archivo a otra carpeta.';
+                Visible = true;
+                trigger OnAction()
+                var
+                    GoogleDriveManager: Codeunit "Google Drive Manager";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
+                    GoogleDriveList: Page "Google Drive List";
+                    destino: Text;
+                    TempFiles: Record "Name/Value Buffer" temporary;
+                    GoogleDrive: Codeunit "Google Drive Manager";
+                    root: Boolean;
+                    CarpetaAnterior: List of [Text];
+                    Inf: Record "Company Information";
+                begin
+                    Inf.Get();
+                    case Rec."Storage Provider" of
+                        Rec."Storage Provider"::"Google Drive":
+                            begin
+                                GoogleDrive.ListFolder(Inf."Google Drive Root Folder ID", TempFiles, false);
+                                GoogleDriveList.SetRecords(Inf."Google Drive Root Folder ID", TempFiles, true);
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino);
+
+                                // Here we would need to implement a folder selection dialog using TempFiles
+                                // For now, we'll use a placeholder solution
+
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    GoogleDrive.Movefile(Rec."Google Drive ID", Destino, '');
+
+
+                            end;
+                        Rec."Storage Provider"::OneDrive:
+                            // OneDriveManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
+                            Message('Función de mover archivo no implementada aún.');
+                        Rec."Storage Provider"::DropBox:
+                            // DropBoxManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
+                            Message('Función de mover archivo no implementada aún.');
+                        Rec."Storage Provider"::Strapi:
+                            // StrapiManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
+                            Message('Función de mover archivo no implementada aún.');
+                    end;
+                end;
+            }
+
+            action(CopyFile)
+            {
+                ApplicationArea = All;
+                Caption = 'Copiar Archivo';
+                Image = Copy;
+                ToolTip = 'Copia el archivo a otra carpeta.';
+                Visible = true;
+                trigger OnAction()
+                var
+                    GoogleDriveManager: Codeunit "Google Drive Manager";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
+                    GoogleDriveList: Page "Google Drive List";
+                    destino: Text;
+                    TempFiles: Record "Name/Value Buffer" temporary;
+                    GoogleDrive: Codeunit "Google Drive Manager";
+                    root: Boolean;
+                    CarpetaAnterior: List of [Text];
+                    Inf: Record "Company Information";
+                // TODO: Implementar diálogo de selección de carpeta destino
+                begin
+                    case Rec."Storage Provider" of
+                        Rec."Storage Provider"::"Google Drive":
+                            begin
+                                GoogleDrive.ListFolder(Inf."Google Drive Root Folder ID", TempFiles, false);
+                                GoogleDriveList.SetRecords(Inf."Google Drive Root Folder ID", TempFiles, true);
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino);
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    GoogleDrive.Copyfile(Rec."Google Drive ID", Destino);
+                            end;
+                        Rec."Storage Provider"::OneDrive:
+                            // OneDriveManager.CopyFile(Rec.GetDocumentID(), destino);
+                            Message('Función de copiar archivo no implementada aún.');
+                        Rec."Storage Provider"::DropBox:
+                            // DropBoxManager.CopyFile(Rec.GetDocumentID(), destino);
+                            Message('Función de copiar archivo no implementada aún.');
+                        Rec."Storage Provider"::Strapi:
+                            // StrapiManager.CopyFile(Rec.GetDocumentID(), destino);
+                            Message('Función de copiar archivo no implementada aún.');
+                    end;
+                end;
+            }
+
+            action(CreateFolder)
+            {
+                ApplicationArea = All;
+                Caption = 'Crear Carpeta';
+                Image = ToggleBreakpoint;
+                ToolTip = 'Crea una carpeta en el almacenamiento en la nube.';
+                trigger OnAction()
+                var
+                    GoogleDriveManager: Codeunit "Google Drive Manager";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
+                    DialogPage: Page "Dialogo Google Drive";
+                    FolderName: Text;
+                begin
+                    DialogPage.SetTexto('Nombre Carpeta');
+                    if DialogPage.RunModal() = Action::OK then begin
+                        DialogPage.GetTexto(FolderName);
+                        if FolderName <> '' then begin
+                            case Rec."Storage Provider" of
+                                Rec."Storage Provider"::"Google Drive":
+                                    GoogleDriveManager.CreateFolder(FolderName, '', false);
+                                Rec."Storage Provider"::OneDrive:
+                                    OneDriveManager.CreateFolder(FolderName, '', false);
+                                Rec."Storage Provider"::DropBox:
+                                    DropBoxManager.CreateFolder(FolderName);
+                                Rec."Storage Provider"::Strapi:
+                                    StrapiManager.CreateFolder(FolderName);
+                            end;
+                            Message('Carpeta "%1" creada correctamente.', FolderName);
+                        end;
+                    end;
+                end;
+            }
+
+            action(DeleteFile)
+            {
+                ApplicationArea = All;
+                Caption = 'Borrar';
+                Image = Delete;
+                ToolTip = 'Elimina el archivo del almacenamiento en la nube.';
+                Visible = true;
+                trigger OnAction()
+                var
+                    GoogleDriveManager: Codeunit "Google Drive Manager";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
+                    ConfirmMsg: Label '¿Está seguro de que desea eliminar el archivo "%1"?';
+                begin
+                    if not Confirm(ConfirmMsg, false, Rec."File Name") then
+                        exit;
+
+                    case Rec."Storage Provider" of
+                        Rec."Storage Provider"::"Google Drive":
+                            If not GoogleDriveManager.DeleteFile(Rec.GetDocumentID()) then
+                                Message('Error al eliminar el archivo.');
+                        Rec."Storage Provider"::OneDrive:
+                            If not OneDriveManager.DeleteFile(Rec.GetDocumentID()) then
+                                Message('Error al eliminar el archivo.');
+                        Rec."Storage Provider"::DropBox:
+                            DropBoxManager.DeleteFile(Rec.GetDocumentID());
+                        Rec."Storage Provider"::Strapi:
+                            StrapiManager.DeleteFile(Rec.GetDocumentID());
+                    end;
+
+                    // Eliminar el registro local
+                    Rec.Delete();
+                    Message('Archivo eliminado correctamente.');
+                end;
+            }
+
+            // action(UploadFile)
+            // {
+            //     ApplicationArea = All;
+            //     Caption = 'Subir Archivo';
+            //     Image = Import;
+            //     ToolTip = 'Sube un archivo al almacenamiento en la nube.';
+            //     trigger OnAction()
+            //     var
+            //         GoogleDriveManager: Codeunit "Google Drive Manager";
+            //         OneDriveManager: Codeunit "OneDrive Manager";
+            //         DropBoxManager: Codeunit "DropBox Manager";
+            //         StrapiManager: Codeunit "Strapi Manager";
+            //         FileInStream: InStream;
+            //         FileName: Text;
+            //         FileId: Text;
+            //         TempBlob: Codeunit "Temp Blob";
+            //         DocumentStream: OutStream;
+            //         InStream: InStream;
+            //         FileMgt: Codeunit "File Management";
+            //         FileExtension: Text;
+            //         FolderMapping: Record "Google Drive Folder Mapping";
+            //         Folder: Text;
+            //         SubFolder: Text;
+            //     begin
+            //         if UploadIntoStream('Seleccionar archivo', '', 'Todos los archivos (*.*)|*.*', FileName, FileInStream) then begin
+            //             // Crear un nuevo registro de Document Attachment
+            //             Rec.Init();
+            //             Rec.InitFieldsFromRecRef(RecRef);
+            //             Rec.ID := 0;
+            //             Rec."File Name" := FileName;
+            //             FileExtension := FileMgt.GetExtension(FileName);
+            //             Rec."File Extension" := FileExtension;
+            //             Rec."Store in Google Drive" := true;
+
+            //             // Subir archivo según el proveedor configurado
+            //             case Rec."Storage Provider" of
+            //                 Rec."Storage Provider"::"Google Drive":
+            //                     begin
+
+            //                     FolderMapping.SetRange("Table ID", Rec."Table ID");
+            //                     if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
+            //                     SubFolder := FolderMapping.CreateSubfolderPath(Rec."Table ID",Rec."No.", 0D);
+            //                     IF SubFolder <> '' then
+            //                         Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
+            //                         TempBlob.CreateOutStream(DocumentStream);
+            //                         FileInStream.ReadText(FileName);
+            //                         TempBlob.CreateInStream(InStream);
+            //                         FileId := GoogleDriveManager.UploadFileB64('', InStream, FileName, FileExtension);
+            //                         Rec."Google Drive ID" := FileId;
+            //                     end;
+            //                 Rec."Storage Provider"::OneDrive:
+            //                     begin
+            //                         TempBlob.CreateOutStream(DocumentStream);
+            //                         FileInStream.ReadText(FileName);
+            //                         TempBlob.CreateInStream(InStream);
+            //                         FileId := OneDriveManager.UploadFileB64('', InStream, FileName);
+            //                         Rec."OneDrive ID" := FileId;
+            //                     end;
+            //                 Rec."Storage Provider"::DropBox:
+            //                     begin
+            //                         TempBlob.CreateOutStream(DocumentStream);
+            //                         FileInStream.ReadText(FileName);
+            //                         TempBlob.CreateInStream(InStream);
+            //                         FileId := DropBoxManager.UploadFileB64('', InStream, FileName);
+            //                         Rec."DropBox ID" := FileId;
+            //                     end;
+            //                 Rec."Storage Provider"::Strapi:
+            //                     begin
+            //                         TempBlob.CreateOutStream(DocumentStream);
+            //                         FileInStream.ReadText(FileName);
+            //                         TempBlob.CreateInStream(InStream);
+            //                         FileId := StrapiManager.UploadFileB64('', InStream, FileName);
+            //                         Rec."Strapi ID" := FileId;
+            //                     end;
+            //             end;
+
+            //             Rec.Insert();
+            //             Message('Archivo "%1" subido correctamente.', FileName);
+            //         end;
+            //     end;
+            // }
         }
     }
 

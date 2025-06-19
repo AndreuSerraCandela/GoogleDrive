@@ -5,6 +5,10 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
 
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+        CompanyInfo: Record "Company Information";
 
     [EventSubscriber(ObjectType::Table, Database::"Document Attachment", OnInsertAttachmentOnBeforeImportStream, '', false, false)]
     local procedure OnInsertAttachmentOnBeforeImportStream(var DocumentAttachment: Record "Document Attachment"; DocInStream: InStream; FileName: Text; var IsHandled: Boolean)
@@ -13,13 +17,44 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         Folder: Text;
         SubFolder: Text;
     begin
-        DocumentAttachment."Store in Google Drive" := true;
-        FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
-        if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
-        SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, DocumentAttachment."No.", 0D);
-        IF SubFolder <> '' then
-            Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
-        DocumentAttachment."Google Drive ID" := GoogleDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+        CompanyInfo.Get();
+        case CompanyInfo."Data Storage Provider" of
+            CompanyInfo."Data Storage Provider"::"Google Drive":
+                begin
+                    DocumentAttachment."Store in Google Drive" := true;
+                    FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                    if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, DocumentAttachment."No.", 0D);
+                    IF SubFolder <> '' then
+                        Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
+                    DocumentAttachment."Google Drive ID" := GoogleDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                end;
+            CompanyInfo."Data Storage Provider"::OneDrive:
+                begin
+                    DocumentAttachment."Store in OneDrive" := true;
+                    FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                    if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, DocumentAttachment."No.", 0D);
+                    IF SubFolder <> '' then
+                        Folder := OneDriveManager.CreateFolderStructure(Folder, SubFolder);
+                    DocumentAttachment."OneDrive ID" := OneDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                end;
+            CompanyInfo."Data Storage Provider"::DropBox:
+                begin
+                    DocumentAttachment."Store in DropBox" := true;
+                    FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                    if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, DocumentAttachment."No.", 0D);
+                    IF SubFolder <> '' then
+                        Folder := DropBoxManager.CreateFolderStructure(Folder, SubFolder);
+                    DocumentAttachment."DropBox ID" := DropBoxManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name");
+                end;
+            CompanyInfo."Data Storage Provider"::Strapi:
+                begin
+                    DocumentAttachment."Store in Strapi" := true;
+                    DocumentAttachment."Strapi ID" := StrapiManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name");
+                end;
+        end;
 
     end;
 

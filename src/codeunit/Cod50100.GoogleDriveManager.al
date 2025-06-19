@@ -45,7 +45,7 @@ codeunit 95100 "Google Drive Manager"
         ClientId := CompanyInfo."Google Client ID";
         SecretKey := CompanyInfo."Google Client Secret";
         // Use OOB (out-of-band) redirect URI for desktop applications
-        RedirectURL := 'urn:ietf:wg:oauth:2.0:oob';
+        RedirectURL := 'https://businesscentral.dynamics.com/OAuthLanding.htm';
     end;
 
     procedure Authenticate(): Boolean
@@ -756,6 +756,42 @@ codeunit 95100 "Google Drive Manager"
         exit(Extension);
     end;
 
+    local procedure RecuperarCarpeta(FileId: Text; OldParent: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Json: Text;
+        StatusInfo: JsonObject;
+        Respuesta: Text;
+        JTokO: JsonToken;
+        JTok: JsonToken;
+        JEntries: JsonArray;
+        JEntry: JsonObject;
+        JEntryToken: JsonToken;
+        JEntryTokens: JsonToken;
+        Inf: Record "Company Information";
+    begin
+        Inf.Get;
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+        Ticket := AccessToken;
+        Url := Inf."Url Api GoogleDrive" + list_folder + FileId + '?fields=parents';
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+        if StatusInfo.Get('parents', JTok) then begin
+            JEntries := JTok.AsArray();
+            foreach JEntryTokens in JEntries do begin
+                JEntry := JEntryTokens.AsObject();
+                if JEntry.Get('id', JEntryToken) then begin
+                    OldParent := JEntryToken.AsValue().AsText();
+                end;
+            end;
+        end;
+        exit(OldParent);
+    end;
+
     procedure Token(): Text
     var
         CompanyInfo: Record "Company Information";
@@ -1163,7 +1199,9 @@ codeunit 95100 "Google Drive Manager"
     begin
         Ticket := GoogleDrive.Token();
         Inf.Get;
-
+        if OldParent = '' then begin
+            RecuperarCarpeta(FileId, OldParent);
+        end;
         // Construir la URL con los parámetros addParents y removeParents
         Url := Inf."Url Api GoogleDrive" + move_folder + FileId +
                '?addParents=' + NewParentId +
@@ -1412,6 +1450,45 @@ codeunit 95100 "Google Drive Manager"
 
         ResponseMessage.Content().ReadAs(ResponseText);
         exit(ResponseText);
+    end;
+
+    procedure RestApiTokenResponse(url: Text; Token: Text; RequestType: Option Get,patch,put,post,delete; payload: Text): HttpResponseMessage
+    var
+        Client: HttpClient;
+        RequestHeaders: HttpHeaders;
+        RequestContent: HttpContent;
+        ResponseMessage: HttpResponseMessage;
+        RequestMessage: HttpRequestMessage;
+        ResponseText: Text;
+        contentHeaders: HttpHeaders;
+    begin
+        RequestHeaders := Client.DefaultRequestHeaders();
+        RequestHeaders.Add('Authorization', StrSubstNo('Bearer %1', token));
+
+        case RequestType of
+            RequestType::Get:
+                Client.Get(URL, ResponseMessage);
+            RequestType::post:
+                begin
+                    RequestContent.WriteFrom(payload);
+                    RequestContent.GetHeaders(contentHeaders);
+                    contentHeaders.Clear();
+                    contentHeaders.Add('Content-Type', 'application/json');
+                    Client.Post(URL, RequestContent, ResponseMessage);
+                end;
+            RequestType::delete:
+                Client.Delete(URL, ResponseMessage);
+            RequestType::patch:
+                begin
+                    RequestContent.WriteFrom(payload);
+                    RequestContent.GetHeaders(contentHeaders);
+                    contentHeaders.Clear();
+                    contentHeaders.Add('Content-Type', 'application/json');
+                    Client.Patch(URL, RequestContent, ResponseMessage);
+                end;
+        end;
+
+        exit(ResponseMessage);
     end;
 
     procedure RestApiToken(url: Text; Token: Text; RequestType: Option Get,patch,put,post,delete; payload: InStream): Text
@@ -1829,7 +1906,7 @@ codeunit 95100 "Google Drive Manager"
         exit('');
     end;
 
-    internal procedure DeleteFile(GoogleDriveID: Text[250])
+    internal procedure DeleteFile(GoogleDriveID: Text[250]): Boolean
     var
         Client: HttpClient;
         RequestContent: HttpContent;
@@ -1849,7 +1926,11 @@ codeunit 95100 "Google Drive Manager"
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + get_metadata + GoogleDriveID;
 
-        Respuesta := RestApiToken(Url, AccessToken, RequestType::delete, '');
+        ResponseMessage := RestApiTokenResponse(Url, AccessToken, RequestType::delete, '');
+        if ResponseMessage.IsSuccessStatusCode() then
+            exit(true)
+        else
+            exit(false);
     end;
 
     procedure RestApi(url: Text; RequestType: Option Get,patch,put,post,delete; payload: Text): Text

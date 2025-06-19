@@ -13,8 +13,9 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
             }
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
-                Caption = 'Archivos de Google Drive';
+                Caption = 'Archivos del Drive';
                 ApplicationArea = All;
+                Visible = IsExtendedFunctionalityEnabled;
             }
         }
     }
@@ -45,6 +46,15 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
     trigger OnOpenPage()
     begin
         CuentaBancaria := '';
+        CheckExtendedFunctionality();
+    end;
+
+    local procedure CheckExtendedFunctionality()
+    var
+        CompanyInfo: Record "Company Information";
+    begin
+        CompanyInfo.Get();
+        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
     end;
 
     var
@@ -54,4 +64,5 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
         Id: Text;
         AutoCreateSubFolder: Boolean;
         SubFolder: Text;
+        IsExtendedFunctionalityEnabled: Boolean;
 }

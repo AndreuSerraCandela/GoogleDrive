@@ -4,9 +4,26 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
     {
         addafter(General)
         {
+            group("Proveedor de Almacenamiento")
+            {
+                Caption = 'Proveedor de Almacenamiento';
+
+                field("Data Storage Provider"; Rec."Data Storage Provider")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Selecciona el proveedor de almacenamiento de datos a utilizar.';
+                }
+                field("Funcionalidad extendida"; Rec."Funcionalidad extendida")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica si la funcionalidad extendida está habilitada.';
+                }
+            }
+
             group("Google Drive Configuration")
             {
                 Caption = 'Configuración Google Drive';
+                Visible = IsGoogleDrive;
 
                 field("Google Client ID"; Rec."Google Client ID")
                 {
@@ -61,6 +78,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
             group("Google Drive Tokens")
             {
                 Caption = 'Tokens Google Drive';
+                Visible = IsGoogleDrive;
 
                 field("Token GoogleDrive"; Rec."Token GoogleDrive")
                 {
@@ -91,6 +109,173 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     Editable = false;
                 }
             }
+
+            group("OneDrive Configuration")
+            {
+                Caption = 'Configuración OneDrive';
+                Visible = IsOneDrive;
+
+                field("OneDrive Client ID"; Rec."OneDrive Client ID")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica el Client ID de la aplicación OneDrive OAuth.';
+                }
+
+                field("OneDrive Client Secret"; Rec."OneDrive Client Secret")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica el Client Secret de la aplicación OneDrive OAuth.';
+                    ExtendedDatatype = Masked;
+                }
+
+                field("OneDrive Tenant ID"; Rec."OneDrive Tenant ID")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica el Tenant ID de Microsoft Azure.';
+                }
+                field("Url Api OneDrive"; Rec."Url Api OneDrive")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica la URL base de la API de OneDrive.';
+                }
+
+                field("OneDrive Root Folder"; Rec."OneDrive Root Folder")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica la carpeta raíz de OneDrive.';
+                }
+                field("Code Ondrive"; Rec."Code Ondrive")
+                {
+                    ApplicationArea = All;
+                }
+            }
+
+            group("OneDrive Tokens")
+            {
+                Caption = 'Tokens OneDrive';
+                Visible = IsOneDrive;
+
+                field("OneDrive Access Token"; Rec."OneDrive Access Token")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Token de acceso actual de OneDrive.';
+                    ExtendedDatatype = Masked;
+                    Editable = TokenFieldsEditable;
+                }
+
+                field("OneDrive Refresh Token"; Rec."OneDrive Refresh Token")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Token de actualización de OneDrive.';
+                    ExtendedDatatype = Masked;
+                    Editable = TokenFieldsEditable;
+                }
+
+                field("OneDrive Token Expiration"; Rec."OneDrive Token Expiration")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Fecha y hora de expiración del token de acceso.';
+                    Editable = false;
+                }
+            }
+
+            group("DropBox Configuration")
+            {
+                Caption = 'Configuración DropBox';
+                Visible = IsDropBox;
+
+                field("DropBox App Key"; Rec."DropBox App Key")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica la App Key de la aplicación DropBox.';
+                }
+
+                field("DropBox App Secret"; Rec."DropBox App Secret")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica la App Secret de la aplicación DropBox.';
+                    ExtendedDatatype = Masked;
+                }
+
+                field("Url Api DropBox"; Rec."Url Api DropBox")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica la URL base de la API de DropBox.';
+                }
+
+                field("DropBox Root Folder"; Rec."DropBox Root Folder")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica la carpeta raíz de DropBox.';
+                }
+            }
+
+            group("DropBox Tokens")
+            {
+                Caption = 'Tokens DropBox';
+                Visible = IsDropBox;
+
+                field("DropBox Access Token"; Rec."DropBox Access Token")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Token de acceso actual de DropBox.';
+                    ExtendedDatatype = Masked;
+                    Editable = TokenFieldsEditable;
+                }
+
+                field("DropBox Refresh Token"; Rec."DropBox Refresh Token")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Token de actualización de DropBox.';
+                    ExtendedDatatype = Masked;
+                    Editable = TokenFieldsEditable;
+                }
+
+                field("DropBox Token Expiration"; Rec."DropBox Token Expiration")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Fecha y hora de expiración del token de acceso.';
+                    Editable = false;
+                }
+            }
+
+            group("Strapi Configuration")
+            {
+                Caption = 'Configuración Strapi';
+                Visible = IsStrapi;
+
+                field("Strapi Base URL"; Rec."Strapi Base URL")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica la URL base de la API de Strapi.';
+                }
+
+                field("Strapi API Token"; Rec."Strapi API Token")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica el token de API de Strapi.';
+                    ExtendedDatatype = Masked;
+                }
+
+                field("Strapi Username"; Rec."Strapi Username")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica el nombre de usuario de Strapi.';
+                }
+
+                field("Strapi Password"; Rec."Strapi Password")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica la contraseña de Strapi.';
+                    ExtendedDatatype = Masked;
+                }
+
+                field("Strapi Collection Name"; Rec."Strapi Collection Name")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Especifica el nombre de la colección en Strapi.';
+                }
+            }
         }
     }
 
@@ -101,6 +286,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
             group("Google Drive")
             {
                 Caption = 'Google Drive';
+                Visible = IsGoogleDrive;
 
                 action("Show Manual")
                 {
@@ -318,15 +504,247 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     end;
                 }
             }
+
+            group("OneDrive")
+            {
+                Caption = 'OneDrive';
+                Visible = IsOneDrive;
+
+                action("OneDrive Test Connection")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Probar Conexión';
+                    ToolTip = 'Prueba la conexión con OneDrive usando la configuración actual.';
+                    Image = TestReport;
+
+                    trigger OnAction()
+                    var
+                        OneDriveManager: Codeunit "OneDrive Manager";
+                    begin
+                        OneDriveManager.Initialize();
+                        if OneDriveManager.Authenticate() then
+                            Message('✅ Conexión exitosa con OneDrive.')
+                        else
+                            Message('❌ Error en la conexión. Verifique la configuración.');
+                    end;
+                }
+
+                action("OneDrive Start OAuth")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Iniciar OAuth';
+                    ToolTip = 'Inicia el proceso de autenticación OAuth con OneDrive.';
+                    Image = Web;
+
+                    trigger OnAction()
+                    var
+                        OneDriveManager: Codeunit "OneDrive Manager";
+                    begin
+                        OneDriveManager.Initialize();
+                        OneDriveManager.StartOAuthFlow();
+                    end;
+                }
+
+                action("Actualizar OneDrive Token")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Actualizar Token';
+                    ToolTip = 'Actualiza el token de acceso usando el refresh token.';
+                    Image = Refresh;
+
+                    trigger OnAction()
+                    var
+                        OneDriveManager: Codeunit "OneDrive Manager";
+                    begin
+                        OneDriveManager.Initialize();
+                        if Rec."OneDrive Access Token" = '' Then begin
+                            OneDriveManager.ObtenerToken(Rec."Code Ondrive");
+                            Commit();
+                        end;
+                        OneDriveManager.RefreshAccessToken();
+                    end;
+                }
+
+                action("OneDrive Validate Configuration")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Validar Configuración';
+                    ToolTip = 'Valida que todos los campos de configuración estén completos.';
+                    Image = ValidateEmailLoggingSetup;
+
+                    trigger OnAction()
+                    var
+                        OneDriveManager: Codeunit "OneDrive Manager";
+                    begin
+                        OneDriveManager.Initialize();
+                        if OneDriveManager.ValidateConfiguration() then
+                            Message('✅ Configuración válida.')
+                        else
+                            Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
+                    end;
+                }
+            }
+
+            group("DropBox")
+            {
+                Caption = 'DropBox';
+                Visible = IsDropBox;
+
+                action("DropBox Test Connection")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Probar Conexión';
+                    ToolTip = 'Prueba la conexión con DropBox usando la configuración actual.';
+                    Image = TestReport;
+
+                    trigger OnAction()
+                    var
+                        DropBoxManager: Codeunit "DropBox Manager";
+                    begin
+                        DropBoxManager.Initialize();
+                        if DropBoxManager.Authenticate() then
+                            Message('✅ Conexión exitosa con DropBox.')
+                        else
+                            Message('❌ Error en la conexión. Verifique la configuración.');
+                    end;
+                }
+
+                action("DropBox Start OAuth")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Iniciar OAuth';
+                    ToolTip = 'Inicia el proceso de autenticación OAuth con DropBox.';
+                    Image = Web;
+
+                    trigger OnAction()
+                    var
+                        DropBoxManager: Codeunit "DropBox Manager";
+                    begin
+                        DropBoxManager.Initialize();
+                        DropBoxManager.StartOAuthFlow();
+                    end;
+                }
+
+                action("Actualizar DropBox Token")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Actualizar Token';
+                    ToolTip = 'Actualiza el token de acceso usando el refresh token.';
+                    Image = Refresh;
+
+                    trigger OnAction()
+                    var
+                        DropBoxManager: Codeunit "DropBox Manager";
+                    begin
+                        DropBoxManager.Initialize();
+                        DropBoxManager.RefreshAccessToken();
+                    end;
+                }
+
+                action("DropBox Validate Configuration")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Validar Configuración';
+                    ToolTip = 'Valida que todos los campos de configuración estén completos.';
+                    Image = ValidateEmailLoggingSetup;
+
+                    trigger OnAction()
+                    var
+                        DropBoxManager: Codeunit "DropBox Manager";
+                    begin
+                        DropBoxManager.Initialize();
+                        if DropBoxManager.ValidateConfiguration() then
+                            Message('✅ Configuración válida.')
+                        else
+                            Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
+                    end;
+                }
+            }
+
+            group("Strapi")
+            {
+                Caption = 'Strapi';
+                Visible = IsStrapi;
+
+                action("Strapi Test Connection")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Probar Conexión';
+                    ToolTip = 'Prueba la conexión con Strapi usando la configuración actual.';
+                    Image = TestReport;
+
+                    trigger OnAction()
+                    var
+                        StrapiManager: Codeunit "Strapi Manager";
+                    begin
+                        StrapiManager.Initialize();
+                        if StrapiManager.Authenticate() then
+                            Message('✅ Conexión exitosa con Strapi.')
+                        else
+                            Message('❌ Error en la conexión. Verifique la configuración.');
+                    end;
+                }
+
+                action("Strapi Validate Configuration")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Validar Configuración';
+                    ToolTip = 'Valida que todos los campos de configuración estén completos.';
+                    Image = ValidateEmailLoggingSetup;
+
+                    trigger OnAction()
+                    var
+                        StrapiManager: Codeunit "Strapi Manager";
+                    begin
+                        StrapiManager.Initialize();
+                        if StrapiManager.ValidateConfiguration() then
+                            Message('✅ Configuración válida.')
+                        else
+                            Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
+                    end;
+                }
+
+                action("Strapi Test API")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Probar API';
+                    ToolTip = 'Prueba la API de Strapi con la configuración actual.';
+                    Image = TestReport;
+
+                    trigger OnAction()
+                    var
+                        StrapiManager: Codeunit "Strapi Manager";
+                    begin
+                        StrapiManager.Initialize();
+                        StrapiManager.TestAPI();
+                    end;
+                }
+            }
         }
     }
 
     var
         TokenFieldsEditable: Boolean;
+        IsGoogleDrive: Boolean;
+        IsOneDrive: Boolean;
+        IsDropBox: Boolean;
+        IsStrapi: Boolean;
 
     trigger OnOpenPage()
     begin
         TokenFieldsEditable := false;
+        IsGoogleDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::"Google Drive";
+        IsOneDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::OneDrive;
+        IsDropBox := Rec."Data Storage Provider" = Rec."Data Storage Provider"::DropBox;
+        IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        IsGoogleDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::"Google Drive";
+        IsOneDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::OneDrive;
+        IsDropBox := Rec."Data Storage Provider" = Rec."Data Storage Provider"::DropBox;
+        IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
     end;
 
     local procedure SetDefaultGoogleDriveSettings()

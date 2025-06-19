@@ -2,7 +2,7 @@ pageextension 95102 VendorExt extends "Vendor Card"
 {
     layout
     {
-        addlast(factboxes)
+        addafter("Attached Documents List")
         {
             part(Visor; "PDF Viewer Part Google Drive")
             {
@@ -15,8 +15,9 @@ pageextension 95102 VendorExt extends "Vendor Card"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos de Google Drive';
+                Caption = 'Archivos del Drive';
                 ApplicationArea = All;
+                Visible = IsExtendedFunctionalityEnabled;
 
                 //SubPageLink = "Vendor No." = field("No.");
             }
@@ -51,6 +52,7 @@ pageextension 95102 VendorExt extends "Vendor Card"
     trigger OnOpenPage()
     begin
         Proveedor := '';
+        CheckExtendedFunctionality();
     end;
 
     var
@@ -60,7 +62,16 @@ pageextension 95102 VendorExt extends "Vendor Card"
         Id: Text;
         AutoCreateSubFolder: Boolean;
         SubFolder: Text;
+        IsExtendedFunctionalityEnabled: Boolean;
 
-
+    local procedure CheckExtendedFunctionality()
+    var
+        CompanyInfo: Record "Company Information";
+    begin
+        CompanyInfo.Get();
+        // Verificar si se ha seleccionado algún proveedor de almacenamiento
+        // Si el campo no está vacío, significa que se ha configurado un proveedor
+        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
+    end;
 }
 

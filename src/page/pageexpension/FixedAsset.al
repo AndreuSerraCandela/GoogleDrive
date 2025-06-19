@@ -2,7 +2,7 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
 {
     layout
     {
-        addlast(factboxes)
+        addafter("Attached Documents List")
         {
             part(Visor; "PDF Viewer Part Google Drive")
             {
@@ -13,8 +13,9 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
             }
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
-                Caption = 'Archivos de Google Drive';
+                Caption = 'Archivos del Drive';
                 ApplicationArea = All;
+                Visible = IsExtendedFunctionalityEnabled;
             }
         }
     }
@@ -43,6 +44,15 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
     trigger OnOpenPage()
     begin
         ActivoFijo := '';
+        CheckExtendedFunctionality();
+    end;
+
+    local procedure CheckExtendedFunctionality()
+    var
+        CompanyInfo: Record "Company Information";
+    begin
+        CompanyInfo.Get();
+        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
     end;
 
     var
@@ -52,4 +62,5 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
         Id: Text;
         AutoCreateSubFolder: Boolean;
         SubFolder: Text;
+        IsExtendedFunctionalityEnabled: Boolean;
 }

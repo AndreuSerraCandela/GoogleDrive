@@ -1,6 +1,6 @@
 table 95100 "Google Drive Folder Mapping"
 {
-    Caption = 'Google Drive Folder Mapping';
+    Caption = 'Folder Mapping';
     DataClassification = CustomerContent;
 
     fields
@@ -27,16 +27,16 @@ table 95100 "Google Drive Folder Mapping"
 
         field(3; "Default Folder ID"; Text[250])
         {
-            Caption = 'Default Google Drive Folder ID';
+            Caption = 'Default Folder ID';
             DataClassification = CustomerContent;
-            ToolTip = 'Especifica el ID de la carpeta de Google Drive donde se almacenarán los archivos de esta tabla por defecto.';
+            ToolTip = 'Especifica el ID de la carpeta del Drive donde se almacenarán los archivos de esta tabla por defecto.';
         }
 
         field(4; "Default Folder Name"; Text[250])
         {
             Caption = 'Default Folder Name';
             DataClassification = CustomerContent;
-            ToolTip = 'Especifica el nombre de la carpeta de Google Drive (solo para referencia).';
+            ToolTip = 'Especifica el nombre de la carpeta del Drive (solo para referencia).';
         }
 
         field(5; "Auto Create Subfolders"; Boolean)
