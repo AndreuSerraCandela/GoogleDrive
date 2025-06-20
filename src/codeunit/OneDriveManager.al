@@ -22,11 +22,16 @@ codeunit 95102 "OneDrive Manager"
 
     procedure Authenticate(): Boolean
     begin
+        CompanyInfo.Get();
+        CompanyInfo.CalcFields("OneDrive Access Token");
         // Verificar si el token está válido
-        if CompanyInfo."OneDrive Token Expiration" < CurrentDateTime then
-            RefreshAccessToken();
+        if not CompanyInfo."OneDrive Access Token".HasValue then
+            StartOAuthFlow()
+        else
+            if CompanyInfo."OneDrive Token Expiration" < CurrentDateTime then
+                RefreshAccessToken();
 
-        exit(CompanyInfo."OneDrive Access Token" <> '');
+        exit(CompanyInfo."OneDrive Access Token".HasValue);
     end;
 
     procedure StartOAuthFlow()
@@ -40,7 +45,6 @@ codeunit 95102 "OneDrive Manager"
         OAuthURL := StrSubstNo(auth_endpoint, CompanyInfo."OneDrive Tenant ID") +
                    '?client_id=' + CompanyInfo."OneDrive Client ID" +
                    '&response_type=code' +
-                   '&redirect_uri=' + RedirectURI +
                    '&scope=Files.ReadWrite.All%20offline_access' +
                    '&response_mode=query';
 
@@ -50,7 +54,11 @@ codeunit 95102 "OneDrive Manager"
 
     procedure RefreshAccessToken()
     begin
-        if CompanyInfo."OneDrive Refresh Token" = '' then
+        CompanyInfo.CalcFields("OneDrive Access Token", "OneDrive Refresh Token");
+        if not CompanyInfo."OneDrive Access Token".HasValue Then
+            ObtenerToken(CompanyInfo."Code Ondrive");
+
+        if not CompanyInfo."OneDrive Refresh Token".HasValue then
             Error('No hay refresh token configurado para OneDrive.');
 
         RefreshToken();
@@ -64,7 +72,8 @@ codeunit 95102 "OneDrive Manager"
             exit(false);
         if CompanyInfo."OneDrive Tenant ID" = '' then
             exit(false);
-        if CompanyInfo."OneDrive Access Token" = '' then
+        CompanyInfo.CalcFields("OneDrive Access Token");
+        if not CompanyInfo."OneDrive Access Token".HasValue then
             exit(false);
 
         exit(true);
@@ -83,7 +92,7 @@ codeunit 95102 "OneDrive Manager"
         if DocumentID = '' then
             exit('');
 
-        Ticket := Token();
+        Ticket := Format(Token());
         Url := graph_endpoint + download_endpoint;
         Url := StrSubstNo(Url, DocumentID);
 
@@ -95,90 +104,151 @@ codeunit 95102 "OneDrive Manager"
     end;
 
     procedure Token(): Text
+    var
+        AccessToken: Text;
+        InStr: InStream;
     begin
+        CompanyInfo.Get();
         if CompanyInfo."OneDrive Token Expiration" < CurrentDateTime then
-            RefreshToken();
+            RefreshAccessToken();
 
-        exit(CompanyInfo."OneDrive Access Token");
+        CompanyInfo.CalcFields("OneDrive Access Token");
+        if CompanyInfo."OneDrive Access Token".HasValue then begin
+            CompanyInfo."OneDrive Access Token".CreateInStream(InStr);
+            InStr.ReadText(AccessToken);
+        end;
+        exit(AccessToken);
     end;
 
     procedure ObtenerToken(CodeOneDrive: Text): Text
     var
-        RequestType: Option Get,patch,put,post,delete;
         Url: Text;
-        Json: Text;
-        Body: JsonObject;
+        BodyText: Text;
         StatusInfo: JsonObject;
         JnodeEntryToken: JsonToken;
         Id: Text;
         RedirectURI: Text;
+        HttpClient: HttpClient;
+        HttpContent: HttpContent;
+        HttpRequest: HttpRequestMessage;
+        HttpResponse: HttpResponseMessage;
+        Headers: HttpHeaders;
+        JsonText: Text;
+        AccessToken: Text;
+        RefreshToken: Text;
+        OutStr: OutStream;
     begin
-        RedirectURI := 'https://businesscentral.dynamics.com/OAuthLanding.htm';
+        CompanyInfo.Get();
+        RedirectURI := 'https://oauth.pstmn.io/v1/callback';
         Url := StrSubstNo(token_endpoint, CompanyInfo."OneDrive Tenant ID");
 
-        Clear(Body);
-        Body.Add('client_id', CompanyInfo."OneDrive Client ID");
-        Body.Add('client_secret', CompanyInfo."OneDrive Client Secret");
-        Body.Add('code', CodeOneDrive);
-        Body.Add('grant_type', 'authorization_code');
-        Body.Add('redirect_uri', RedirectURI);
-        Body.WriteTo(Json);
+        BodyText := 'grant_type=authorization_code' +
+                    '&code=' + UrlEncode(CodeOneDrive) +
+                    '&redirect_uri=' + UrlEncode(RedirectURI) +
+                    '&client_id=' + UrlEncode(CompanyInfo."OneDrive Client ID") +
+                    '&client_secret=' + UrlEncode(CompanyInfo."OneDrive Client Secret") +
+                    '&scope=' + UrlEncode('Files.ReadWrite.All offline_access');
 
-        Json := RestApi(Url, RequestType::post, Json, '', '');
+        HttpContent.WriteFrom(BodyText);
+        HttpContent.GetHeaders(Headers);
+        Headers.Clear();
+        Headers.Add('Content-Type', 'application/x-www-form-urlencoded');
 
-        StatusInfo.ReadFrom(Json);
+        HttpRequest.SetRequestUri(Url);
+        HttpRequest.Method('POST');
+        HttpRequest.Content := HttpContent;
+
+        if not HttpClient.Send(HttpRequest, HttpResponse) then
+            Error('The request to the token endpoint failed.');
+
+        HttpResponse.Content().ReadAs(JsonText);
+
+        if not HttpResponse.IsSuccessStatusCode() then
+            Error('The token endpoint returned an error. Status: %1, Body: %2', HttpResponse.HttpStatusCode(), JsonText);
+
+        StatusInfo.ReadFrom(JsonText);
 
         if StatusInfo.Get('refresh_token', JnodeEntryToken) then begin
-            Id := JnodeEntryToken.AsValue().AsText();
-            CompanyInfo."OneDrive Refresh Token" := Id;
-            CompanyInfo.Modify();
+            RefreshToken := JnodeEntryToken.AsValue().AsText();
+            CompanyInfo."OneDrive Refresh Token".CreateOutStream(OutStr);
+            OutStr.WriteText(RefreshToken);
         end;
 
         if StatusInfo.Get('access_token', JnodeEntryToken) then begin
-            Id := JnodeEntryToken.AsValue().AsText();
-            CompanyInfo."OneDrive Access Token" := Id;
+            AccessToken := JnodeEntryToken.AsValue().AsText();
+            CompanyInfo."OneDrive Access Token".CreateOutStream(OutStr);
+            OutStr.WriteText(AccessToken);
+            Id := AccessToken;
 
             if StatusInfo.Get('expires_in', JnodeEntryToken) then begin
                 CompanyInfo."OneDrive Token Expiration" := CurrentDateTime + (JnodeEntryToken.AsValue().AsInteger() * 1000);
             end else begin
                 CompanyInfo."OneDrive Token Expiration" := CurrentDateTime + 3600000; // 1 hora por defecto
             end;
-
-            CompanyInfo.Modify();
         end;
 
+        CompanyInfo.Modify(true);
         exit(Id);
     end;
 
     procedure RefreshToken(): Text
     var
-        RequestType: Option Get,patch,put,post,delete;
         Url: Text;
-        Json: Text;
-        Body: JsonObject;
+        BodyText: Text;
         StatusInfo: JsonObject;
         JnodeEntryToken: JsonToken;
         Id: Text;
-        RedirectURI: Text;
+        HttpClient: HttpClient;
+        HttpContent: HttpContent;
+        HttpRequest: HttpRequestMessage;
+        HttpResponse: HttpResponseMessage;
+        Headers: HttpHeaders;
+        JsonText: Text;
+        AccessToken: Text;
+        RefreshToken: Text;
+        OldRefreshToken: Text;
+        OutStr: OutStream;
+        InStr: InStream;
     begin
-        RedirectURI := '';
+        CompanyInfo.Get();
         Url := StrSubstNo(token_endpoint, CompanyInfo."OneDrive Tenant ID");
 
-        Clear(Body);
-        Body.Add('client_id', CompanyInfo."OneDrive Client ID");
-        Body.Add('client_secret', CompanyInfo."OneDrive Client Secret");
-        Body.Add('refresh_token', CompanyInfo."OneDrive Refresh Token");
-        Body.Add('grant_type', 'refresh_token');
-        Body.Add('redirect_uri', RedirectURI);
-        Body.WriteTo(Json);
+        CompanyInfo.CalcFields("OneDrive Refresh Token");
+        if CompanyInfo."OneDrive Refresh Token".HasValue then begin
+            CompanyInfo."OneDrive Refresh Token".CreateInStream(InStr);
+            InStr.ReadText(OldRefreshToken);
+        end;
 
-        Json := RestApi(Url, RequestType::post, Json, '', '');
+        BodyText := 'grant_type=refresh_token' +
+                    '&refresh_token=' + UrlEncode(OldRefreshToken) +
+                    '&client_id=' + UrlEncode(CompanyInfo."OneDrive Client ID") +
+                    '&client_secret=' + UrlEncode(CompanyInfo."OneDrive Client Secret") +
+                    '&scope=' + UrlEncode('Files.ReadWrite.All offline_access');
 
-        StatusInfo.ReadFrom(Json);
+        HttpContent.WriteFrom(BodyText);
+        HttpContent.GetHeaders(Headers);
+        Headers.Clear();
+        Headers.Add('Content-Type', 'application/x-www-form-urlencoded');
+
+        HttpRequest.SetRequestUri(Url);
+        HttpRequest.Method('POST');
+        HttpRequest.Content := HttpContent;
+
+        if not HttpClient.Send(HttpRequest, HttpResponse) then
+            Error('The request to the token endpoint failed.');
+
+        HttpResponse.Content().ReadAs(JsonText);
+
+        if not HttpResponse.IsSuccessStatusCode() then
+            Error('The token endpoint returned an error. Status: %1, Body: %2', HttpResponse.HttpStatusCode(), JsonText);
+
+        StatusInfo.ReadFrom(JsonText);
 
         if StatusInfo.Get('access_token', JnodeEntryToken) then begin
-            Id := JnodeEntryToken.AsValue().AsText();
-            CompanyInfo."OneDrive Access Token" := Id;
+            AccessToken := JnodeEntryToken.AsValue().AsText();
+            CompanyInfo."OneDrive Access Token".CreateOutStream(OutStr);
+            OutStr.WriteText(AccessToken);
+            Id := AccessToken;
 
             if StatusInfo.Get('expires_in', JnodeEntryToken) then begin
                 CompanyInfo."OneDrive Token Expiration" := CurrentDateTime + (JnodeEntryToken.AsValue().AsInteger() * 1000);
@@ -186,9 +256,13 @@ codeunit 95102 "OneDrive Manager"
                 CompanyInfo."OneDrive Token Expiration" := CurrentDateTime + 3600000; // 1 hora por defecto
             end;
 
-            CompanyInfo.Modify();
+            if StatusInfo.Get('refresh_token', JnodeEntryToken) then begin
+                RefreshToken := JnodeEntryToken.AsValue().AsText();
+                CompanyInfo."OneDrive Refresh Token".CreateOutStream(OutStr);
+                OutStr.WriteText(RefreshToken);
+            end;
         end;
-
+        CompanyInfo.Modify(true);
         exit(Id);
     end;
 
@@ -222,7 +296,7 @@ codeunit 95102 "OneDrive Manager"
         Id: Text;
         FilePath: Text;
     begin
-        Ticket := Token();
+        Ticket := Format(Token());
 
         // Construir la ruta del archivo
         if Carpeta <> '' then
@@ -257,7 +331,7 @@ codeunit 95102 "OneDrive Manager"
         Bs64: Codeunit "Base64 Convert";
         FilePath: Text;
     begin
-        Ticket := Token();
+        Ticket := Format(Token());
 
         // Primero necesitamos obtener el ID del archivo
         if Carpeta <> '' then
@@ -297,7 +371,7 @@ codeunit 95102 "OneDrive Manager"
         Id: Text;
         FolderName: Text;
     begin
-        Ticket := Token();
+        Ticket := Format(Token());
         if RootFolder then
             ParentPath := ''
         else
@@ -347,7 +421,7 @@ codeunit 95102 "OneDrive Manager"
             if not Confirm('¿Está seguro de que desea eliminar la carpeta?', true) then
                 exit('');
 
-        Ticket := Token();
+        Ticket := Format(Token());
 
         // Obtener el ID del archivo/carpeta
         Id := GetFileId(Carpeta);
@@ -374,7 +448,7 @@ codeunit 95102 "OneDrive Manager"
         JTokenLink: JsonToken;
         Id: Text;
     begin
-        Ticket := Token();
+        Ticket := Format(Token());
 
         // Obtener información del archivo
         Url := graph_endpoint + '/me/drive/root:/' + FilePath;
@@ -400,7 +474,7 @@ codeunit 95102 "OneDrive Manager"
         JTokenLink: JsonToken;
         WebUrl: Text;
     begin
-        Ticket := Token();
+        Ticket := Format(Token());
 
         Url := graph_endpoint + '/me/drive/items/' + FileId + '?select=webUrl';
 
@@ -684,7 +758,7 @@ codeunit 95102 "OneDrive Manager"
         StatusInfo: JsonObject;
         JTokenLink: JsonToken;
     begin
-        Ticket := Token();
+        Ticket := Format(Token());
         Url := graph_endpoint + delete_endpoint;
         Url := StrSubstNo(Url, GetDocumentID);
         ResponseMessage := RestApiTokenResponse(Url, Ticket, RequestType::delete, '');
@@ -742,7 +816,7 @@ codeunit 95102 "OneDrive Manager"
         ParentFolderPath: Text;
     begin
         Files.DeleteAll();
-        Ticket := Token();
+        Ticket := Format(Token());
 
         // Construir la URL para listar el contenido de la carpeta
         if SoloSubfolder then begin
@@ -842,5 +916,82 @@ codeunit 95102 "OneDrive Manager"
             exit(CopyStr(FileName, DotPosition + 1))
         else
             exit('');
+    end;
+
+    local procedure UrlEncode(InputText: Text): Text
+    var
+        i: Integer;
+        Result: Text;
+        CurrentChar: Text[1];
+    begin
+        Result := '';
+        for i := 1 to StrLen(InputText) do begin
+            CurrentChar := CopyStr(InputText, i, 1);
+            case CurrentChar of
+                ' ':
+                    Result += '%20';
+                '!':
+                    Result += '%21';
+                '"':
+                    Result += '%22';
+                '#':
+                    Result += '%23';
+                '$':
+                    Result += '%24';
+                '%':
+                    Result += '%25';
+                '&':
+                    Result += '%26';
+                '''':
+                    Result += '%27';
+                '(':
+                    Result += '%28';
+                ')':
+                    Result += '%29';
+                '*':
+                    Result += '%2A';
+                '+':
+                    Result += '%2B';
+                ',':
+                    Result += '%2C';
+                '/':
+                    Result += '%2F';
+                ':':
+                    Result += '%3A';
+                ';':
+                    Result += '%3B';
+                '<':
+                    Result += '%3C';
+                '=':
+                    Result += '%3D';
+                '>':
+                    Result += '%3E';
+                '?':
+                    Result += '%3F';
+                '@':
+                    Result += '%40';
+                '[':
+                    Result += '%5B';
+                '\':
+                    Result += '%5C';
+                ']':
+                    Result += '%5D';
+                '^':
+                    Result += '%5E';
+                '`':
+                    Result += '%60';
+                '{':
+                    Result += '%7B';
+                '|':
+                    Result += '%7C';
+                '}':
+                    Result += '%7D';
+                '~':
+                    Result += '%7E';
+                else
+                    Result += CurrentChar;
+            end;
+        end;
+        exit(Result);
     end;
 }

@@ -110,12 +110,12 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'OneDrive Tenant ID';
             DataClassification = CustomerContent;
         }
-        field(95118; "OneDrive Access Token"; Text[1024])
+        field(95118; "OneDrive Access Token"; Blob)
         {
             Caption = 'OneDrive Access Token';
             DataClassification = CustomerContent;
         }
-        field(95119; "OneDrive Refresh Token"; Text[1024])
+        field(95119; "OneDrive Refresh Token"; Blob)
         {
             Caption = 'OneDrive Refresh Token';
             DataClassification = CustomerContent;
@@ -199,7 +199,7 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'Strapi Collection Name';
             DataClassification = CustomerContent;
         }
-        field(95136; "Code Ondrive"; Text[100])
+        field(95136; "Code Ondrive"; Text[1024])
         {
 
         }
@@ -219,4 +219,10 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
     begin
         exit("Refresh Token GoogleDrive");
     end;
+
+    procedure GetTokenOndrive(): Text
+    begin
+
+    end;
+
 }

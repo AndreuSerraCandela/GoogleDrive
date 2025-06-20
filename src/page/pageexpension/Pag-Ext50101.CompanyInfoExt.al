@@ -159,7 +159,6 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Token de acceso actual de OneDrive.';
-                    ExtendedDatatype = Masked;
                     Editable = TokenFieldsEditable;
                 }
 
@@ -167,7 +166,6 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Token de actualización de OneDrive.';
-                    ExtendedDatatype = Masked;
                     Editable = TokenFieldsEditable;
                 }
 
@@ -557,7 +555,8 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                         OneDriveManager: Codeunit "OneDrive Manager";
                     begin
                         OneDriveManager.Initialize();
-                        if Rec."OneDrive Access Token" = '' Then begin
+                        Rec.CalcFields("OneDrive Access Token");
+                        if Rec."OneDrive Access Token".HasValue = false Then begin
                             OneDriveManager.ObtenerToken(Rec."Code Ondrive");
                             Commit();
                         end;
