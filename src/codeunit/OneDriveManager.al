@@ -300,6 +300,7 @@ codeunit 95102 "OneDrive Manager"
         Ticket := Format(Token());
 
         // Construir la ruta del archivo
+        //https://graph.microsoft.com/v1.0/me/drive/root:/RUTA/CARPETA/archivo.txt:/content
         Url := graph_endpoint + upload_endpoint;
         Url := StrSubstNo(Url, Carpeta);
         //Falta Token
