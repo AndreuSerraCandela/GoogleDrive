@@ -22,12 +22,14 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
     trigger OnAfterGetRecord()
     var
         RecRef: RecordRef;
+        CompaniInfo: Record "Company Information";
     begin
         if ActivoFijo = Rec."No." then
             exit;
+        CompaniInfo.Get();
         ActivoFijo := Rec."No.";
         GoogleDriveManager.GetFolderMapping(Database::"Fixed Asset", Id);
-        SubFolder := FolderMapping.CreateSubfolderPath(Database::"Fixed Asset", Rec."No.", 0D);
+        SubFolder := FolderMapping.CreateSubfolderPath(Database::"Fixed Asset", Rec."No.", 0D, CompaniInfo."Data Storage Provider");
         IF SubFolder <> '' then
             Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
         RecRef.GetTable(Rec);

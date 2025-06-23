@@ -22,12 +22,14 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
     trigger OnAfterGetRecord()
     var
         RecRef: RecordRef;
+        CompaniInfo: Record "Company Information";
     begin
+        CompaniInfo.Get();
         if CuentaBancaria = Rec."No." then
             exit;
         CuentaBancaria := Rec."No.";
         GoogleDriveManager.GetFolderMapping(Database::"Bank Account", Id);
-        SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", Rec."No.", 0D);
+        SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", Rec."No.", 0D, CompaniInfo."Data Storage Provider");
         IF SubFolder <> '' then
             Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
         RecRef.GetTable(Rec);

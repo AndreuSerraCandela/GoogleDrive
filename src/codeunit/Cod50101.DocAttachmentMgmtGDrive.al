@@ -24,7 +24,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                     DocumentAttachment."Store in Google Drive" := true;
                     FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
                     if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, DocumentAttachment."No.", 0D);
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
                     DocumentAttachment."Google Drive ID" := GoogleDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
@@ -33,8 +33,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                 begin
                     DocumentAttachment."Store in OneDrive" := true;
                     FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
-                    if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, DocumentAttachment."No.", 0D);
+                    if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder Id";
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Folder := OneDriveManager.CreateFolderStructure(Folder, SubFolder);
                     DocumentAttachment."OneDrive ID" := OneDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
@@ -44,7 +44,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                     DocumentAttachment."Store in DropBox" := true;
                     FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
                     if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, DocumentAttachment."No.", 0D);
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Folder := DropBoxManager.CreateFolderStructure(Folder, SubFolder);
                     DocumentAttachment."DropBox ID" := DropBoxManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name");

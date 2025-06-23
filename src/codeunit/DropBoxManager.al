@@ -811,4 +811,171 @@ codeunit 95103 "DropBox Manager"
         else
             exit('');
     end;
+
+    procedure RecuperaIdFolder(IdCarpeta: Text; Carpeta: Text; var Files: Record "Name/Value Buffer" temporary; Crear: Boolean; RootFolder: Boolean): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JEntries: JsonArray;
+        JEntry: JsonObject;
+        JEntryToken: JsonToken;
+        JEntryTokens: JsonToken;
+        ItemType: Text;
+        a: Integer;
+        FullPath: Text;
+        Found: Boolean;
+        ResultId: Text;
+    begin
+        Files.DeleteAll();
+        if not Authenticate() then
+            Error('No se pudo autenticar con DropBox. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        CompanyInfo.Get();
+        Url := CompanyInfo."Url Api DropBox" + list_folder;
+
+        if RootFolder then
+            IdCarpeta := ''
+        else
+            if IdCarpeta = CompanyInfo."Root Folder" then
+                IdCarpeta := '';
+
+
+        Clear(Body);
+        Body.Add('path', IdCarpeta);
+        Body.Add('recursive', false);
+        Body.Add('include_media_info', false);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+
+            if StatusInfo.Get('entries', JEntryToken) then begin
+                JEntries := JEntryToken.AsArray();
+                a := 0;
+
+                foreach JEntryTokens in JEntries do begin
+                    JEntry := JEntryTokens.AsObject();
+                    a += 1;
+                    Files.Init();
+                    Files.ID := a;
+
+                    if JEntry.Get('name', JEntryToken) then
+                        Files.Name := JEntryToken.AsValue().AsText();
+
+                    if JEntry.Get('.tag', JEntryToken) then
+                        ItemType := JEntryToken.AsValue().AsText();
+
+                    if JEntry.Get('id', JEntryToken) then
+                        Files."Google Drive ID" := JEntryToken.AsValue().AsText();
+
+                    if ItemType = 'folder' then
+                        Files.Value := 'Carpeta'
+                    else begin
+                        Files.Value := '';
+                        Files."File Extension" := GetFileExtension(Files.Name);
+                    end;
+
+                    Files.Insert();
+
+                    if (ItemType = 'folder') and (Files.Name = Carpeta) then begin
+                        Found := true;
+                        ResultId := Files."Google Drive ID";
+                    end;
+                end;
+            end;
+        end;
+
+        if Found then
+            exit(ResultId);
+
+        if Crear then begin
+            if IdCarpeta = '' then
+                FullPath := '/' + Carpeta
+            else
+                FullPath := IdCarpeta + '/' + Carpeta;
+
+            ResultId := CreateDropBoxFolder(FullPath);
+            exit(ResultId);
+        end;
+
+        exit('');
+    end;
+
+    local procedure CreateDropBoxFolder(FolderPath: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        JMetadata: JsonObject;
+        NewFolderId: Text;
+    begin
+        Ticket := Token();
+        CompanyInfo.Get();
+        Url := CompanyInfo."Url Api DropBox" + create_folder;
+
+        Clear(Body);
+        Body.Add('path', FolderPath);
+        Body.Add('autorename', false);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('metadata', JToken) then begin
+                JMetadata := JToken.AsObject();
+                if JMetadata.Get('id', JToken) then
+                    NewFolderId := JToken.AsValue().AsText();
+            end else begin
+                if StatusInfo.Get('error_summary', JToken) then
+                    if StrPos(JToken.AsValue().AsText(), 'path/conflict/folder') > 0 then begin
+                        exit(GetFolderId(FolderPath));
+                    end;
+                Error('Failed to create folder in DropBox: %1', Respuesta);
+            end;
+        end;
+        exit(NewFolderId);
+    end;
+
+    local procedure GetFolderId(FolderPath: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        FolderId: Text;
+    begin
+        Ticket := Token();
+        Url := CompanyInfo."Url Api DropBox" + get_metadata;
+
+        Clear(Body);
+        Body.Add('path', FolderPath);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('id', JToken) then
+                FolderId := JToken.AsValue().AsText();
+        end;
+
+        exit(FolderId);
+    end;
 }

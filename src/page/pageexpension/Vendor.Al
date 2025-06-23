@@ -27,13 +27,14 @@ pageextension 95102 VendorExt extends "Vendor Card"
     trigger OnAfterGetRecord()
     var
         RecRef: RecordRef;
-
+        CompaniInfo: Record "Company Information";
     begin
         if Proveedor = Rec."No." then
             exit;
         Proveedor := Rec."No.";
+        CompaniInfo.Get();
         GoogleDriveManager.GetFolderMapping(Database::Vendor, Id);
-        SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, rEC."No.", 0D);
+        SubFolder := FolderMapping.CreateSubfolderPath(Database::Vendor, rEC."No.", 0D, CompaniInfo."Data Storage Provider");
         IF SubFolder <> '' then
             Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
         RecRef.GetTable(Rec);

@@ -22,12 +22,14 @@ pageextension 95104 ItemExt extends "Item Card"
     trigger OnAfterGetRecord()
     var
         RecRef: RecordRef;
+        CompaniInfo: Record "Company Information";
     begin
         if Articulo = Rec."No." then
             exit;
+        CompaniInfo.Get();
         Articulo := Rec."No.";
         GoogleDriveManager.GetFolderMapping(Database::Item, Id);
-        SubFolder := FolderMapping.CreateSubfolderPath(Database::Item, Rec."No.", 0D);
+        SubFolder := FolderMapping.CreateSubfolderPath(Database::Item, Rec."No.", 0D, CompaniInfo."Data Storage Provider");
         IF SubFolder <> '' then
             Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
         RecRef.GetTable(Rec);

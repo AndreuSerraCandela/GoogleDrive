@@ -67,7 +67,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     ApplicationArea = All;
                     ToolTip = 'Especifica la URL base de la API de Google Drive.';
                 }
-                field("Google Drive Root Folder"; Rec."Google Drive Root Folder")
+                field("Google Drive Root Folder"; Rec."Root Folder")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Especifica la carpeta raíz de Google Drive.';
@@ -139,7 +139,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     ToolTip = 'Especifica la URL base de la API de OneDrive.';
                 }
 
-                field("OneDrive Root Folder"; Rec."OneDrive Root Folder")
+                field("OneDrive Root Folder"; Rec."Root Folder")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Especifica la carpeta raíz de OneDrive.';
@@ -201,7 +201,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     ToolTip = 'Especifica la URL base de la API de DropBox.';
                 }
 
-                field("DropBox Root Folder"; Rec."DropBox Root Folder")
+                field("DropBox Root Folder"; Rec."Root Folder")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Especifica la carpeta raíz de DropBox.';
@@ -501,6 +501,18 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                         Message(DiagnosticResult);
                     end;
                 }
+                action("Crea Root Google Drive")
+                {
+                    ApplicationArea = All;
+                    Image = FiledPosted;
+                    trigger OnAction()
+                    var
+                        GoogleMapping: Record "Google Drive Folder Mapping";
+                    begin
+                        if Rec."Root Folder" <> '' then
+                            Rec."Root Folder ID" := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", true, true);
+                    end;
+                }
             }
 
             group("OneDrive")
@@ -582,6 +594,18 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                             Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
                     end;
                 }
+                action("Crea Root One Drive")
+                {
+                    ApplicationArea = All;
+                    Image = FiledPosted;
+                    trigger OnAction()
+                    var
+                        GoogleMapping: Record "Google Drive Folder Mapping";
+                    begin
+                        if Rec."Root Folder" <> '' then
+                            Rec."Root Folder ID" := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", true, true);
+                    end;
+                }
             }
 
             group("DropBox")
@@ -658,6 +682,18 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                             Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
                     end;
                 }
+                action("Crea Root DropBox")
+                {
+                    ApplicationArea = All;
+                    Image = FiledPosted;
+                    trigger OnAction()
+                    var
+                        GoogleMapping: Record "Google Drive Folder Mapping";
+                    begin
+                        if Rec."Root Folder" <> '' then
+                            Rec."Root Folder ID" := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", true, true);
+                    end;
+                }
             }
 
             group("Strapi")
@@ -716,6 +752,18 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     begin
                         StrapiManager.Initialize();
                         StrapiManager.TestAPI();
+                    end;
+                }
+                action("Crea Root Strapi")
+                {
+                    ApplicationArea = All;
+                    Image = FiledPosted;
+                    trigger OnAction()
+                    var
+                        GoogleMapping: Record "Google Drive Folder Mapping";
+                    begin
+                        if Rec."Root Folder" <> '' then
+                            Rec."Root Folder ID" := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", true, true);
                     end;
                 }
             }

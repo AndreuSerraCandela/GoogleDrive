@@ -186,7 +186,9 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         PDFStorage: Record "Document Attachment";
         FileList: Record "Name/Value Buffer" temporary;
         Instream: InStream;
+        CompaniInfo: Record "Company Information";
     begin
+        CompaniInfo.Get();
         //Clear(PDFStorageArray);
         Clear(VisibleControl1);
         Clear(VisibleControl2);
@@ -210,7 +212,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                 begin
 
                     PDFStorage.SetRange("No.", RecRef.Field(1).Value);
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(1).Value, 0D);
+                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(1).Value, 0D, CompaniInfo."Data Storage Provider");
                 end;
             36:
                 begin
@@ -229,7 +231,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                     //     If PDFStorage.Insert Then;
                     // end;
                     PDFStorage.SetRange("No.", RecRef.Field(3).Value);
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value);
+                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
                     Case DocTypeS of
                         DocTypeS::"Blanket Order":
                             PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Blanket Order");
@@ -248,7 +250,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
             38:
                 begin
                     PDFStorage.SetRange("No.", RecRef.Field(3).Value);
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value);
+                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
                     DocTyped := RecRef.Field(1).Value;
                     Case DocTyped of
                         DocTyped::"Blanket Order":
@@ -268,22 +270,22 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
             112:
                 begin
                     PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::Invoice);
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value);
+                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
                 end;
             114:
                 begin
                     PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Credit Memo");
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value);
+                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
                 end;
             122:
                 begin
                     PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::Invoice);
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value);
+                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
                 end;
             144:
                 begin
                     PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Credit Memo");
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value);
+                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
                 end;
             1173:
                 begin
@@ -292,7 +294,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                     PDFStorage.SetRange("No.", RecRef.Field(PDFStorage.FieldNo("No.")).Value);
                     PDFStorage.SetRange("Line No.", RecRef.Field(PDFStorage.FieldNo("Line No.")).Value);
                     PDFStorage.SetRange("Document Type", RecRef.Field(PDFStorage.FieldNo("Document Type")).Value);
-                    SubFolder := FolderMapping.CreateSubfolderPath(RecRef.Field(PDFStorage.FieldNo("Table ID")).Value, RecRef.Field(PDFStorage.FieldNo("No.")).Value, RecRef.Field(PDFStorage.FieldNo("Line No.")).Value);
+                    SubFolder := FolderMapping.CreateSubfolderPath(RecRef.Field(PDFStorage.FieldNo("Table ID")).Value, RecRef.Field(PDFStorage.FieldNo("No.")).Value, RecRef.Field(PDFStorage.FieldNo("Line No.")).Value, CompaniInfo."Data Storage Provider");
                 end;
 
 

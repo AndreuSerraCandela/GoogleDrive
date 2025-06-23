@@ -22,12 +22,14 @@ pageextension 95103 CustomerExt extends "Customer Card"
     trigger OnAfterGetRecord()
     var
         RecRef: RecordRef;
+        CompaniInfo: Record "Company Information";
     begin
         if Cliente = Rec."No." then
             exit;
+        CompaniInfo.Get();
         Cliente := Rec."No.";
         GoogleDriveManager.GetFolderMapping(Database::Customer, Id);
-        SubFolder := FolderMapping.CreateSubfolderPath(Database::Customer, Rec."No.", 0D);
+        SubFolder := FolderMapping.CreateSubfolderPath(Database::Customer, Rec."No.", 0D, CompaniInfo."Data Storage Provider");
         IF SubFolder <> '' then
             Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
         RecRef.GetTable(Rec);

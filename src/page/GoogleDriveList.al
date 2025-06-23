@@ -283,7 +283,7 @@ page 95105 "Google Drive List"
         GoogleDrive.Carpetas(FolderId, Files);
         Rec.DeleteAll();
         Inf.Get();
-        RootFolder := Inf."Google Drive Root Folder";
+        RootFolder := Inf."Root Folder";
         // Agregar la carpeta ".." al inicio
         Rec.Init();
         Rec.ID := -99;

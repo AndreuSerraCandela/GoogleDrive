@@ -271,19 +271,20 @@ codeunit 95102 "OneDrive Manager"
         DocumentStream: OutStream;
         TempBlob: Codeunit "Temp Blob";
         Int: Instream;
+        FileMang: Codeunit "File Management";
+        Extension: Text;
     begin
         TempBlob.CreateOutStream(DocumentStream);
         DocumentAttach."Document Reference ID".ExportStream(DocumentStream);
+        If DocumentAttach."File Extension" = '' then
+            Extension := FileMang.GetExtension(DocumentAttach."File Name")
+        else
+            Extension := DocumentAttach."File Extension";
         TempBlob.CreateInStream(Int);
 
-        exit(UploadFileB64(Carpeta, Int, DocumentAttach."File Name"));
+        exit(UploadFileB64(Carpeta, Int, DocumentAttach."File Name", Extension));
     end;
 
-    [Obsolete('Please use the overload with 4 parameters.', 'v1.0.0.5')]
-    procedure UploadFileB64(Carpeta: Text; Base64Data: InStream; Filename: Text): Text
-    begin
-        exit(UploadFileB64(Carpeta, Base64Data, Filename, ''));
-    end;
 
     procedure UploadFileB64(Carpeta: Text; Base64Data: InStream; Filename: Text; FileExtension: Text[30]): Text
     var
@@ -294,20 +295,15 @@ codeunit 95102 "OneDrive Manager"
         StatusInfo: JsonObject;
         JTokenLink: JsonToken;
         Id: Text;
-        FilePath: Text;
+
     begin
         Ticket := Format(Token());
 
         // Construir la ruta del archivo
-        if Carpeta <> '' then
-            FilePath := Carpeta + '/' + Filename
-        else
-            FilePath := Filename;
-
         Url := graph_endpoint + upload_endpoint;
-        Url := StrSubstNo(Url, FilePath);
-
-        Respuesta := RestApiOfset(Url, RequestType::put, Base64Data);
+        Url := StrSubstNo(Url, Carpeta);
+        //Falta Token
+        Respuesta := RestApiOfset(Url, Ticket, RequestType::put, Base64Data);
 
         StatusInfo.ReadFrom(Respuesta);
 
@@ -358,56 +354,7 @@ codeunit 95102 "OneDrive Manager"
         exit(Base64Data);
     end;
 
-    procedure CreateFolder(Carpeta: Text; ParentPath: Text; RootFolder: Boolean): Text
-    var
-        Ticket: Text;
-        RequestType: Option Get,patch,put,post,delete;
-        Url: Text;
-        Json: Text;
-        Body: JsonObject;
-        StatusInfo: JsonObject;
-        Respuesta: Text;
-        JTokenLink: JsonToken;
-        Id: Text;
-        FolderName: Text;
-    begin
-        Ticket := Format(Token());
-        if RootFolder then
-            ParentPath := ''
-        else
-            ParentPath := ParentPath;
 
-        // Separar la ruta del padre y el nombre de la carpeta
-        // if StrPos(Carpeta, '/') > 0 then begin
-        //     ParentPath := CopyStr(Carpeta, 1, StrPos(Carpeta, '/') - 1);
-        //     FolderName := CopyStr(Carpeta, StrPos(Carpeta, '/') + 1);
-        // end else begin
-        //     ParentPath := '';
-        FolderName := Carpeta;
-        // end;
-
-        Url := graph_endpoint + create_folder_endpoint;
-        if ParentPath <> '' then
-            Url := StrSubstNo(Url, ParentPath)
-        else
-            Url := StrSubstNo(Url, '');
-
-        Clear(Body);
-        Body.Add('name', FolderName);
-        Body.Add('folder', '{}');
-        Body.Add('@microsoft.graph.conflictBehavior', 'rename');
-        Body.WriteTo(Json);
-
-        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
-        StatusInfo.ReadFrom(Respuesta);
-
-        if StatusInfo.Get('id', JTokenLink) then begin
-            Id := JTokenLink.AsValue().AsText();
-        end else
-            Error(Respuesta);
-
-        exit(Id);
-    end;
 
     procedure DeleteFolder(Carpeta: Text; HideDialog: Boolean): Text
     var
@@ -629,7 +576,7 @@ codeunit 95102 "OneDrive Manager"
         exit(ResponseMessage);
     end;
 
-    procedure RestApiOfset(url: Text; RequestType: Option Get,patch,put,post,delete; payload: instream): Text
+    procedure RestApiOfset(url: Text; Token: Text; RequestType: Option Get,patch,put,post,delete; payload: instream): Text
     var
         Client: HttpClient;
         RequestHeaders: HttpHeaders;
@@ -640,6 +587,7 @@ codeunit 95102 "OneDrive Manager"
         contentHeaders: HttpHeaders;
     begin
         RequestHeaders := Client.DefaultRequestHeaders();
+        RequestHeaders.Add('Authorization', StrSubstNo('Bearer %1', token));
 
         case RequestType of
             RequestType::Get:
@@ -719,34 +667,30 @@ codeunit 95102 "OneDrive Manager"
         ResponseMessage.Content().ReadAs(payload);
     end;
 
-    internal procedure CreateFolderStructure(BaseFolderId: Text; FolderPath: Text): Text
+    internal procedure CreateFolderStructure(BaseFolderId: Text; FolderName: Text): Text
     var
-        PathParts: List of [Text];
-        CurrentFolderId: Text;
-        FolderName: Text;
         NewFolderId: Text;
-        i: Integer;
     begin
-        if FolderPath = '' then
+        if FolderName = '' then
             exit(BaseFolderId);
 
         // Split path by '/'
-        PathParts := FolderPath.Split('/');
-        CurrentFolderId := BaseFolderId;
+        //PathParts := FolderPath.Split('/');
+        //CurrentFolderId := BaseFolderId;
+        NewFolderId := FindOrCreateSubfolder(BaseFolderId, FolderName, true);
+        // for i := 1 to PathParts.Count do begin
+        //     FolderName := PathParts.Get(i);
+        //     if FolderName <> '' then begin
+        //         // Check if folder already exists
+        //         NewFolderId := FindOrCreateSubfolder(CurrentFolderId, FolderName, true);
+        //         if NewFolderId <> '' then
+        //             CurrentFolderId := NewFolderId
+        //         else
+        //             exit(CurrentFolderId); // Return last successful folder if creation fails
+        //     end;
+        // end;
 
-        for i := 1 to PathParts.Count do begin
-            FolderName := PathParts.Get(i);
-            if FolderName <> '' then begin
-                // Check if folder already exists
-                NewFolderId := FindOrCreateSubfolder(CurrentFolderId, FolderName, true);
-                if NewFolderId <> '' then
-                    CurrentFolderId := NewFolderId
-                else
-                    exit(CurrentFolderId); // Return last successful folder if creation fails
-            end;
-        end;
-
-        exit(CurrentFolderId);
+        exit(NewFolderId);
     end;
 
     procedure DeleteFile(GetDocumentID: Text): Boolean
@@ -793,7 +737,7 @@ codeunit 95102 "OneDrive Manager"
             exit(FolderId);
 
         // Folder doesn't exist, create it
-        exit(CreateFolder(FolderName, ParentFolderId, false));
+        exit(CreateOneDriveFolder(ParentFolderId, FolderName, false));
     end;
 
     procedure ListFolder(FolderId: Text; var Files: Record "Name/Value Buffer" temporary; SoloSubfolder: Boolean)
@@ -909,13 +853,9 @@ codeunit 95102 "OneDrive Manager"
 
     local procedure GetFileExtension(FileName: Text): Text
     var
-        DotPosition: Integer;
+        FileMgt: Codeunit "File Management";
     begin
-        DotPosition := StrPos(FileName, '.');
-        if DotPosition > 0 then
-            exit(CopyStr(FileName, DotPosition + 1))
-        else
-            exit('');
+        exit(FileMgt.GetExtension(FileName));
     end;
 
     local procedure UrlEncode(InputText: Text): Text
@@ -993,5 +933,124 @@ codeunit 95102 "OneDrive Manager"
             end;
         end;
         exit(Result);
+    end;
+
+    procedure RecuperaIdFolder(IdCarpeta: Text; Carpeta: Text; var Files: Record "Name/Value Buffer" temporary; Crear: Boolean; RootFolder: Boolean): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JValue: JsonArray;
+        JEntry: JsonObject;
+        JToken: JsonToken;
+        JEntryTokens: JsonToken;
+        ItemName: Text;
+        Found: Boolean;
+        ResultId: Text;
+        a: Integer;
+        Extension: Text;
+    begin
+        Files.DeleteAll();
+        if not Authenticate() then
+            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        CompanyInfo.Get();
+        If IdCarpeta = '' Then
+            IdCarpeta := CompanyInfo."Root Folder ID";
+        if RootFolder then
+            Url := StrSubstNo(graph_endpoint + '/me/drive/root/children')
+        else
+            Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1/children', IdCarpeta);
+
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('value', JToken) then begin
+                JValue := JToken.AsArray();
+                a := 0;
+                foreach JEntryTokens in JValue do begin
+                    JEntry := JEntryTokens.AsObject();
+                    a += 1;
+                    Files.Init();
+                    Files.ID := a;
+
+                    if JEntry.Get('name', JToken) then
+                        Files.Name := JToken.AsValue().AsText();
+
+                    if JEntry.Get('id', JToken) then
+                        Files."Google Drive ID" := JToken.AsValue().AsText();
+
+                    if JEntry.Get('folder', JToken) then begin
+                        Files.Value := 'Carpeta';
+                        if Files.Name = Carpeta then begin
+                            Found := true;
+                            ResultId := Files."Google Drive ID";
+                        end;
+                    end else begin
+                        Files.Value := '';
+                        if JEntry.Get('file', JToken) then begin
+                            Extension := GetFileExtension(Files.Name);
+                            if StrLen(Extension) < 30 then
+                                Files."File Extension" := Extension;
+                        end;
+                    end;
+                    Files.Insert();
+                end;
+            end;
+        end;
+
+        if Found then
+            exit(ResultId);
+
+        if Crear then begin
+            ResultId := CreateOneDriveFolder(IdCarpeta, Carpeta, RootFolder);
+            exit(ResultId);
+        end;
+
+        exit('');
+    end;
+
+    procedure CreateOneDriveFolder(ParentFolderId: Text; FolderName: Text; RootFolder: Boolean): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        FolderObject: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        NewFolderId: Text;
+    begin
+        Ticket := Token();
+        if RootFolder then
+            Url := StrSubstNo(graph_endpoint + '/me/drive/root/children')
+        else
+            Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1/children', ParentFolderId);
+
+        Clear(Body);
+        Body.Add('name', FolderName);
+        Clear(FolderObject);
+        Body.Add('folder', FolderObject);
+        Body.Add('@microsoft.graph.conflictBehavior', 'rename');
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('id', JToken) then
+                NewFolderId := JToken.AsValue().AsText()
+            else
+                Error('Failed to create folder in OneDrive: %1', Respuesta);
+        end;
+        exit(NewFolderId);
     end;
 }

@@ -22,12 +22,14 @@ pageextension 95105 ResourceExt extends "Resource Card"
     trigger OnAfterGetRecord()
     var
         RecRef: RecordRef;
+        CompaniInfo: Record "Company Information";
     begin
         if Recurso = Rec."No." then
             exit;
+        CompaniInfo.Get();
         Recurso := Rec."No.";
         GoogleDriveManager.GetFolderMapping(Database::Resource, Id);
-        SubFolder := FolderMapping.CreateSubfolderPath(Database::Resource, Rec."No.", 0D);
+        SubFolder := FolderMapping.CreateSubfolderPath(Database::Resource, Rec."No.", 0D, CompaniInfo."Data Storage Provider");
         IF SubFolder <> '' then
             Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
         RecRef.GetTable(Rec);

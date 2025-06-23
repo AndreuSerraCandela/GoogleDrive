@@ -105,11 +105,24 @@ table 95100 "Google Drive Folder Mapping"
     procedure RecuperarIdFolder(Folder: Text; Crear: Boolean; RootFolder: Boolean): Text
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
+        OnDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
         Files: Record "Name/Value Buffer" temporary;
         Id: Text;
+        CompaiInfo: Record "Company Information";
     begin
-        exit(GoogleDriveManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
-
+        CompaiInfo.Get();
+        case CompaiInfo."Data Storage Provider" of
+            CompaiInfo."Data Storage Provider"::"Google Drive":
+                exit(GoogleDriveManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
+            CompaiInfo."Data Storage Provider"::OneDrive:
+                exit(OnDriveManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
+            CompaiInfo."Data Storage Provider"::DropBox:
+                exit(DropBoxManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
+            CompaiInfo."Data Storage Provider"::Strapi:
+                exit(StrapiManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
+        end;
     end;
 
     procedure GetDefaultFolderForTable(TableID: Integer): Text
@@ -122,7 +135,7 @@ table 95100 "Google Drive Folder Mapping"
         exit(''); // Return empty if no mapping found
     end;
 
-    procedure CreateSubfolderPath(TableID: Integer; DocumentNo: Text; DocumentDate: Date): Text
+    procedure CreateSubfolderPath(TableID: Integer; DocumentNo: Text; DocumentDate: Date; Origen: Enum "Data Storage Provider"): Text
     var
         FolderMapping: Record "Google Drive Folder Mapping";
         SubfolderPath: Text;
@@ -131,13 +144,19 @@ table 95100 "Google Drive Folder Mapping"
     begin
         if not FolderMapping.Get(TableID) then
             exit('');
+        if Origen <> Origen::OneDrive Then begin
+            if not FolderMapping."Auto Create Subfolders" then
+                exit(FolderMapping."Default Folder ID");
 
-        if not FolderMapping."Auto Create Subfolders" then
-            exit(FolderMapping."Default Folder ID");
+            if FolderMapping."Subfolder Pattern" = '' then
+                exit(FolderMapping."Default Folder ID");
+        end else begin
+            if not FolderMapping."Auto Create Subfolders" then
+                exit(FolderMapping."Default Folder Id");
 
-        if FolderMapping."Subfolder Pattern" = '' then
-            exit(FolderMapping."Default Folder ID");
-
+            if FolderMapping."Subfolder Pattern" = '' then
+                exit(FolderMapping."Default Folder Id");
+        end;
         SubfolderPath := FolderMapping."Subfolder Pattern";
 
         // Replace patterns

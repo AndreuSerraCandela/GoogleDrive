@@ -189,6 +189,7 @@ page 95106 "Google Drive Folder Mapping"
                     TestDocNo: Text;
                     TestDate: Date;
                     FolderId: Text;
+                    Origen: Enum "Data Storage Provider";
                 begin
                     if Rec."Default Folder ID" = '' then begin
                         Message('Por favor, especifique un ID de carpeta primero.');
@@ -198,7 +199,7 @@ page 95106 "Google Drive Folder Mapping"
                     TestDocNo := 'TEST-001';
                     TestDate := Today;
 
-                    TestPath := Rec.CreateSubfolderPath(Rec."Table ID", TestDocNo, TestDate);
+                    TestPath := Rec.CreateSubfolderPath(Rec."Table ID", TestDocNo, TestDate, Origen::"Google Drive");
 
                     if TestPath = '' then begin
                         Message('No se pudo generar la ruta de subcarpeta. Verifique la configuración.');

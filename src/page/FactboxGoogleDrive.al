@@ -113,8 +113,8 @@ page 95100 "Google Drive Factbox"
 
                     // Get folder list
                     Inf.Get();
-                    GoogleDrive.ListFolder(Inf."Google Drive Root Folder ID", TempFiles, false);
-                    GoogleDriveList.SetRecords(Inf."Google Drive Root Folder ID", TempFiles, true);
+                    GoogleDrive.ListFolder(Inf."Root Folder ID", TempFiles, false);
+                    GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
                     GoogleDriveList.RunModal();
                     GoogleDriveList.GetDestino(destino);
                     // Here we would need to implement a folder selection dialog using TempFiles
@@ -292,7 +292,7 @@ page 95100 "Google Drive Factbox"
         GoogleDrive.Carpetas(FolderId, Files);
         Rec.DeleteAll();
         Inf.Get();
-        RootFolder := Inf."Google Drive Root Folder";
+        RootFolder := Inf."Root Folder";
         // Agregar la carpeta ".." al inicio
         Rec.Init();
         Rec.ID := -99;

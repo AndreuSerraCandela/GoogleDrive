@@ -36,6 +36,7 @@ codeunit 95100 "Google Drive Manager"
         root: Text;
         origenfinal: Text;
         tipofinal: Text;
+        OrigenEstorage: Enum "Data Storage Provider";
 
     procedure Initialize()
     var
@@ -840,7 +841,7 @@ codeunit 95100 "Google Drive Manager"
 
         Ticket := AccessToken;
         Inf.Get;
-        RootFolderId := Inf."Google Drive Root Folder ID";
+        RootFolderId := Inf."Root Folder ID";
         Url := Inf."Url Api GoogleDrive" + list_folder;
         if RootFolder = false then
             Url := Url + '?q=' + C + RootFolderId + C + 'in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
@@ -931,7 +932,7 @@ codeunit 95100 "Google Drive Manager"
         Ticket := AccessToken;
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + list_folder;
-        if IdCarpeta = '' then IdCarpeta := Inf."Google Drive Root Folder ID";
+        if IdCarpeta = '' then IdCarpeta := Inf."Root Folder ID";
         //https://www.googleapis.com/drive/v3/files?q=%27FOLDER_ID%27+in+parents&fields=files(id%2Cname%2CmimeType)
         Url := Url + '?q=' + C + IdCarpeta + C + '+in+parents&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         if IdCarpeta = '' then
@@ -1025,7 +1026,7 @@ codeunit 95100 "Google Drive Manager"
         If CopyStr(ParentId, 1, 1) = '/' then
             ParentId := CopyStr(ParentId, 2);
         if (ParentId = '') and (not RootFolder) then
-            ParentId := Inf."Google Drive Root Folder ID";
+            ParentId := Inf."Root Folder ID";
 
         Body.Add('name', Carpeta);
         Body.add('mimeType', 'application/vnd.google-apps.folder');
@@ -1303,10 +1304,10 @@ codeunit 95100 "Google Drive Manager"
             If FolderId <> '' Then
                 Url := Url + '?q=' + C + FolderId + C + '+in+parents&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
             else
-                Url := Url + '?q=' + C + Inf."Google Drive Root Folder ID" + C + '+in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
+                Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
 
         end else
-            Url := Url + '?q=' + C + Inf."Google Drive Root Folder ID" + C + '+in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
+            Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, Json);
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
@@ -1598,7 +1599,7 @@ codeunit 95100 "Google Drive Manager"
         Message('Tokens configurados manualmente exitosamente.');
     end;
 
-    procedure GetTargetFolderForDocument(TableID: Integer; DocumentNo: Text; DocumentDate: Date): Text
+    procedure GetTargetFolderForDocument(TableID: Integer; DocumentNo: Text; DocumentDate: Date; Origen: Enum "Data Storage Provider"): Text
     var
         FolderMapping: Record "Google Drive Folder Mapping";
         TargetFolderId: Text;
@@ -1614,7 +1615,7 @@ codeunit 95100 "Google Drive Manager"
         if DocumentNo = '' then
             exit(TargetFolderId);
         // Check if we need to create subfolders
-        SubfolderPath := FolderMapping.CreateSubfolderPath(TableID, DocumentNo, DocumentDate);
+        SubfolderPath := FolderMapping.CreateSubfolderPath(TableID, DocumentNo, DocumentDate, Origen);
 
         if SubfolderPath <> TargetFolderId then begin
             // Need to create subfolder structure
@@ -1691,7 +1692,8 @@ codeunit 95100 "Google Drive Manager"
             exit(false);
 
         // Get target folder based on configuration
-        TargetFolderId := GetTargetFolderForDocument(TableID, DocumentNo, DocumentDate);
+
+        TargetFolderId := GetTargetFolderForDocument(TableID, DocumentNo, DocumentDate, OrigenEstorage::"Google Drive");
 
         FileName := DocumentAttachment."File Name";
         if FileName = '' then

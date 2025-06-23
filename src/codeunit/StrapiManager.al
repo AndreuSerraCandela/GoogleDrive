@@ -250,6 +250,11 @@ codeunit 95104 "Strapi Manager"
         exit(Id);
     end;
 
+    procedure RecuperaIdFolder(IdCarpeta: Text; Carpeta: Text; var Files: Record "Name/Value Buffer" temporary; Crear: Boolean; RootFolder: Boolean): Text
+    begin
+        exit('');
+    end;
+
     local procedure GetFileId(Filename: Text): Text
     var
         RequestType: Option Get,patch,put,post,delete;

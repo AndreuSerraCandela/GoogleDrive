@@ -58,22 +58,22 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'Google Auth Provider Cert URL';
             DataClassification = CustomerContent;
         }
-        field(95110; "Google Drive Root Folder"; Text[250])
+        field(95110; "Root Folder"; Text[250])
         {
 
-            Caption = 'Google Drive Root Folder';
+            Caption = 'Root Folder';
             DataClassification = CustomerContent;
             trigger OnValidate()
             var
                 GoogleMapping: Record "Google Drive Folder Mapping";
             begin
-                if "Google Drive Root Folder" <> '' then
-                    "Google Drive Root Folder ID" := GoogleMapping.RecuperarIdFolder("Google Drive Root Folder", true, true);
+                if "Root Folder" <> '' then
+                    "Root Folder ID" := GoogleMapping.RecuperarIdFolder("Root Folder", true, true);
             end;
         }
-        field(95111; "Google Drive Root Folder ID"; Text[250])
+        field(95111; "Root Folder ID"; Text[250])
         {
-            Caption = 'Google Drive Root Folder ID';
+            Caption = 'Root Folder ID';
             DataClassification = CustomerContent;
         }
         field(95112; "Google Drive Manual"; Blob)
@@ -125,11 +125,6 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'OneDrive Token Expiration';
             DataClassification = CustomerContent;
         }
-        field(95121; "OneDrive Root Folder"; Text[250])
-        {
-            Caption = 'OneDrive Root Folder';
-            DataClassification = CustomerContent;
-        }
         field(95134; "Url Api OneDrive"; Text[250])
         {
             Caption = 'OneDrive API URL';
@@ -162,11 +157,7 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'DropBox Token Expiration';
             DataClassification = CustomerContent;
         }
-        field(95127; "DropBox Root Folder"; Text[250])
-        {
-            Caption = 'DropBox Root Folder';
-            DataClassification = CustomerContent;
-        }
+
         field(95133; "Url Api DropBox"; Text[250])
         {
             Caption = 'DropBox API URL';

@@ -88,7 +88,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     case CompanyInfo."Data Storage Provider" of
                         CompanyInfo."Data Storage Provider"::"Google Drive":
                             begin
-                                TargetFolderId := GoogleDriveManager.GetTargetFolderForDocument(IdTable, No, 0D);
+                                TargetFolderId := GoogleDriveManager.GetTargetFolderForDocument(IdTable, No, 0D, CompanyInfo."Data Storage Provider");
                                 GoogleDriveManager.Carpetas(TargetFolderId, Files);
                             end;
                         CompanyInfo."Data Storage Provider"::OneDrive:
@@ -280,8 +280,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     case Rec."Storage Provider" of
                         Rec."Storage Provider"::"Google Drive":
                             begin
-                                GoogleDrive.ListFolder(Inf."Google Drive Root Folder ID", TempFiles, false);
-                                GoogleDriveList.SetRecords(Inf."Google Drive Root Folder ID", TempFiles, true);
+                                GoogleDrive.ListFolder(Inf."Root Folder ID", TempFiles, false);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino);
 
@@ -333,8 +333,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     case Rec."Storage Provider" of
                         Rec."Storage Provider"::"Google Drive":
                             begin
-                                GoogleDrive.ListFolder(Inf."Google Drive Root Folder ID", TempFiles, false);
-                                GoogleDriveList.SetRecords(Inf."Google Drive Root Folder ID", TempFiles, true);
+                                GoogleDrive.ListFolder(Inf."Root Folder ID", TempFiles, false);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino);
                                 if destino = '' then
@@ -378,7 +378,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 Rec."Storage Provider"::"Google Drive":
                                     GoogleDriveManager.CreateFolder(FolderName, '', false);
                                 Rec."Storage Provider"::OneDrive:
-                                    OneDriveManager.CreateFolder(FolderName, '', false);
+                                    OneDriveManager.CreateOneDriveFolder(FolderName, '', false);
                                 Rec."Storage Provider"::DropBox:
                                     DropBoxManager.CreateFolder(FolderName);
                                 Rec."Storage Provider"::Strapi:
