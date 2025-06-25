@@ -85,11 +85,34 @@ page 95100 "Google Drive Factbox"
                 Image = Download;
                 trigger OnAction()
                 var
-                    Base64Txt: Text;
+                    Base64Data: Text;
+                    CompanyInfo: Record "Company Information";
+                    GoogleDriveManager: Codeunit "Google Drive Manager";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
+                    a: Integer;
+                    Nombre: Text;
+
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::"Descargar Archivo";
-                    Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
+                    CompanyInfo.Get();
+                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::"Google Drive" then begin
+                        Base64Data := GoogleDriveManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
+
+                    end;
+                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::OneDrive then begin
+                        Base64Data := OneDriveManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
+
+                    end;
+                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::DropBox then begin
+                        Base64Data := DropBoxManager.DownloadFileB64('', Rec."Google Drive ID", Rec.Name, true);
+
+                    end;
+                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Strapi then begin
+                        Base64Data := StrapiManager.DownloadFileB64('', Rec."Google Drive ID", Rec.Name, true);
+                    end;
                     Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                 end;
             }
@@ -106,6 +129,11 @@ page 95100 "Google Drive Factbox"
                     TempFiles: Record "Name/Value Buffer" temporary;
                     GoogleDriveList: Page "Google Drive List";
                     Inf: Record "Company Information";
+                    NewId: Text;
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    NombreCarpetaDestino: Text;
+                    DocRef: RecordRef;
+                    FieldRef: FieldRef;
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::Mover;
@@ -113,23 +141,51 @@ page 95100 "Google Drive Factbox"
 
                     // Get folder list
                     Inf.Get();
-                    GoogleDrive.ListFolder(Inf."Root Folder ID", TempFiles, false);
-                    GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
-                    GoogleDriveList.RunModal();
-                    GoogleDriveList.GetDestino(destino);
-                    // Here we would need to implement a folder selection dialog using TempFiles
-                    // For now, we'll use a placeholder solution
+                    case Inf."Data Storage Provider" of
+                        Inf."Data Storage Provider"::"Google Drive":
+                            begin
+                                GoogleDrive.ListFolder(Inf."Root Folder ID", TempFiles, false);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
 
-                    if destino = '' then
-                        Message('no ha elegido destino')
-                    else begin
-                        If Rec.Value = 'Carpeta' then
-                            GoogleDrive.MoveFolder(Rec."Google Drive ID", destino)
-                        else
-                            GoogleDrive.Movefile(Rec."Google Drive ID", Destino, root);
-                        Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
+                                // Here we would need to implement a folder selection dialog using TempFiles
+                                // For now, we'll use a placeholder solution
+
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    GoogleDrive.Movefile(Rec."Google Drive ID", Destino, '');
+
+
+                            end;
+                        Inf."Data Storage Provider"::OneDrive:
+                            begin
+                                OneDriveManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                Commit;
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    NewId := OneDriveManager.Movefile(Rec."Google Drive ID", Destino, '', true, Rec."Name" + '.' + Rec."File Extension");
+                                if NewId <> '' then begin
+                                    Rec."Google Drive ID" := NewId;
+                                    Rec.Modify();
+                                end;
+                            end;
+                        Inf."Data Storage Provider"::DropBox:
+                            // DropBoxManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
+                            Message('Función de mover archivo no implementada aún.');
+                        Inf."Data Storage Provider"::Strapi:
+                            // StrapiManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
+                            Message('Función de mover archivo no implementada aún.');
                     end;
+
+                    Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                 end;
+
             }
             action("Copiar Archivo")
             {
@@ -142,6 +198,10 @@ page 95100 "Google Drive Factbox"
                     destino: Text;
                     TempFiles: Record "Name/Value Buffer" temporary;
                     GoogleDriveList: Page "Google Drive List";
+                    Inf: Record "Company Information";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    NewId: Text;
+                    NombreCarpetaDestino: Text;
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::Copiar;
@@ -149,13 +209,39 @@ page 95100 "Google Drive Factbox"
                     GoogleDrive.ListFolder(root, TempFiles, false);
                     GoogleDriveList.SetRecords(root, TempFiles, true);
                     GoogleDriveList.RunModal();
-                    GoogleDriveList.GetDestino(destino);
+                    GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                     // Here we would need to implement a folder selection dialog using TempFiles
                     // For now, we'll use a placeholder solution
                     if destino = '' then
                         Message('no ha elegido destino')
                     else begin
-                        GoogleDrive.CopyFile(Rec."Google Drive ID", destino);
+                        Inf.Get();
+                        case Inf."Data Storage Provider" of
+                            Inf."Data Storage Provider"::"Google Drive":
+                                GoogleDrive.CopyFile(Rec."Google Drive ID", destino);
+                            Inf."Data Storage Provider"::OneDrive:
+                                begin
+                                    OneDriveManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
+                                    GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                    Commit;
+                                    GoogleDriveList.RunModal();
+                                    GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
+                                    if destino = '' then
+                                        Message('no ha elegido destino')
+                                    else
+                                        NewId := OneDriveManager.Movefile(Rec."Google Drive ID", Destino, '', true, Rec."Name" + '.' + Rec."File Extension");
+                                    if NewId <> '' then begin
+                                        Rec."Google Drive ID" := NewId;
+                                        Rec.Modify();
+                                    end;
+                                end;
+                            Inf."Data Storage Provider"::DropBox:
+                                // DropBoxManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
+                                Message('Función de mover archivo no implementada aún.');
+                            Inf."Data Storage Provider"::Strapi:
+                                // StrapiManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
+                                Message('Función de mover archivo no implementada aún.');
+                        end;
                         Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                     end;
                 end;
@@ -172,16 +258,49 @@ page 95100 "Google Drive Factbox"
                     DorpBox: Codeunit "Google Drive Manager";
                     Ventana: Page "Dialogo Google Drive";
                     Carpeta: Text;
+                    Inf: Record "Company Information";
                 begin
                     Ventana.SetTexto('Nombre Carpeta');
                     Ventana.RunModal();
                     Ventana.GetTexto(Carpeta);
                     Nombre := Carpeta;
                     Accion := Accion::"Crear Carpeta";
-                    If CarpetaAnterior[Indice] = '' then
-                        GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal, false)
-                    else
-                        GoogleDrive.CreateFolder(Carpeta, root, false);
+                    Inf.Get();
+                    if Carpeta <> '' then begin
+                        case Inf."Data Storage Provider" of
+                            Inf."Data Storage Provider"::"Google Drive":
+                                begin
+                                    If CarpetaAnterior[Indice] = '' then
+                                        GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal, false)
+                                    else
+                                        GoogleDrive.CreateFolder(Carpeta, root, false);
+                                end;
+                            Inf."Data Storage Provider"::OneDrive:
+                                begin
+                                    If CarpetaAnterior[Indice] = '' then
+                                        OneDrive.CreateOneDriveFolder(Carpeta, CarpetaPrincipal, false)
+                                    else
+                                        OneDrive.CreateOneDriveFolder(Carpeta, root, false);
+
+                                end;
+                            Inf."Data Storage Provider"::DropBox:
+                                begin
+                                    If CarpetaAnterior[Indice] = '' then
+                                        DropBox.CreateFolder(Carpeta, CarpetaPrincipal, false)
+                                    else
+                                        DropBox.CreateFolder(Carpeta, root, false);
+                                end;
+                            Inf."Data Storage Provider"::Strapi:
+                                begin
+                                    If CarpetaAnterior[Indice] = '' then
+                                        Strapi.CreateFolder(Carpeta, CarpetaPrincipal, false)
+                                    else
+                                        Strapi.CreateFolder(Carpeta, root, false);
+                                end;
+                        end;
+                        Message('Carpeta "%1" creada correctamente.', Carpeta);
+                    end;
+
                     Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                 end;
             }
@@ -198,9 +317,9 @@ page 95100 "Google Drive Factbox"
                     Nombre := Rec.Name;
                     Accion := Accion::Borrar;
                     If Rec.Value = 'Carpeta' then
-                        GoogleDrive.DeleteFolder(Rec."Google Drive ID", false)
+                        DeleteFolder(Rec."Google Drive ID", false)
                     else begin
-                        GoogleDrive.DeleteFile(Rec."Google Drive ID");
+                        DeleteFile(Rec."Google Drive ID");
                         Doc.SetRange("Google Drive ID", Rec."Google Drive ID");
                         If Doc.FindFirst Then
                             Doc.Delete;
@@ -222,6 +341,14 @@ page 95100 "Google Drive Factbox"
                     Id: Text;
                     Doc: Record "Document Attachment";
                     a: Integer;
+                    CompanyInfo: Record "Company Information";
+                    FolderMapping: Record "Google Drive Folder Mapping";
+                    Folder: Text;
+                    SubFolder: Text;
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
+                    Path: Text;
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::"Subir Archivo";
@@ -229,6 +356,29 @@ page 95100 "Google Drive Factbox"
                     UPLOADINTOSTREAM('Import', '', ' All Files (*.*)|*.*', Filename, NVInStream);
                     FileExtension := FileMgt.GetExtension(FileName);
                     Id := GoogleDrive.UploadFileB64(root, NVInStream, Filename, FileExtension);
+                    CompanyInfo.Get();
+                    case CompanyInfo."Data Storage Provider" of
+                        CompanyInfo."Data Storage Provider"::"Google Drive":
+                            begin
+                                Id := GoogleDrive.UploadFileB64(root, NVInStream, Filename, FileExtension);
+                            end;
+                        CompanyInfo.
+                        "Data Storage Provider"::OneDrive:
+                            begin
+                                Path := OneDriveManager.OptenerPath(Rec."Google Drive ID");
+                                Id := OneDriveManager.UploadFileB64(Path, NVInStream, FileName, FileExtension);
+                            end;
+                        CompanyInfo."Data Storage Provider"::DropBox:
+                            begin
+                                Path := DropBoxManager.OptenerPath(Rec."Google Drive ID");
+                                Id := DropBoxManager.UploadFileB64(Path, NVInStream, FileName + FileExtension);
+                            end;
+                        CompanyInfo."Data Storage Provider"::Strapi:
+                            begin
+                                Id := StrapiManager.UploadFileB64(Path, NVInStream, FileName + FileExtension);
+                            end;
+                    end;
+
                     Doc.SetRange("Table ID", GRecRef.Number);
                     If Doc.Findlast Then a := Doc.ID + 1;
                     Doc.InitFieldsFromRecRef(GRecRef);
@@ -246,6 +396,9 @@ page 95100 "Google Drive Factbox"
 
     var
         GoogleDrive: Codeunit "Google Drive Manager";
+        OneDrive: Codeunit "OneDrive Manager";
+        DropBox: Codeunit "DropBox Manager";
+        Strapi: Codeunit "Strapi Manager";
         Base64Txt: Text;
         CarpetaAnterior: array[10] of Text;
         Indice: Integer;
@@ -319,5 +472,47 @@ page 95100 "Google Drive Factbox"
             rec.FindFirst();
         CurrPage.Update(false);
 
+    end;
+
+    procedure DeleteFile(Id: Text)
+    var
+        GoogleDrive: Codeunit "Google Drive Manager";
+        Inf: Record "Company Information";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+    begin
+        Inf.Get();
+        case Inf."Data Storage Provider" of
+            Inf."Data Storage Provider"::"Google Drive":
+                GoogleDrive.DeleteFile(Id);
+            Inf."Data Storage Provider"::OneDrive:
+                OneDriveManager.DeleteFile(Id);
+            Inf."Data Storage Provider"::DropBox:
+                DropBoxManager.DeleteFile(Id);
+            Inf."Data Storage Provider"::Strapi:
+                StrapiManager.DeleteFile(Id);
+        end;
+    end;
+
+    procedure DeleteFolder(Id: Text; HideDialog: Boolean)
+    var
+        GoogleDrive: Codeunit "Google Drive Manager";
+        Inf: Record "Company Information";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+    begin
+        Inf.Get();
+        case Inf."Data Storage Provider" of
+            Inf."Data Storage Provider"::"Google Drive":
+                GoogleDrive.DeleteFolder(Id, HideDialog);
+            Inf."Data Storage Provider"::OneDrive:
+                OneDriveManager.DeleteFolder(Id, HideDialog);
+            Inf."Data Storage Provider"::DropBox:
+                DropBoxManager.DeleteFolder(Id, HideDialog);
+            Inf."Data Storage Provider"::Strapi:
+                StrapiManager.DeleteFolder(Id, HideDialog);
+        end;
     end;
 }

@@ -1,8 +1,8 @@
-pageextension 95108 BankAccountExt extends "Bank Account Card"
+pageextension 95109 JobExt extends "Job Card"
 {
     layout
     {
-        addlast(factboxes)
+        addafter("Attached Documents List")
         {
             part(Visor; "PDF Viewer Part Google Drive")
             {
@@ -25,15 +25,15 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
         CompanyInfo: Record "Company Information";
         Path: Text;
     begin
-        if CuentaBancaria = Rec."No." then
+        if Job = Rec."No." then
             exit;
         CompanyInfo.Get();
         case CompanyInfo."Data Storage Provider" of
             CompanyInfo."Data Storage Provider"::"Google Drive":
                 begin
-                    CuentaBancaria := Rec."No.";
-                    GoogleDriveManager.GetFolderMapping(Database::"Bank Account", Id);
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
+                    Job := Rec."No.";
+                    GoogleDriveManager.GetFolderMapping(Database::Job, Id);
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Job, Rec."No.", 0D, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
                     RecRef.GetTable(Rec);
@@ -44,15 +44,15 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
             CompanyInfo.
             "Data Storage Provider"::OneDrive:
                 begin
-                    CuentaBancaria := Rec."No.";
+                    Job := Rec."No.";
                     Path := CompanyInfo."Root Folder" + '/';
-                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    FolderMapping.SetRange("Table ID", Database::Job);
                     if FolderMapping.FindFirst() Then begin
                         Id := FolderMapping."Default Folder Id";
                         Path += FolderMapping."Default Folder Name" + '/';
                     end;
 
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Customer, Rec."No.", 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Job, Rec."No.", 0D, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then begin
                         Id := OneDriveManager.CreateFolderStructure(Id, SubFolder);
                         Path += SubFolder + '/'
@@ -63,10 +63,10 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
                 end;
             CompanyInfo."Data Storage Provider"::DropBox:
                 begin
-                    CuentaBancaria := Rec."No.";
-                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    Job := Rec."No.";
+                    FolderMapping.SetRange("Table ID", Database::Job);
                     if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Job, Rec."No.", 0D, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Id := DropBoxManager.CreateFolderStructure(Id, SubFolder);
                     if CompanyInfo."Funcionalidad extendida" then
@@ -75,10 +75,10 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
                 end;
             CompanyInfo."Data Storage Provider"::Strapi:
                 begin
-                    CuentaBancaria := Rec."No.";
-                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    Job := Rec."No.";
+                    FolderMapping.SetRange("Table ID", Database::Job);
                     if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Job, Rec."No.", 0D, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Id := StrapiManager.CreateFolderStructure(Id, SubFolder);
                     if CompanyInfo."Funcionalidad extendida" then
@@ -96,7 +96,7 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
 
     trigger OnOpenPage()
     begin
-        CuentaBancaria := '';
+        Job := '';
         CheckExtendedFunctionality();
     end;
 
@@ -109,12 +109,12 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
     end;
 
     var
-        CuentaBancaria: Text;
+        Job: Text;
         GoogleDriveManager: Codeunit "Google Drive Manager";
+        FolderMapping: Record "Google Drive Folder Mapping";
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
-        FolderMapping: Record "Google Drive Folder Mapping";
         Id: Text;
         AutoCreateSubFolder: Boolean;
         SubFolder: Text;

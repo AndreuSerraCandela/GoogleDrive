@@ -629,4 +629,127 @@ codeunit 95104 "Strapi Manager"
         else
             exit(false);
     end;
+
+    internal procedure OpenFileInBrowser(StrapiID: Text[250])
+    var
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        ResponseMessage: HttpResponseMessage;
+        ResponseText: Text;
+    begin
+        Url := CompanyInfo."Strapi Base URL" + '/api/' + CompanyInfo."Strapi Collection Name" + '/' + StrapiID;
+        ResponseMessage := RestApiTokenResponse(Url, CompanyInfo."Strapi API Token", RequestType::get, '');
+        if ResponseMessage.IsSuccessStatusCode() then begin
+            ResponseMessage.Content().ReadAs(ResponseText);
+            Hyperlink(ResponseText);
+        end
+        else
+            Error('Error al abrir el archivo en el navegador: %1', ResponseText);
+    end;
+
+    internal procedure CreateSubfolderStructure(Id: Text; SubFolder: Text): Text
+    begin
+        if SubFolder = '' then
+            exit(Id);
+
+        exit(FindOrCreateSubfolder(Id, SubFolder, false));
+    end;
+
+    procedure GetFolderMapping(TableID: Integer; Var Id: Text): Record "Google Drive Folder Mapping"
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+    begin
+        FolderMapping.SetRange("Table ID", TableID);
+        if FolderMapping.FindFirst() then
+            Id := FolderMapping."Default Folder ID";
+        exit(FolderMapping);
+    end;
+
+    local procedure FindOrCreateSubfolder(ParentFolderId: Text; FolderName: Text; SoloSubfolder: Boolean): Text
+    var
+        Files: Record "Name/Value Buffer" temporary;
+        FolderId: Text;
+        FoundFolder: Boolean;
+    begin
+        // First, try to find existing folder
+        ListFolder(ParentFolderId, Files, SoloSubfolder);
+
+        Files.Reset();
+        if Files.FindSet() then begin
+            repeat
+                if (Files.Name = FolderName) and (Files.Value = 'Carpeta') then begin
+                    // Extract folder ID from Value field
+                    FolderId := Files."Google Drive ID";
+                    FoundFolder := true;
+                end;
+            until (Files.Next() = 0) or FoundFolder;
+        end;
+        if FoundFolder then
+            exit(FolderId);
+        exit(CreateFolder(FolderName, ParentFolderId, false));
+    end;
+
+    procedure CreateFolder(FolderName: Text; ParentFolderId: Text; RootFolder: Boolean): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+    begin
+        CompanyInfo.Get();
+        Ticket := CompanyInfo."Strapi API Token";
+        Url := CompanyInfo."Strapi Base URL" + '/api/' + CompanyInfo."Strapi Collection Name";
+        Clear(Body);
+        if RootFolder then
+            Body.Add('name', FolderName)
+        else
+            Body.Add('name', ParentFolderId + '/' + FolderName);
+        Body.WriteTo(Json);
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('id', JToken) then
+                exit(JToken.AsValue().AsText());
+        end;
+        exit('');
+    end;
+
+    procedure CreateSubfolderPath(TableID: Integer; DocumentNo: Text; DocumentDate: Date; Origen: Enum "Data Storage Provider"): Text
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        SubfolderPath: Text;
+        Year: Text;
+        Month: Text;
+    begin
+        if not FolderMapping.Get(TableID) then
+            exit('');
+
+        if not FolderMapping."Auto Create Subfolders" then
+            exit(FolderMapping."Default Folder ID");
+
+        if FolderMapping."Subfolder Pattern" = '' then
+            exit(FolderMapping."Default Folder ID");
+        SubfolderPath := FolderMapping."Subfolder Pattern";
+
+        // Replace patterns
+        if StrPos(SubfolderPath, '{DOCNO}') > 0 then
+            SubfolderPath := DocumentNo;
+        if DocumentDate = 0D then
+            exit(SubfolderPath);
+        if StrPos(SubfolderPath, '{YEAR}') > 0 then begin
+            Year := Format(Date2DMY(DocumentDate, 3));
+            SubfolderPath := Year;
+        end;
+
+        if StrPos(SubfolderPath, '{MONTH}') > 0 then begin
+            Month := Format(DocumentDate, 0, '<Month Text>');
+            SubfolderPath := Month;
+        end;
+
+        exit(SubfolderPath);
+    end;
 }

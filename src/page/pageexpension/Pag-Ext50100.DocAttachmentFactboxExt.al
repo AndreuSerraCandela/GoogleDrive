@@ -9,7 +9,32 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 ApplicationArea = All;
                 ToolTip = 'Specifies whether the attachment should be stored in Google Drive instead of in the database.';
                 Caption = 'Store in Google Drive';
-                Editable = true;
+                Editable = false;
+                Visible = IsGoogle;
+            }
+            field("Store in OneDrive"; Rec."Store in OneDrive")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies whether the attachment should be stored in OneDrive instead of in the database.';
+                Caption = 'Store in OneDrive';
+                Editable = false;
+                Visible = IsOndrive;
+            }
+            field("Store in DropBox"; Rec."Store in DropBox")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies whether the attachment should be stored in DropBox instead of in the database.';
+                Caption = 'Store in DropBox';
+                Editable = false;
+                Visible = IsDropBox;
+            }
+            field("Store in Strapi"; Rec."Store in Strapi")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies whether the attachment should be stored in Strapi instead of in the database.';
+                Caption = 'Store in Strapi';
+                Editable = false;
+                Visible = IsStrapi;
             }
             field("Google Drive ID"; Rec."Google Drive ID")
             {
@@ -17,13 +42,55 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 ToolTip = 'Specifies the ID of the file in Google Drive.';
                 Caption = 'Google Drive ID';
                 Editable = false;
-                Visible = Rec."Store in Google Drive";
+                Visible = IsGoogle;
 
                 trigger OnDrillDown()
                 var
                     GoogleDriveManager: Codeunit "Google Drive Manager";
                 begin
                     GoogleDriveManager.OpenFileInBrowser(Rec."Google Drive ID");
+                end;
+            }
+            field("OneDrive ID"; Rec."OneDrive ID")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the ID of the file in OneDrive.';
+                Caption = 'OneDrive ID';
+                Editable = false;
+                Visible = IsOndrive;
+                trigger OnDrillDown()
+                var
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                begin
+                    OneDriveManager.OpenFileInBrowser(Rec."OneDrive ID");
+                end;
+            }
+            field("DropBox ID"; Rec."DropBox ID")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the ID of the file in DropBox.';
+                Caption = 'DropBox ID';
+                Editable = false;
+                Visible = IsDropBox;
+                trigger OnDrillDown()
+                var
+                    DropBoxManager: Codeunit "DropBox Manager";
+                begin
+                    DropBoxManager.OpenFileInBrowser(Rec."DropBox ID");
+                end;
+            }
+            field("Strapi ID"; Rec."Strapi ID")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the ID of the file in Strapi.';
+                Caption = 'Strapi ID';
+                Editable = false;
+                Visible = IsStrapi;
+                trigger OnDrillDown()
+                var
+                    StrapiManager: Codeunit "Strapi Manager";
+                begin
+                    StrapiManager.OpenFileInBrowser(Rec."Strapi ID");
                 end;
             }
         }
@@ -154,7 +221,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             action(MoveToGoogleDrive)
             {
                 ApplicationArea = All;
-                Caption = 'Mover a Google Drive';
+                Caption = 'Mover a Drive';
                 Image = SendTo;
                 ToolTip = 'Mueve los documentos seleccionados a Google Drive y los elimina del almacenamiento local.';
                 trigger OnAction()
@@ -175,6 +242,13 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     SubFolder: Text;
                     InStream: InStream;
                     TenantMedia: Record "Tenant Media";
+                    CompanyInfo: Record "Company Information";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
+                    Path: Text;
+                    FolderMapping: Record "Google Drive Folder Mapping";
+                    Folder: Text;
                 begin
                     if not Confirm(ConfirmMsg) then
                         exit;
@@ -182,41 +256,161 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     DocumentAttachment.CopyFilters(Rec);
                     if DocumentAttachment.FindSet() then
                         repeat
-                            if not DocumentAttachment."Store in Google Drive" then begin
-                                FullFileName := DocumentAttachment."File Name" + '.' + DocumentAttachment."File Extension";
-                                Clear(DocumentStream);
-                                TempBlob.CreateOutStream(DocumentStream);
-                                GoogleDrive.GetFolderMapping(DocumentAttachment."Table ID", Id);
-                                SubFolder := GoogleDrive.CreateFolderStructure(Id, DocumentAttachment."No.");
-                                if SubFolder <> '' then
-                                    Id := GoogleDrive.CreateFolderStructure(Id, SubFolder);
-                                DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
-                                TempBlob.CreateInStream(InStream);
-                                FileId := GoogleDriveManager.UploadFileB64(Id, InStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
-                                if FileId = '' then
-                                    Message(ErrorMsg, DocumentAttachment."File Name")
-                                else begin
-                                    DocumentAttachment."Store in Google Drive" := true;
-                                    DocumentAttachment."Google Drive ID" := FileId;
-                                    DocumentAttachment2.ID := DocumentAttachment.ID;
-                                    DocumentAttachment2."Table ID" := DocumentAttachment."Table ID";
-                                    DocumentAttachment2."No." := DocumentAttachment."No.";
-                                    DocumentAttachment2."Attached By" := DocumentAttachment."Attached By";
-                                    DocumentAttachment2."File Name" := DocumentAttachment."File Name";
-                                    DocumentAttachment2."File Extension" := DocumentAttachment."File Extension";
-                                    DocumentAttachment2."Attached Date" := DocumentAttachment."Attached Date";
-                                    DocumentAttachment2."File Type" := DocumentAttachment."File Type";
-                                    DocumentAttachment2."Document Flow Production" := DocumentAttachment."Document Flow Production";
-                                    DocumentAttachment2."Document Flow Purchase" := DocumentAttachment."Document Flow Purchase";
-                                    DocumentAttachment2."Document Flow Sales" := DocumentAttachment."Document Flow Sales";
-                                    DocumentAttachment2."Document Type" := DocumentAttachment."Document Type";
-                                    DocumentAttachment2."Google Drive ID" := FileId;
-                                    DocumentAttachment2."Line No." := DocumentAttachment."Line No.";
-                                    DocumentAttachment2."Store in Google Drive" := true;
-                                    DocumentAttachment2.User := DocumentAttachment.User;
-                                    DocumentAttachment.Delete(true);
-                                    DocumentAttachment.Insert();
-                                end;
+                            case CompanyInfo."Data Storage Provider" of
+                                CompanyInfo."Data Storage Provider"::"Google Drive":
+                                    begin
+
+                                        if not DocumentAttachment."Store in Google Drive" then begin
+                                            FullFileName := DocumentAttachment."File Name" + '.' + DocumentAttachment."File Extension";
+                                            Clear(DocumentStream);
+                                            TempBlob.CreateOutStream(DocumentStream);
+                                            GoogleDrive.GetFolderMapping(DocumentAttachment."Table ID", Id);
+                                            SubFolder := GoogleDrive.CreateFolderStructure(Id, DocumentAttachment."No.");
+                                            if SubFolder <> '' then
+                                                Id := GoogleDrive.CreateFolderStructure(Id, SubFolder);
+                                            DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
+                                            TempBlob.CreateInStream(InStream);
+                                            FileId := GoogleDriveManager.UploadFileB64(Id, InStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                                            if FileId = '' then
+                                                Message(ErrorMsg, DocumentAttachment."File Name")
+                                            else begin
+                                                DocumentAttachment."Store in Google Drive" := true;
+                                                DocumentAttachment."Google Drive ID" := FileId;
+                                                DocumentAttachment2.ID := DocumentAttachment.ID;
+                                                DocumentAttachment2."Table ID" := DocumentAttachment."Table ID";
+                                                DocumentAttachment2."No." := DocumentAttachment."No.";
+                                                DocumentAttachment2."Attached By" := DocumentAttachment."Attached By";
+                                                DocumentAttachment2."File Name" := DocumentAttachment."File Name";
+                                                DocumentAttachment2."File Extension" := DocumentAttachment."File Extension";
+                                                DocumentAttachment2."Attached Date" := DocumentAttachment."Attached Date";
+                                                DocumentAttachment2."File Type" := DocumentAttachment."File Type";
+                                                DocumentAttachment2."Document Flow Production" := DocumentAttachment."Document Flow Production";
+                                                DocumentAttachment2."Document Flow Purchase" := DocumentAttachment."Document Flow Purchase";
+                                                DocumentAttachment2."Document Flow Sales" := DocumentAttachment."Document Flow Sales";
+                                                DocumentAttachment2."Document Type" := DocumentAttachment."Document Type";
+                                                DocumentAttachment2."Google Drive ID" := FileId;
+                                                DocumentAttachment2."Line No." := DocumentAttachment."Line No.";
+                                                DocumentAttachment2."Store in Google Drive" := true;
+                                                DocumentAttachment2.User := DocumentAttachment.User;
+                                                DocumentAttachment.Delete(true);
+                                                DocumentAttachment2.Insert();
+                                            end;
+                                        end;
+                                    end;
+                                CompanyInfo."Data Storage Provider"::OneDrive:
+                                    begin
+                                        if not DocumentAttachment."Store in OneDrive" then begin
+                                            Path := CompanyInfo."Root Folder" + '/';
+                                            DocumentAttachment."Store in OneDrive" := true;
+                                            FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                                            if FolderMapping.FindFirst() Then begin
+                                                Folder := FolderMapping."Default Folder Id";
+                                                Path += FolderMapping."Default Folder Name" + '/';
+                                            end;
+                                            ;
+                                            SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                                            IF SubFolder <> '' then begin
+                                                Folder := OneDriveManager.CreateFolderStructure(Folder, SubFolder);
+                                                Path += SubFolder + '/'
+                                            end;
+                                            DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
+                                            TempBlob.CreateInStream(InStream);
+                                            FileId := OneDriveManager.UploadFileB64(Path, InStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                                            if FileId = '' then
+                                                Message(ErrorMsg, DocumentAttachment."File Name")
+                                            else begin
+                                                DocumentAttachment."Store in OneDrive" := true;
+                                                DocumentAttachment."OneDrive ID" := FileId;
+                                                DocumentAttachment2.ID := DocumentAttachment.ID;
+                                                DocumentAttachment2."Table ID" := DocumentAttachment."Table ID";
+                                                DocumentAttachment2."No." := DocumentAttachment."No.";
+                                                DocumentAttachment2."Attached By" := DocumentAttachment."Attached By";
+                                                DocumentAttachment2."File Name" := DocumentAttachment."File Name";
+                                                DocumentAttachment2."File Extension" := DocumentAttachment."File Extension";
+                                                DocumentAttachment2."Attached Date" := DocumentAttachment."Attached Date";
+                                                DocumentAttachment2."File Type" := DocumentAttachment."File Type";
+                                                DocumentAttachment2."Document Flow Production" := DocumentAttachment."Document Flow Production";
+                                                DocumentAttachment2."Document Flow Purchase" := DocumentAttachment."Document Flow Purchase";
+                                                DocumentAttachment2."Document Flow Sales" := DocumentAttachment."Document Flow Sales";
+                                                DocumentAttachment2."Document Type" := DocumentAttachment."Document Type";
+                                                DocumentAttachment2."OneDrive ID" := FileId;
+                                                DocumentAttachment2."Line No." := DocumentAttachment."Line No.";
+                                                DocumentAttachment2."Store in OneDrive" := true;
+                                                DocumentAttachment2.User := DocumentAttachment.User;
+                                                DocumentAttachment.Delete(true);
+                                                DocumentAttachment2.Insert();
+                                            end;
+                                        end;
+                                    end;
+                                CompanyInfo."Data Storage Provider"::DropBox:
+                                    begin
+                                        if not DocumentAttachment."Store in DropBox" then begin
+                                            Path := CompanyInfo."Root Folder" + '/';
+                                            DocumentAttachment."Store in OneDrive" := true;
+                                            FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                                            if FolderMapping.FindFirst() Then begin
+                                                Folder := FolderMapping."Default Folder Id";
+                                                Path += FolderMapping."Default Folder Name" + '/';
+                                            end;
+                                            ;
+                                            SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                                            IF SubFolder <> '' then begin
+                                                Folder := DropBoxManager.CreateFolderStructure(Folder, SubFolder);
+                                                Path += SubFolder + '/'
+                                            end;
+                                            DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
+                                            TempBlob.CreateInStream(InStream);
+                                            FileId := DropBoxManager.UploadFileB64(Path, InStream, DocumentAttachment."File Name" + DocumentAttachment."File Extension");
+                                            if FileId = '' then
+                                                Message(ErrorMsg, DocumentAttachment."File Name")
+                                            else begin
+                                                DocumentAttachment."Store in DropBox" := true;
+                                                DocumentAttachment."DropBox ID" := FileId;
+                                                DocumentAttachment2.ID := DocumentAttachment.ID;
+                                                DocumentAttachment2."Table ID" := DocumentAttachment."Table ID";
+                                                DocumentAttachment2."No." := DocumentAttachment."No.";
+                                                DocumentAttachment2."Attached By" := DocumentAttachment."Attached By";
+                                                DocumentAttachment2."File Name" := DocumentAttachment."File Name";
+                                                DocumentAttachment2."File Extension" := DocumentAttachment."File Extension";
+                                                DocumentAttachment2."Attached Date" := DocumentAttachment."Attached Date";
+                                                DocumentAttachment2."File Type" := DocumentAttachment."File Type";
+                                                DocumentAttachment2."Document Flow Production" := DocumentAttachment."Document Flow Production";
+                                                DocumentAttachment2."Document Flow Purchase" := DocumentAttachment."Document Flow Purchase";
+                                                DocumentAttachment2."Document Flow Sales" := DocumentAttachment."Document Flow Sales";
+                                                DocumentAttachment2."Document Type" := DocumentAttachment."Document Type";
+                                                DocumentAttachment2."DropBox ID" := FileId;
+                                                DocumentAttachment2."Line No." := DocumentAttachment."Line No.";
+                                                DocumentAttachment2."Store in DropBox" := true;
+                                                DocumentAttachment2.User := DocumentAttachment.User;
+                                                DocumentAttachment.Delete(true);
+                                                DocumentAttachment2.Insert();
+                                            end;
+
+                                        end;
+                                    end;
+                                CompanyInfo."Data Storage Provider"::Strapi:
+                                    begin
+                                        if not DocumentAttachment."Store in Strapi" then begin
+                                            Path := CompanyInfo."Root Folder" + '/';
+                                            DocumentAttachment."Store in OneDrive" := true;
+                                            FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                                            if FolderMapping.FindFirst() Then begin
+                                                Folder := FolderMapping."Default Folder Id";
+                                                Path += FolderMapping."Default Folder Name" + '/';
+                                            end;
+                                            ;
+                                            SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                                            IF SubFolder <> '' then begin
+                                                Folder := StrapiManager.CreateFolderStructure(Folder, SubFolder);
+                                                Path += SubFolder + '/'
+                                            end;
+                                            DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
+                                            TempBlob.CreateInStream(InStream);
+                                            FileId := StrapiManager.UploadFileB64(Path, InStream, DocumentAttachment."File Name" + DocumentAttachment."File Extension");
+                                            if FileId = '' then
+                                                Message(ErrorMsg, DocumentAttachment."File Name")
+                                        end;
+                                    end;
                             end;
                         until DocumentAttachment.Next() = 0;
 
@@ -246,7 +440,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         Rec."Storage Provider"::"Google Drive":
                             Base64Txt := GoogleDriveManager.DownloadFileB64(Rec.GetDocumentID(), Rec."File Name", true);
                         Rec."Storage Provider"::OneDrive:
-                            Base64Txt := OneDriveManager.DownloadFileB64('', Base64Txt, Rec."File Name", true);
+                            Base64Txt := OneDriveManager.DownloadFileB64(Base64Txt, Rec."File Name", true);
                         Rec."Storage Provider"::DropBox:
                             Base64Txt := DropBoxManager.DownloadFileB64('', Base64Txt, Rec."File Name", true);
                         Rec."Storage Provider"::Strapi:
@@ -275,15 +469,19 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     root: Boolean;
                     CarpetaAnterior: List of [Text];
                     Inf: Record "Company Information";
+                    NewId: Text;
+                    NombreCarpetaDestino: Text;
+                    DocRef: RecordRef;
+                    FieldRef: FieldRef;
                 begin
                     Inf.Get();
-                    case Rec."Storage Provider" of
-                        Rec."Storage Provider"::"Google Drive":
+                    case Inf."Data Storage Provider" of
+                        Inf."Data Storage Provider"::"Google Drive":
                             begin
                                 GoogleDrive.ListFolder(Inf."Root Folder ID", TempFiles, false);
                                 GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
                                 GoogleDriveList.RunModal();
-                                GoogleDriveList.GetDestino(destino);
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
 
                                 // Here we would need to implement a folder selection dialog using TempFiles
                                 // For now, we'll use a placeholder solution
@@ -295,15 +493,42 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
 
                             end;
-                        Rec."Storage Provider"::OneDrive:
-                            // OneDriveManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
-                            Message('Función de mover archivo no implementada aún.');
-                        Rec."Storage Provider"::DropBox:
+                        Inf."Data Storage Provider"::OneDrive:
+                            begin
+                                OneDriveManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                Commit;
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    NewId := OneDriveManager.Movefile(Rec."OneDrive ID", Destino, '', true, Rec."File Name" + '.' + Rec."File Extension");
+                                if NewId <> '' then begin
+                                    Rec."OneDrive ID" := NewId;
+                                    Rec.Modify();
+                                end;
+                            end;
+                        Inf."Data Storage Provider"::DropBox:
                             // DropBoxManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
                             Message('Función de mover archivo no implementada aún.');
-                        Rec."Storage Provider"::Strapi:
+                        Inf."Data Storage Provider"::Strapi:
                             // StrapiManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
                             Message('Función de mover archivo no implementada aún.');
+
+                    end;
+                    if NombreCarpetaDestino <> '' then begin
+                        Case Rec."Table ID" of
+                            Database::Customer, Database::Vendor, Database::Item, Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
+                                begin
+                                    DocRef.Open(Rec."Table ID");
+                                    FieldRef.SetRange(DocRef.Field(1), NombreCarpetaDestino);
+                                    If DocRef.FindFirst() then begin
+                                        Rec."No." := NombreCarpetaDestino;
+                                        Rec.Modify();
+                                    End;
+                                end;
+                        end;
                     end;
                 end;
             }
@@ -328,7 +553,13 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     root: Boolean;
                     CarpetaAnterior: List of [Text];
                     Inf: Record "Company Information";
-                // TODO: Implementar diálogo de selección de carpeta destino
+                    NewId: Text;
+                    NombreCarpetaDestino: Text;
+                    // TODO: Implementar diálogo de selección de carpeta destino
+                    DocRef: RecordRef;
+                    FieldRef: FieldRef;
+                    Id: Integer;
+                    DocumentAttachment: Record "Document Attachment";
                 begin
                     case Rec."Storage Provider" of
                         Rec."Storage Provider"::"Google Drive":
@@ -336,21 +567,49 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 GoogleDrive.ListFolder(Inf."Root Folder ID", TempFiles, false);
                                 GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
                                 GoogleDriveList.RunModal();
-                                GoogleDriveList.GetDestino(destino);
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
                                     Message('no ha elegido destino')
                                 else
                                     GoogleDrive.Copyfile(Rec."Google Drive ID", Destino);
                             end;
                         Rec."Storage Provider"::OneDrive:
-                            // OneDriveManager.CopyFile(Rec.GetDocumentID(), destino);
-                            Message('Función de copiar archivo no implementada aún.');
+                            begin
+                                OneDriveManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                Commit;
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    NewId := OneDriveManager.Movefile(Rec."OneDrive ID", Destino, '', false, Rec."File Name" + '.' + Rec."File Extension");
+
+                            end;
                         Rec."Storage Provider"::DropBox:
                             // DropBoxManager.CopyFile(Rec.GetDocumentID(), destino);
                             Message('Función de copiar archivo no implementada aún.');
                         Rec."Storage Provider"::Strapi:
                             // StrapiManager.CopyFile(Rec.GetDocumentID(), destino);
                             Message('Función de copiar archivo no implementada aún.');
+                    end;
+                    if NombreCarpetaDestino <> '' then begin
+                        Case Rec."Table ID" of
+                            Database::Customer, Database::Vendor, Database::Item, Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
+                                begin
+                                    DocRef.Open(Rec."Table ID");
+                                    FieldRef.SetRange(DocRef.Field(1), NombreCarpetaDestino);
+                                    If DocRef.FindFirst() then begin
+                                        DocumentAttachment.SetRange("Table ID", Rec."Table ID");
+                                        DocumentAttachment.SetRange("No.", NombreCarpetaDestino);
+                                        if DocumentAttachment.FindLast() then Id := DocumentAttachment.ID;
+                                        DocumentAttachment := Rec;
+                                        DocumentAttachment."No." := NombreCarpetaDestino;
+                                        DocumentAttachment.ID := Id + 1;
+                                        DocumentAttachment.Insert();
+                                    End;
+                                end;
+                        end;
                     end;
                 end;
             }
@@ -510,14 +769,34 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             // }
         }
     }
-
+    var
+        IsGoogle: Boolean;
+        IsOndrive: Boolean;
+        IsDropBox: Boolean;
+        IsStrapi: Boolean;
     // Add triggers
     trigger OnOpenPage()
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+        CompanyInfo: Record "Company Information";
     begin
+        CompanyInfo.GET();
+        IsGoogle := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::"Google Drive";
+        IsOndrive := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::OneDrive;
+        IsDropBox := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::DropBox;
+        IsStrapi := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Strapi;
         // Initialize Google Drive Manager when the page opens
-        GoogleDriveManager.Initialize();
+        If IsGoogle Then
+            GoogleDriveManager.Initialize();
+        if IsOndrive Then
+            OneDriveManager.Initialize();
+        if IsDropBox Then
+            DropBoxManager.Initialize();
+        if IsStrapi Then
+            StrapiManager.Initialize();
     end;
 
     internal procedure GetRefTable(var RecRef: RecordRef; DocumentAttachment: Record "Document Attachment"): Boolean

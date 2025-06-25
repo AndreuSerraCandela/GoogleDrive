@@ -16,6 +16,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         FolderMapping: Record "Google Drive Folder Mapping";
         Folder: Text;
         SubFolder: Text;
+        Path: Text;
     begin
         CompanyInfo.Get();
         case CompanyInfo."Data Storage Provider" of
@@ -29,15 +30,23 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                         Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
                     DocumentAttachment."Google Drive ID" := GoogleDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
                 end;
-            CompanyInfo."Data Storage Provider"::OneDrive:
+            CompanyInfo.
+            "Data Storage Provider"::OneDrive:
                 begin
+                    Path := CompanyInfo."Root Folder" + '/';
                     DocumentAttachment."Store in OneDrive" := true;
                     FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
-                    if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder Id";
+                    if FolderMapping.FindFirst() Then begin
+                        Folder := FolderMapping."Default Folder Id";
+                        Path += FolderMapping."Default Folder Name" + '/';
+                    end;
+                    ;
                     SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
-                    IF SubFolder <> '' then
+                    IF SubFolder <> '' then begin
                         Folder := OneDriveManager.CreateFolderStructure(Folder, SubFolder);
-                    DocumentAttachment."OneDrive ID" := OneDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                        Path += SubFolder + '/'
+                    end;
+                    DocumentAttachment."OneDrive ID" := OneDriveManager.UploadFileB64(Path, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
                 end;
             CompanyInfo."Data Storage Provider"::DropBox:
                 begin
@@ -60,10 +69,32 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
 
     [EventSubscriber(ObjectType::Table, Database::"Document Attachment", OnAfterDeleteEvent, '', false, false)]
     local procedure OnAfterDeleteEvent(var Rec: Record "Document Attachment")
+    var
+        DeDonde: Text;
     begin
         if Rec.IsTemporary then exit;
-        If Confirm('¿Desea eliminar el archivo de Google Drive?', false) then
-            GoogleDriveManager.DeleteFile(Rec."Google Drive ID");
+        CompanyInfo.Get();
+        Case CompanyInfo."Data Storage Provider" of
+            CompanyInfo."Data Storage Provider"::"Google Drive":
+                DeDonde := 'Google Drive';
+            CompanyInfo."Data Storage Provider"::OneDrive:
+                DeDonde := 'OneDrive';
+            CompanyInfo."Data Storage Provider"::DropBox:
+                DeDonde := 'DropBox';
+            CompanyInfo."Data Storage Provider"::Strapi:
+                DeDonde := 'Strapi';
+        end;
+        If Confirm('¿Desea eliminar el archivo de %1?', false, DeDonde) then
+            case CompanyInfo."Data Storage Provider" of
+                CompanyInfo."Data Storage Provider"::"Google Drive":
+                    GoogleDriveManager.DeleteFile(Rec."Google Drive ID");
+                CompanyInfo."Data Storage Provider"::OneDrive:
+                    OneDriveManager.DeleteFile(Rec."OneDrive ID");
+                CompanyInfo."Data Storage Provider"::DropBox:
+                    DropBoxManager.DeleteFile(Rec."DropBox ID");
+                CompanyInfo."Data Storage Provider"::Strapi:
+                    StrapiManager.DeleteFile(Rec."Strapi ID");
+            end;
     end;
 
     procedure UploadAttachment(var DocumentAttachment: Record "Document Attachment"; FileName: Text; FileExtension: Text): Boolean
@@ -170,7 +201,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
     [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeHasContent', '', true, true)]
     local procedure OnBeforeHasContent(var DocumentAttachment: Record "Document Attachment"; var AttachmentIsAvailable: Boolean; var IsHandled: Boolean)
     begin
-        if DocumentAttachment."Store in Google Drive" then begin
+        if (DocumentAttachment."Store in Google Drive" or DocumentAttachment."Store in OneDrive" or DocumentAttachment."Store in DropBox" or DocumentAttachment."Store in Strapi") then begin
             AttachmentIsAvailable := true;
             IsHandled := true;
         end;
@@ -183,12 +214,27 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             IsHandled := true;
             GoogleDriveManager.OpenFileInBrowser(DocumentAttachment."Google Drive ID");
         end;
+        if DocumentAttachment."Store in OneDrive" then begin
+            IsHandled := true;
+            OneDriveManager.OpenFileInBrowser(DocumentAttachment."OneDrive ID");
+        end;
+        if DocumentAttachment."Store in DropBox" then begin
+            IsHandled := true;
+            DropBoxManager.OpenFileInBrowser(DocumentAttachment."DropBox ID");
+        end;
+        if DocumentAttachment."Store in Strapi" then begin
+            IsHandled := true;
+            StrapiManager.OpenFileInBrowser(DocumentAttachment."Strapi ID");
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeGetAsTempBlob', '', true, true)]
     local procedure OnBeforeGetAsTempBlob(var DocumentAttachment: Record "Document Attachment"; var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
         Base64Data: Text;
         OutStream: OutStream;
         Base64: Codeunit "Base64 Convert";
@@ -199,5 +245,21 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             Base64.FromBase64(Base64Data, OutStream);
             IsHandled := true;
         end;
+        if DocumentAttachment."Store in OneDrive" then begin
+            Base64Data := OneDriveManager.DownloadFileB64(DocumentAttachment."OneDrive ID", DocumentAttachment."File Name", false);
+            TempBlob.CreateOutStream(OutStream);
+            Base64.FromBase64(Base64Data, OutStream);
+            IsHandled := true;
+        end;
+        if DocumentAttachment."Store in DropBox" then begin
+            Base64Data := DropBoxManager.DownloadFileB64('', DocumentAttachment."DropBox ID", DocumentAttachment."File Name", false);
+            TempBlob.CreateOutStream(OutStream);
+            Base64.FromBase64(Base64Data, OutStream);
+            IsHandled := true;
+        end;
+        if DocumentAttachment."Store in Strapi" then begin
+            Base64Data := StrapiManager.DownloadFileB64('', DocumentAttachment."Strapi ID", DocumentAttachment."File Name", false);
+        end;
     end;
+
 }

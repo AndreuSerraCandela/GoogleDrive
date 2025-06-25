@@ -262,6 +262,7 @@ codeunit 95103 "DropBox Manager"
         exit(Base64Data);
     end;
 
+
     procedure CreateFolder(Carpeta: Text): Text
     var
         Ticket: Text;
@@ -769,6 +770,208 @@ codeunit 95103 "DropBox Manager"
             exit(true)
         else
             exit(false);
+    end;
+
+    internal procedure OpenFileInBrowser(DropBoxID: Text[250])
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        Link: Text;
+        ErrorMessage: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con DropBox. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        CompanyInfo.Get();
+
+        // Obtener enlace temporal del archivo
+        Url := CompanyInfo."Url Api DropBox" + get_temporary_link;
+
+        Clear(Body);
+        Body.Add('path', DropBoxID);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de DropBox.');
+
+        StatusInfo.ReadFrom(Respuesta);
+
+        // Verificar si hay error en la respuesta
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
+        end;
+
+        // Obtener el enlace temporal
+        if StatusInfo.Get('link', JToken) then begin
+            Link := JToken.AsValue().AsText();
+            Hyperlink(Link);
+        end else begin
+            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+        end;
+    end;
+
+    internal procedure CreateSubfolderStructure(Id: Text; SubFolder: Text): Text
+    begin
+        if SubFolder = '' then
+            exit(Id);
+
+        exit(FindOrCreateSubfolder(Id, SubFolder, false));
+    end;
+
+    internal procedure OptenerPath(DropBoxID: Text[250]): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JTokenLink: JsonToken;
+        Body: JsonObject;
+        Json: Text;
+        Path: Text;
+    begin
+        //POST https://api.dropboxapi.com/2/files/get_metadata
+        Url := CompanyInfo."Url Api DropBox" + get_metadata;
+        // {
+        // "file": "id:abc123xyz",
+        // "include_media_info": false
+        // }
+
+        Clear(Body);
+        Body.Add('file', DropBoxID);
+        Body.Add('include_media_info', false);
+        Body.WriteTo(Json);
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+        // {
+        // "id": "id:abc123xyz",
+        // "name": "factura.pdf",
+        // "path_lower": "/misfacturas/2025/factura.pdf",
+        // "path_display": "/MisFacturas/2025/Factura.pdf",
+        // "client_modified": "...",
+        // ...
+        // }
+
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('path_display', JTokenLink) then begin
+                Path := JTokenLink.AsValue().AsText();
+                if Path.EndsWith('/') then
+                    Path := CopyStr(Path, 1, StrLen(Path) - 1);
+                exit(Path);
+            end;
+        end;
+        exit('');
+    end;
+
+    procedure GetFolderMapping(TableID: Integer; Var Id: Text): Record "Google Drive Folder Mapping"
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+    begin
+        FolderMapping.SetRange("Table ID", TableID);
+        if FolderMapping.FindFirst() then
+            Id := FolderMapping."Default Folder ID";
+        exit(FolderMapping);
+    end;
+
+    procedure FindOrCreateSubfolder(ParentFolderId: Text; FolderName: Text; SoloSubfolder: Boolean): Text
+    var
+        Files: Record "Name/Value Buffer" temporary;
+        FolderId: Text;
+        FoundFolder: Boolean;
+    begin
+        // First, try to find existing folder
+        ListFolder(ParentFolderId, Files, SoloSubfolder);
+
+        Files.Reset();
+        if Files.FindSet() then begin
+            repeat
+                if (Files.Name = FolderName) and (Files.Value = 'Carpeta') then begin
+                    // Extract folder ID from Value field
+                    FolderId := Files."Google Drive ID";
+                    FoundFolder := true;
+                end;
+            until (Files.Next() = 0) or FoundFolder;
+        end;
+
+        if FoundFolder then
+            exit(FolderId);
+
+        // Folder doesn't exist, create it
+        exit(CreateFolder(FolderName, ParentFolderId, false));
+    end;
+
+    procedure CreateFolder(FolderName: Text; ParentFolderId: Text; RootFolder: Boolean): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+    begin
+        Ticket := Token();
+        Url := CompanyInfo."Url Api DropBox" + create_folder;
+        Clear(Body);
+        if RootFolder then
+            Body.Add('path', FolderName)
+        else
+            Body.Add('path', ParentFolderId + '/' + FolderName);
+        Body.Add('autorename', false);
+        Body.WriteTo(Json);
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('id', JToken) then
+                exit(JToken.AsValue().AsText());
+        end;
+        exit('');
+    end;
+
+    procedure CreateSubfolderPath(TableID: Integer; DocumentNo: Text; DocumentDate: Date; Origen: Enum "Data Storage Provider"): Text
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        SubfolderPath: Text;
+        Year: Text;
+        Month: Text;
+    begin
+        if not FolderMapping.Get(TableID) then
+            exit('');
+
+        if not FolderMapping."Auto Create Subfolders" then
+            exit(FolderMapping."Default Folder ID");
+
+        if FolderMapping."Subfolder Pattern" = '' then
+            exit(FolderMapping."Default Folder ID");
+        SubfolderPath := FolderMapping."Subfolder Pattern";
+
+        // Replace patterns
+        if StrPos(SubfolderPath, '{DOCNO}') > 0 then
+            SubfolderPath := DocumentNo;
+        if DocumentDate = 0D then
+            exit(SubfolderPath);
+        if StrPos(SubfolderPath, '{YEAR}') > 0 then begin
+            Year := Format(Date2DMY(DocumentDate, 3));
+            SubfolderPath := Year;
+        end;
+
+        if StrPos(SubfolderPath, '{MONTH}') > 0 then begin
+            Month := Format(DocumentDate, 0, '<Month Text>');
+            SubfolderPath := Month;
+        end;
+
+        exit(SubfolderPath);
     end;
 
     local procedure FolderExists(FolderPath: Text): Boolean

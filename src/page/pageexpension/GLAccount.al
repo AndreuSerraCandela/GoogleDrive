@@ -22,19 +22,70 @@ pageextension 95107 GLAccountExt extends "G/L Account Card"
     trigger OnAfterGetRecord()
     var
         RecRef: RecordRef;
-        CompaniInfo: Record "Company Information";
+        CompanyInfo: Record "Company Information";
+        Path: Text;
     begin
         if CuentaContable = Rec."No." then
             exit;
-        CompaniInfo.Get();
-        CuentaContable := Rec."No.";
-        GoogleDriveManager.GetFolderMapping(Database::"G/L Account", Id);
-        SubFolder := FolderMapping.CreateSubfolderPath(Database::"G/L Account", Rec."No.", 0D, CompaniInfo."Data Storage Provider");
-        IF SubFolder <> '' then
-            Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
-        RecRef.GetTable(Rec);
-        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
-        CurrPage.Visor.Page.SetRecord(Rec.RecordId);
+        CompanyInfo.Get();
+        case CompanyInfo."Data Storage Provider" of
+            CompanyInfo."Data Storage Provider"::"Google Drive":
+                begin
+                    CuentaContable := Rec."No.";
+                    GoogleDriveManager.GetFolderMapping(Database::"G/L Account", Id);
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"G/L Account", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
+                    IF SubFolder <> '' then
+                        Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
+                    RecRef.GetTable(Rec);
+                    if CompanyInfo."Funcionalidad extendida" then
+                        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
+                    CurrPage.Visor.Page.SetRecord(Rec.RecordId);
+                end;
+            CompanyInfo.
+            "Data Storage Provider"::OneDrive:
+                begin
+                    CuentaContable := Rec."No.";
+                    Path := CompanyInfo."Root Folder" + '/';
+                    FolderMapping.SetRange("Table ID", Database::"G/L Account");
+                    if FolderMapping.FindFirst() Then begin
+                        Id := FolderMapping."Default Folder Id";
+                        Path += FolderMapping."Default Folder Name" + '/';
+                    end;
+
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"G/L Account", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
+                    IF SubFolder <> '' then begin
+                        Id := OneDriveManager.CreateFolderStructure(Id, SubFolder);
+                        Path += SubFolder + '/'
+                    end;
+                    if CompanyInfo."Funcionalidad extendida" then
+                        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
+                    CurrPage.Visor.Page.SetRecord(Rec.RecordId);
+                end;
+            CompanyInfo."Data Storage Provider"::DropBox:
+                begin
+                    CuentaContable := Rec."No.";
+                    FolderMapping.SetRange("Table ID", Database::"G/L Account");
+                    if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"G/L Account", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
+                    IF SubFolder <> '' then
+                        Id := DropBoxManager.CreateFolderStructure(Id, SubFolder);
+                    if CompanyInfo."Funcionalidad extendida" then
+                        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
+                    CurrPage.Visor.Page.SetRecord(Rec.RecordId);
+                end;
+            CompanyInfo."Data Storage Provider"::Strapi:
+                begin
+                    CuentaContable := Rec."No.";
+                    FolderMapping.SetRange("Table ID", Database::"G/L Account");
+                    if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"G/L Account", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
+                    IF SubFolder <> '' then
+                        Id := StrapiManager.CreateFolderStructure(Id, SubFolder);
+                    if CompanyInfo."Funcionalidad extendida" then
+                        CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
+                    CurrPage.Visor.Page.SetRecord(Rec.RecordId);
+                end;
+        end;
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -60,6 +111,9 @@ pageextension 95107 GLAccountExt extends "G/L Account Card"
     var
         CuentaContable: Text;
         GoogleDriveManager: Codeunit "Google Drive Manager";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
         FolderMapping: Record "Google Drive Folder Mapping";
         Id: Text;
         AutoCreateSubFolder: Boolean;

@@ -777,17 +777,15 @@ codeunit 95100 "Google Drive Manager"
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
         Ticket := AccessToken;
-        Url := Inf."Url Api GoogleDrive" + list_folder + FileId + '?fields=parents';
+        Url := Inf."Url Api GoogleDrive" + list_folder + '/' + FileId + '?fields=parents';
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
         if StatusInfo.Get('parents', JTok) then begin
             JEntries := JTok.AsArray();
             foreach JEntryTokens in JEntries do begin
-                JEntry := JEntryTokens.AsObject();
-                if JEntry.Get('id', JEntryToken) then begin
-                    OldParent := JEntryToken.AsValue().AsText();
-                end;
+                OldParent := JEntryTokens.AsValue().AsText()
+
             end;
         end;
         exit(OldParent);
@@ -1201,7 +1199,7 @@ codeunit 95100 "Google Drive Manager"
         Ticket := GoogleDrive.Token();
         Inf.Get;
         if OldParent = '' then begin
-            RecuperarCarpeta(FileId, OldParent);
+            OldParent := RecuperarCarpeta(FileId, OldParent);
         end;
         // Construir la URL con los parámetros addParents y removeParents
         Url := Inf."Url Api GoogleDrive" + move_folder + FileId +

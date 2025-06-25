@@ -182,11 +182,15 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         GoogleDriveManager: Codeunit "Google Drive Manager";
         Id: Text;
         SubFolder: Text;
+        Path: Text;
         DocTypeD: Enum "Purchase Document Type";
         PDFStorage: Record "Document Attachment";
         FileList: Record "Name/Value Buffer" temporary;
         Instream: InStream;
         CompaniInfo: Record "Company Information";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
     begin
         CompaniInfo.Get();
         //Clear(PDFStorageArray);
@@ -205,33 +209,29 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
             VisibleControl1 := false;
             exit;
         end;
-        GoogleDriveManager.GetFolderMapping(gSourceRecordId.TableNo, Id);
+        case CompaniInfo."Data Storage Provider" of
+            CompaniInfo."Data Storage Provider"::"Google Drive":
+                GoogleDriveManager.GetFolderMapping(gSourceRecordId.TableNo, Id);
+            CompaniInfo."Data Storage Provider"::OneDrive:
+                OneDriveManager.GetFolderMapping(gSourceRecordId.TableNo, Id);
+            CompaniInfo."Data Storage Provider"::DropBox:
+                DropBoxManager.GetFolderMapping(gSourceRecordId.TableNo, Id);
+            CompaniInfo."Data Storage Provider"::Strapi:
+                StrapiManager.GetFolderMapping(gSourceRecordId.TableNo, Id);
+        end;
         PDFStorage.SetRange("Table ID", gSourceRecordId.TableNo);
         Case gSourceRecordId.TableNo of
-            18, 23, 27, 167, 156, 5600:
+            Database::Customer, Database::Vendor, Database::Item, Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
                 begin
 
                     PDFStorage.SetRange("No.", RecRef.Field(1).Value);
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(1).Value, 0D, CompaniInfo."Data Storage Provider");
+                    SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(1).Value, 0D, SubFolder, Path);
                 end;
             36:
                 begin
                     DocTypeS := RecRef.Field(1).Value;
-                    // if DocTypeS = DocTypeS::Order Then begin
-                    //     Ticket := Alfresco.Token();
-                    //     rInf.Get;
-                    //     UrlAlfresco := '?&alf_ticket=' + Ticket;
-                    //     Node := RecRef.Field(Contrato.FieldNo(nodeRef)).Value;
-                    //     Url := rInf."Servidor Alfresco" + Nodes + '/'
-                    //     + Node + '/content' + UrlAlfresco;
-                    //     PDFStorage.Id := 0;
-                    //     PDFStorage."Grupos Usuario" := Url;
-                    //     PDFStorage."File Name" := 'URL';
-                    //     MostrarPrimero := true;
-                    //     If PDFStorage.Insert Then;
-                    // end;
                     PDFStorage.SetRange("No.", RecRef.Field(3).Value);
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
+                    SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
                     Case DocTypeS of
                         DocTypeS::"Blanket Order":
                             PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Blanket Order");
@@ -250,7 +250,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
             38:
                 begin
                     PDFStorage.SetRange("No.", RecRef.Field(3).Value);
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
+                    SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
                     DocTyped := RecRef.Field(1).Value;
                     Case DocTyped of
                         DocTyped::"Blanket Order":
@@ -270,22 +270,22 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
             112:
                 begin
                     PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::Invoice);
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
+                    SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
                 end;
             114:
                 begin
                     PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Credit Memo");
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
+                    SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
                 end;
             122:
                 begin
                     PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::Invoice);
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
+                    SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
                 end;
             144:
                 begin
                     PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Credit Memo");
-                    SubFolder := FolderMapping.CreateSubfolderPath(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, CompaniInfo."Data Storage Provider");
+                    SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
                 end;
             1173:
                 begin
@@ -294,17 +294,43 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                     PDFStorage.SetRange("No.", RecRef.Field(PDFStorage.FieldNo("No.")).Value);
                     PDFStorage.SetRange("Line No.", RecRef.Field(PDFStorage.FieldNo("Line No.")).Value);
                     PDFStorage.SetRange("Document Type", RecRef.Field(PDFStorage.FieldNo("Document Type")).Value);
-                    SubFolder := FolderMapping.CreateSubfolderPath(RecRef.Field(PDFStorage.FieldNo("Table ID")).Value, RecRef.Field(PDFStorage.FieldNo("No.")).Value, RecRef.Field(PDFStorage.FieldNo("Line No.")).Value, CompaniInfo."Data Storage Provider");
+                    SubFolder := ObtenerSubfolder(RecRef.Field(PDFStorage.FieldNo("Table ID")).Value, RecRef.Field(PDFStorage.FieldNo("No.")).Value, RecRef.Field(PDFStorage.FieldNo("Line No.")).Value, SubFolder, Path);
                 end;
 
 
 
         end;
         //
-        IF SubFolder <> '' then
-            Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
+        IF SubFolder <> '' then begin
+            case CompaniInfo."Data Storage Provider" of
+                CompaniInfo."Data Storage Provider"::"Google Drive":
+                    begin
+                        Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
+                        GoogleDriveManager.ListFolder(Id, FileList, true);
+                    end;
+                CompaniInfo."Data Storage Provider"::OneDrive:
+                    begin
+                        IF SubFolder <> '' then begin
+                            Id := OneDriveManager.CreateFolderStructure(Id, SubFolder);
+                            Path += SubFolder + '/'
+                        end;
+                        OneDriveManager.ListFolder(Id, FileList, true);
 
-        GoogleDriveManager.ListFolder(Id, FileList, true);
+                    end;
+                CompaniInfo."Data Storage Provider"::DropBox:
+                    begin
+                        Id := DropBoxManager.CreateSubfolderStructure(Id, SubFolder);
+                        DropBoxManager.ListFolder(Id, FileList, true);
+                    end;
+                CompaniInfo."Data Storage Provider"::Strapi:
+                    begin
+                        Id := StrapiManager.CreateSubfolderStructure(Id, SubFolder);
+                        StrapiManager.ListFolder(Id, FileList, true);
+                    end;
+            end;
+        end;
+
+
         FileList.SetFilter("Name", '*.pdf');
         VisibleControl1 := false;
         if PDFStorage.FindSet() then VisibleControl1 := true;
@@ -335,7 +361,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
 
                         until FileList.Next() = 0;
                 end;
-            18, 23, 27, 156, 167, 5600:
+            Database::Customer, Database::Vendor, Database::Item, Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
                 begin
                     if FileList.FindFirst() then
                         repeat
@@ -419,6 +445,35 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         end;
         PDFViewerCard.Run();
 
+    end;
+
+    local procedure ObtenerSubfolder(TableNo: Integer; Value: Variant; Date: Date; var SubFolder: Text; var Path: Text): Text
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        CompanyInfo: Record "Company Information";
+        Id: Text;
+        GoogleDriveManager: Codeunit "Google Drive Manager";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+    begin
+        CompanyInfo.Get();
+        case CompanyInfo."Data Storage Provider" of
+            CompanyInfo."Data Storage Provider"::"Google Drive":
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+            CompanyInfo."Data Storage Provider"::OneDrive:
+                begin
+                    SubFolder := OneDriveManager.CreateFolderStructure(Id, SubFolder);
+                    FolderMapping.SetRange("Table ID", TableNo);
+                    if FolderMapping.FindFirst() Then Path += FolderMapping."Default Folder Name" + '/';
+                    SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+                end;
+            CompanyInfo."Data Storage Provider"::DropBox:
+                SubFolder := DropBoxManager.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+            CompanyInfo."Data Storage Provider"::Strapi:
+                SubFolder := StrapiManager.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+        end;
+        exit(SubFolder);
     end;
 
     var

@@ -286,23 +286,6 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                 Caption = 'Google Drive';
                 Visible = IsGoogleDrive;
 
-                action("Show Manual")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Mostrar Manual';
-                    ToolTip = 'Muestra el manual de usuario de Google Drive.';
-                    Image = Help;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedIsBig = true;
-
-                    trigger OnAction()
-                    var
-                        GoogleDriveManualViewer: Page "Google Drive Manual Viewer";
-                    begin
-                        GoogleDriveManualViewer.Run();
-                    end;
-                }
 
                 action("Configure Default Settings")
                 {
@@ -465,22 +448,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     end;
                 }
 
-                action("Folder Mapping Setup")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Configurar Mapeo de Carpetas';
-                    ToolTip = 'Configura qué carpetas de Google Drive usar para cada tipo de documento.';
-                    Image = Setup;
-                    Promoted = true;
-                    PromotedCategory = Process;
 
-                    trigger OnAction()
-                    var
-                        FolderMappingPage: Page "Google Drive Folder Mapping";
-                    begin
-                        FolderMappingPage.Run();
-                    end;
-                }
 
                 action("Diagnose OAuth Configuration")
                 {
@@ -767,6 +735,40 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     end;
                 }
             }
+            action("Folder Mapping Setup")
+            {
+                ApplicationArea = All;
+                Caption = 'Configurar Mapeo de Carpetas';
+                ToolTip = 'Configura qué carpetas de Google Drive usar para cada tipo de documento.';
+                Image = Setup;
+                Promoted = true;
+                PromotedCategory = Process;
+
+                trigger OnAction()
+                var
+                    FolderMappingPage: Page "Google Drive Folder Mapping";
+                begin
+                    FolderMappingPage.Run();
+                end;
+            }
+            action("Show Manual")
+            {
+                ApplicationArea = All;
+                Caption = 'Mostrar Manual';
+                ToolTip = 'Muestra el manual de usuario del Drive.';
+                Image = Help;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+
+                trigger OnAction()
+                var
+                    GoogleDriveManualViewer: Page "Google Drive Manual Viewer";
+                begin
+                    GoogleDriveManualViewer.Run();
+                end;
+            }
+
         }
     }
 

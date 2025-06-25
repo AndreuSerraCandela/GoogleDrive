@@ -302,7 +302,7 @@ codeunit 95102 "OneDrive Manager"
         // Construir la ruta del archivo
         //https://graph.microsoft.com/v1.0/me/drive/root:/RUTA/CARPETA/archivo.txt:/content
         Url := graph_endpoint + upload_endpoint;
-        Url := StrSubstNo(Url, Carpeta);
+        Url := StrSubstNo(Url, Carpeta + Filename + '.' + FileExtension);
         //Falta Token
         Respuesta := RestApiOfset(Url, Ticket, RequestType::put, Base64Data);
 
@@ -316,46 +316,59 @@ codeunit 95102 "OneDrive Manager"
         exit(Id);
     end;
 
-    procedure DownloadFileB64(Carpeta: Text; var Base64Data: Text; Filename: Text; BajarFichero: Boolean): Text
+    procedure DownloadFileB64(OneDriveID: Text[250]; FileName: Text; BajarFichero: Boolean): Text
     var
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;
         Url: Text;
         Respuesta: Text;
-        Id: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        Link: Text;
+        ErrorMessage: Text;
         TempBlob: Codeunit "Temp Blob";
-        Int: Instream;
+        InStr: InStream;
+        OutStr: OutStream;
         Bs64: Codeunit "Base64 Convert";
-        FilePath: Text;
+        Base64Data: Text;
     begin
-        Ticket := Format(Token());
+        if not Authenticate() then
+            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
 
-        // Primero necesitamos obtener el ID del archivo
-        if Carpeta <> '' then
-            FilePath := Carpeta + '/' + Filename
-        else
-            FilePath := Filename;
+        Ticket := Token();
+        Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1?select=id,name,webUrl,@microsoft.graph.downloadUrl', OneDriveID);
 
-        Id := GetFileId(FilePath);
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
-        if Id = '' then
-            Error('Archivo no encontrado: %1', FilePath);
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de OneDrive.');
 
-        Url := graph_endpoint + download_endpoint;
-        Url := StrSubstNo(Url, Id);
+        StatusInfo.ReadFrom(Respuesta);
 
-        TempBlob.CreateInStream(Int);
-        RestApiGetContentStream(Url, RequestType::Get, Int);
-        Base64Data := Bs64.ToBase64(Int);
-
-        if BajarFichero then begin
-            DownloadFromStream(Int, 'Guardar', 'C:\Temp', 'ALL Files (*.*)|*.*', Filename);
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
         end;
 
-        exit(Base64Data);
+        if StatusInfo.Get('@microsoft.graph.downloadUrl', JToken) then begin
+            Link := JToken.AsValue().AsText();
+
+            // Descargar el contenido del archivo
+            TempBlob.CreateOutStream(OutStr);
+            RestApiGetContentStream(Link, RequestType::get, InStr);
+
+            // Convertir a base64
+            Base64Data := Bs64.ToBase64(InStr);
+
+            if BajarFichero then begin
+                DownloadFromStream(InStr, 'Guardar', 'C:\Temp', 'ALL Files (*.*)|*.*', FileName);
+            end;
+
+            exit(Base64Data);
+        end else begin
+            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+        end;
     end;
-
-
 
     procedure DeleteFolder(Carpeta: Text; HideDialog: Boolean): Text
     var
@@ -692,6 +705,191 @@ codeunit 95102 "OneDrive Manager"
         // end;
 
         exit(NewFolderId);
+    end;
+
+    internal procedure OpenFileInBrowser(OneDriveID: Text[250])
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        Link: JsonObject;
+        LinkToken: JsonToken;
+        WebUrl: Text;
+        ErrorMessage: Text;
+        Json: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        // Obtener metadatos del archivo incluyendo el enlace web
+        //Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1?select=id,name,webUrl,@microsoft.graph.downloadUrl', OneDriveID);
+        Url := graph_endpoint + '/me/drive/items/' + OneDriveID + '/createLink';
+        Json := '{"type": "view","scope": "anonymous"}';
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de OneDrive.');
+
+        StatusInfo.ReadFrom(Respuesta);
+
+        // Verificar si hay error en la respuesta
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
+        end;
+        //{"@odata.context":"https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.permission",
+        //"id":"2b09a13e-84fe-435b-a1eb-e1c1ef07132f","roles":["read"],"shareId":"u!aHR0cHM6Ly9tYWxsYXBhbG1hLW15LnNoYXJlcG9pbnQuY29tLzppOi9nL3BlcnNvbmFsL2FuZHJldXNlcnJhX21hbGxhcGFsbWFfb25taWNyb3NvZnRfY29tL0VkTVFCOFloLUJsTWp1TlVfUkRTVnA0QjQtc2JSakpBMWw3M1ZVVXBSZVhRdmc","hasPassword":false,//
+        //"link":{"scope":"anonymous","type":"view","webUrl":"https://mallapalma-my.sharepoint.com/:i:/g/personal/andreuserra_mallapalma_onmicrosoft_com/EdMQB8Yh-BlMjuNU_RDSVp4B4-sbRjJA1l73VUUpReXQvg","preventsDownload":false}}
+        // Intentar obtener el enlace web
+        if StatusInfo.Get('link', JToken) then begin
+            Link := JToken.AsObject();
+            if Link.Get('webUrl', LinkToken) then begin
+                WebUrl := LinkToken.AsValue().AsText();
+                Hyperlink(WebUrl);
+            end;
+        end else begin
+            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+        end;
+    end;
+
+    internal procedure GetFolderMapping(TableID: Integer; Var Id: Text): Record "Google Drive Folder Mapping"
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+    begin
+        FolderMapping.SetRange("Table ID", TableID);
+        if FolderMapping.FindFirst() then
+            Id := FolderMapping."Default Folder ID";
+        exit(FolderMapping);
+    end;
+
+    internal procedure Movefile(OneDriveID: Text[250]; Destino: Text; arg: Text; Mover: Boolean; Filename: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JTokenLink: JsonToken;
+        Body: JsonObject;
+        JDestino: JsonObject;
+        Json: Text;
+        ErrorMessage: Text;
+        CopiedFileId: Text;
+        JEntryToken: JsonToken;
+        JEntries: JsonArray;
+        JEntryTokens: JsonToken;
+        JEntry: JsonObject;
+        ItemId: Text;
+        ItemName: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+
+        // Primero copiar el archivo al destino
+        Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1/copy', OneDriveID);
+
+        Clear(Body);
+        Clear(JDestino);
+        JDestino.Add('id', Destino);
+        Body.Add('parentReference', JDestino);
+        if arg <> '' then
+            Body.Add('name', arg);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('error', JTokenLink) then begin
+                ErrorMessage := JTokenLink.AsValue().AsText();
+                Error('Error al copiar el archivo: %1. Respuesta completa: %2', ErrorMessage, Respuesta);
+            end;
+
+            // Obtener el ID del archivo copiado
+            if StatusInfo.Get('id', JTokenLink) then begin
+                CopiedFileId := JTokenLink.AsValue().AsText();
+            end;
+        end else begin
+            // Un get de los archivos de la carpeta destino y, buscar por nombre
+            Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1/children', Destino);
+            Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+            if Respuesta <> '' then begin
+                StatusInfo.ReadFrom(Respuesta);
+                if StatusInfo.Get('value', JEntryToken) then begin
+                    JEntries := JEntryToken.AsArray();
+
+                    foreach JEntryTokens in JEntries do begin
+                        JEntry := JEntryTokens.AsObject();
+                        if JEntry.Get('id', JEntryToken) then
+                            ItemId := JEntryToken.AsValue().AsText()
+                        else
+                            ItemId := '';
+
+                        // Obtener el nombre del elemento
+                        if JEntry.Get('name', JEntryToken) then
+                            ItemName := JEntryToken.AsValue().AsText()
+                        else
+                            ItemName := '';
+                        if ItemName = Filename then begin
+                            CopiedFileId := ItemId;
+                            break;
+                        end;
+                    end;
+                end;
+            end;
+        end;
+
+
+        // Si la copia fue exitosa, eliminar el archivo original
+        if (Mover) and (CopiedFileId <> '') then begin
+            if not DeleteFile(OneDriveID) then begin
+                Error('El archivo se copió pero no se pudo eliminar el original. ID del archivo copiado: %1', Filename);
+            end;
+        end;
+        if CopiedFileId = '' then Error('No se pudo copiar el archivo');
+        exit(CopiedFileId);
+    end;
+
+    internal procedure OptenerPath(OneDriveID: Text[250]): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JTokenLink: JsonToken;
+        Json: JsonObject;
+        JsonParent: JsonObject;
+        Name: JsonToken;
+        Parent: JsonToken;
+        PathBase: JsonToken;
+        RutaCompleta: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        //GET https://graph.microsoft.com/v1.0/me/drive/items/{item-id}
+        Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1', OneDriveID);
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+        Json.ReadFrom(Respuesta);
+
+        Json.Get('name', Name);
+        if Json.Get('parentReference', Parent) Then begin
+            JsonParent := Parent.AsObject();
+            if JsonParent.Get('path', PathBase) then
+                RutaCompleta := PathBase.AsValue().AsText();
+        end
+        else
+            Error('No se pudo obtener el path del archivo');
+
+        exit(RutaCompleta);
     end;
 
     procedure DeleteFile(GetDocumentID: Text): Boolean
