@@ -37,15 +37,17 @@ codeunit 95102 "OneDrive Manager"
     procedure StartOAuthFlow()
     var
         OAuthURL: Text;
-        RedirectURI: Text;
+    //RedirectURI: Text;
     begin
         // Construir URL de autorización de OneDrive/Microsoft Graph
-        RedirectURI := 'https://businesscentral.dynamics.com/OAuthLanding.htm'; // Para aplicaciones de escritorio
+        //RedirectURI := 'https://businesscentral.dynamics.com/OAuthLanding.htm'; // Para aplicaciones de escritorio
 
         OAuthURL := StrSubstNo(auth_endpoint, CompanyInfo."OneDrive Tenant ID") +
                    '?client_id=' + CompanyInfo."OneDrive Client ID" +
                    '&response_type=code' +
                    '&scope=Files.ReadWrite.All%20offline_access' +
+                   '&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient' +
+                   '&state=12345' +
                    '&response_mode=query';
 
         // Abrir navegador o mostrar URL

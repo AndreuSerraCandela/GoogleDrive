@@ -142,7 +142,7 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'DropBox App Secret';
             DataClassification = CustomerContent;
         }
-        field(95124; "DropBox Access Token"; Text[1024])
+        field(95124; "DropBox Access Token"; Blob)
         {
             Caption = 'DropBox Access Token';
             DataClassification = CustomerContent;
@@ -194,6 +194,16 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
         {
 
         }
+        field(95137; "Code DropBox"; Text[1024])
+        {
+            Caption = 'DropBox Code';
+            DataClassification = CustomerContent;
+        }
+        field(95138; "Code GoogleDrive"; Text[1024])
+        {
+            Caption = 'GoogleDrive Code';
+            DataClassification = CustomerContent;
+        }
     }
 
     procedure GetTokenGoogleDrive(): Text
@@ -214,6 +224,26 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
     procedure GetTokenOndrive(): Text
     begin
 
+    end;
+
+    procedure SetTokenDropbox(NewTokenDropbox: Text)
+    var
+        OutStream: OutStream;
+    begin
+        Clear("DropBox Access Token");
+        "DropBox Access Token".CreateOutStream(OutStream, TEXTENCODING::UTF8);
+        OutStream.WriteText(NewTokenDropbox);
+        Modify();
+    end;
+
+    procedure GetTokenDropbox() TokenDropbox: Text
+    var
+        TypeHelper: Codeunit "Type Helper";
+        InStream: InStream;
+    begin
+        CalcFields("DropBox Access Token");
+        "DropBox Access Token".CreateInStream(InStream, TEXTENCODING::UTF8);
+        exit(TypeHelper.TryReadAsTextWithSepAndFieldErrMsg(InStream, TypeHelper.LFSeparator(), FieldName("DropBox Access Token")));
     end;
 
 }

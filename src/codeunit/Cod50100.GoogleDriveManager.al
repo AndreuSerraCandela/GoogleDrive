@@ -47,6 +47,7 @@ codeunit 95100 "Google Drive Manager"
         SecretKey := CompanyInfo."Google Client Secret";
         // Use OOB (out-of-band) redirect URI for desktop applications
         RedirectURL := 'https://businesscentral.dynamics.com/OAuthLanding.htm';
+        RedirectURL := 'https://developers.google.com/oauthplayground';
     end;
 
     procedure Authenticate(): Boolean
@@ -99,7 +100,7 @@ codeunit 95100 "Google Drive Manager"
         end;
 
         // Build scopes and encode them
-        Scopes := 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive';
+        Scopes := 'https://www.googleapis.com/auth/drive.file';// https://www.googleapis.com/auth/drive';
         EncodedScopes := UrlEncode(Scopes);
 
         // Encode redirect URI
@@ -111,8 +112,8 @@ codeunit 95100 "Google Drive Manager"
         // Build authorization URL with proper parameter separation
         AuthUrl := CompanyInfo."Google Auth URI" +
                    '?client_id=' + CompanyInfo."Google Client ID" +
-                   '&redirect_uri=' + EncodedRedirectUri +
-                   '&scope=' + EncodedScopes +
+                   '&redirect_uri=https://developers.google.com/oauthplayground' +// EncodedRedirectUri +
+                   '&scope=' + Scopes +
                    '&response_type=code' +
                    '&access_type=offline' +
                    '&state=' + State +

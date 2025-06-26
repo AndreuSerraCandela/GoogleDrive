@@ -27,26 +27,35 @@ codeunit 95103 "DropBox Manager"
         if CompanyInfo."DropBox Token Expiration" < CurrentDateTime then
             RefreshAccessToken();
 
-        exit(CompanyInfo."DropBox Access Token" <> '');
+        exit(CompanyInfo."DropBox Access Token".HasValue);
     end;
 
     procedure StartOAuthFlow()
     var
         OAuthURL: Text;
+        Ventana: Page "Dialogo Dropbox";
+        CodeDropBox: Text;
     begin
-        // TODO: Implementar flujo OAuth de DropBox
-        // Construir URL de autorización de DropBox
-        OAuthURL := 'https://www.dropbox.com/oauth2/authorize?' +
-                   'client_id=' + CompanyInfo."DropBox App Key" +
-                   '&response_type=code' +
-                   '&redirect_uri=urn:ietf:wg:oauth:2.0:oob';
+        CompanyInfo.Get();
+        Hyperlink('https://www.dropbox.com/oauth2/authorize?client_id=' + CompanyInfo."DropBox App Key" + '&response_type=code&token_access_type=offline');
+        Ventana.SetTexto('Código DropBox');
+        Ventana.RunModal();
+        Ventana.GetTexto(CodeDropBox);
+        ObtenerToken(CodeDropBox);
+        // // TODO: Implementar flujo OAuth de DropBox
+        // // Construir URL de autorización de DropBox
+        // OAuthURL := 'https://www.dropbox.com/oauth2/authorize?' +
+        //            'client_id=' + CompanyInfo."DropBox App Key" +
+        //            '&response_type=code' +
+        //            '&redirect_uri=https://oauth.pstmn.io/v1/callback';
 
-        // Abrir navegador o mostrar URL
-        Hyperlink(OAuthURL);
+        // // Abrir navegador o mostrar URL
+        // Hyperlink(OAuthURL);
     end;
 
     procedure RefreshAccessToken()
     begin
+        CompanyInfo.Get();
         if CompanyInfo."DropBox Refresh Token" = '' then
             Error('No hay refresh token configurado para DropBox.');
 
@@ -59,7 +68,7 @@ codeunit 95103 "DropBox Manager"
             exit(false);
         if CompanyInfo."DropBox App Secret" = '' then
             exit(false);
-        if CompanyInfo."DropBox Access Token" = '' then
+        if not CompanyInfo."DropBox Access Token".HasValue then
             exit(false);
 
         exit(true);
@@ -100,7 +109,7 @@ codeunit 95103 "DropBox Manager"
         if CompanyInfo."DropBox Token Expiration" < CurrentDateTime then
             RefreshToken();
 
-        exit(CompanyInfo."DropBox Access Token");
+        exit(CompanyInfo.GetTokenDropbox());
     end;
 
     procedure ObtenerToken(CodeDropbox: Text): Text
@@ -111,26 +120,39 @@ codeunit 95103 "DropBox Manager"
         StatusInfo: JsonObject;
         JnodeEntryToken: JsonToken;
         Id: Text;
+        Respuesta: Text;
     begin
+        CompanyInfo.Get;
         Url := CompanyInfo."Url Api DropBox" + oauth2_token + '?code=' + CodeDropbox + '&grant_type=authorization_code';
-        Json := RestApi(Url, RequestType::post, Json, CompanyInfo."DropBox App Key", CompanyInfo."DropBox App Secret");
+        Respuesta := RestApi(Url, RequestType::post, Json, CompanyInfo."DropBox App Key", CompanyInfo."DropBox App Secret");
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+        // {
+        //     "access_token": "sl.u.AbX9y6Fe3AuH5o66-gmJpR032jwAwQPIVVzWXZNkdzcYT02akC2de219dZi6gxYPVnYPrpvISRSf9lxKWJzYLjtMPH-d9fo_0gXex7X37VIvpty4-G8f4-WX45AcEPfRnJJDwzv-",
+        //     "expires_in": 14400,
+        //     "token_type": "bearer",
+        //     "scope": "account_info.read files.content.read files.content.write files.metadata.read",
+        //     "refresh_token": "nBiM85CZALsAAAAAAAAAAQXHBoNpNutK4ngsXHsqW4iGz9tisb3JyjGqikMJIYbd",
+        //     "account_id": "dbid:AAH4f99T0taONIb-OurWxbNQ6ywGRopQngc",
+        //     "uid": "12345"
+        // }
+        //recuperar AccessToken y refresh_token
 
-        StatusInfo.ReadFrom(Json);
-
-        if StatusInfo.Get('refresh_token', JnodeEntryToken) then begin
+        If StatusInfo.Get('refresh_token', JnodeEntryToken) Then begin
             Id := JnodeEntryToken.AsValue().AsText();
             CompanyInfo."DropBox Refresh Token" := Id;
-            CompanyInfo."DropBox Token Expiration" := CurrentDateTime + 14400000; // 4 horas
-            CompanyInfo.Modify();
+            //Añadir 4 horas a la fecha actual
+            CompanyInfo."DropBox Token Expiration" := CurrentDateTime + 14400000;
+            CompanyInfo.Modify;
         end;
 
-        if StatusInfo.Get('access_token', JnodeEntryToken) then begin
+        If StatusInfo.Get('access_token', JnodeEntryToken) Then begin
             Id := JnodeEntryToken.AsValue().AsText();
-            CompanyInfo."DropBox Access Token" := Id;
+            CompanyInfo.SetTokenDropbox(Id);
             CompanyInfo.Modify();
         end;
-
-        exit(Id);
+        Commit;
+        exit(id);
     end;
 
     procedure RefreshToken(): Text
@@ -149,7 +171,7 @@ codeunit 95103 "DropBox Manager"
 
         if StatusInfo.Get('access_token', JnodeEntryToken) then begin
             Id := JnodeEntryToken.AsValue().AsText();
-            CompanyInfo."DropBox Access Token" := Id;
+            CompanyInfo.SetTokenDropbox(Id);
             CompanyInfo."DropBox Token Expiration" := CurrentDateTime + 14400000; // 4 horas
             CompanyInfo.Modify();
         end;

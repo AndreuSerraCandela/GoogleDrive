@@ -101,6 +101,10 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     ExtendedDatatype = Masked;
                     Editable = TokenFieldsEditable;
                 }
+                field("Code GoogleDrive"; Rec."Code GoogleDrive")
+                {
+                    ApplicationArea = All;
+                }
 
                 field("Fecha Expiracion Token GoogleDrive"; Rec."Expiracion Token GoogleDrive")
                 {
@@ -206,6 +210,10 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     ApplicationArea = All;
                     ToolTip = 'Especifica la carpeta raíz de DropBox.';
                 }
+                field("Code DropBox"; Rec."Code DropBox")
+                {
+                    ApplicationArea = All;
+                }
             }
 
             group("DropBox Tokens")
@@ -213,12 +221,16 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                 Caption = 'Tokens DropBox';
                 Visible = IsDropBox;
 
-                field("DropBox Access Token"; Rec."DropBox Access Token")
+                field("DropBox Access Token"; TokenDropBox)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Token de acceso actual de DropBox.';
                     ExtendedDatatype = Masked;
                     Editable = TokenFieldsEditable;
+                    trigger OnValidate()
+                    begin
+                        Rec.SetTokenDropbox(TokenDropBox);
+                    end;
                 }
 
                 field("DropBox Refresh Token"; Rec."DropBox Refresh Token")
@@ -334,18 +346,19 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     end;
                 }
 
-                action("Complete OAuth")
+                action("Obtener Token")
                 {
                     ApplicationArea = All;
-                    Caption = 'Completar OAuth';
+                    Caption = 'Obtener Token';
                     ToolTip = 'Completa el proceso de autenticación OAuth con el código de autorización.';
                     Image = Approve;
 
                     trigger OnAction()
                     var
-                        OAuthDialog: Page "OAuth Completion Dialog";
+                        GoogleDriveManager: Codeunit "Google Drive Manager";
                     begin
-                        OAuthDialog.RunModal();
+                        GoogleDriveManager.Initialize();
+                        GoogleDriveManager.CompleteOAuthFlow(Rec."Code GoogleDrive", Rec."Google Project ID");
                     end;
                 }
 
@@ -616,6 +629,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     end;
                 }
 
+
                 action("Actualizar DropBox Token")
                 {
                     ApplicationArea = All;
@@ -778,6 +792,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
         IsOneDrive: Boolean;
         IsDropBox: Boolean;
         IsStrapi: Boolean;
+        TokenDropBox: Text;
 
     trigger OnOpenPage()
     begin
@@ -786,6 +801,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
         IsOneDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::OneDrive;
         IsDropBox := Rec."Data Storage Provider" = Rec."Data Storage Provider"::DropBox;
         IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
+
     end;
 
     trigger OnAfterGetRecord()
@@ -794,6 +810,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
         IsOneDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::OneDrive;
         IsDropBox := Rec."Data Storage Provider" = Rec."Data Storage Provider"::DropBox;
         IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
+        TokenDropBox := Rec.GetTokenDropbox();
     end;
 
     local procedure SetDefaultGoogleDriveSettings()
