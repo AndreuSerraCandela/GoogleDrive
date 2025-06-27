@@ -12,6 +12,14 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Selecciona el proveedor de almacenamiento de datos a utilizar.';
+                    trigger OnValidate()
+                    begin
+                        IsGoogleDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::"Google Drive";
+                        IsOneDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::OneDrive;
+                        IsDropBox := Rec."Data Storage Provider" = Rec."Data Storage Provider"::DropBox;
+                        IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
+                        CurrPage.Update(false);
+                    end;
                 }
                 field("Funcionalidad extendida"; Rec."Funcionalidad extendida")
                 {

@@ -655,6 +655,11 @@ codeunit 95104 "Strapi Manager"
         exit(FindOrCreateSubfolder(Id, SubFolder, false));
     end;
 
+    internal procedure EditFile(StrapiID: Text[250])
+    begin
+        OpenFileInBrowser(StrapiID);
+    end;
+
     procedure GetFolderMapping(TableID: Integer; Var Id: Text): Record "Google Drive Folder Mapping"
     var
         FolderMapping: Record "Google Drive Folder Mapping";

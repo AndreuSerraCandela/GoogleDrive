@@ -59,7 +59,7 @@ page 95105 "Google Drive List"
                                     Inf."Data Storage Provider"::"Google Drive":
                                         GoogleDriveManager.OpenFileInBrowser(Rec."Google Drive ID");
                                     Inf."Data Storage Provider"::OneDrive:
-                                        OneDriveManager.OpenFileInBrowser(Rec."Google Drive ID");
+                                        OneDriveManager.OpenFileInBrowser(Rec."Google Drive ID", false);
                                     Inf."Data Storage Provider"::DropBox:
                                         DropBoxManager.OpenFileInBrowser(Rec."Google Drive ID");
                                     Inf."Data Storage Provider"::Strapi:

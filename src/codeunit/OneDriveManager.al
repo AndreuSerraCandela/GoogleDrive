@@ -709,7 +709,7 @@ codeunit 95102 "OneDrive Manager"
         exit(NewFolderId);
     end;
 
-    internal procedure OpenFileInBrowser(OneDriveID: Text[250])
+    internal procedure OpenFileInBrowser(OneDriveID: Text[250]; IsEdit: Boolean)
     var
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;
@@ -731,6 +731,8 @@ codeunit 95102 "OneDrive Manager"
         //Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1?select=id,name,webUrl,@microsoft.graph.downloadUrl', OneDriveID);
         Url := graph_endpoint + '/me/drive/items/' + OneDriveID + '/createLink';
         Json := '{"type": "view","scope": "anonymous"}';
+        if IsEdit then
+            Json := '{"type": "edit","scope": "anonymous"}';
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
 
         if Respuesta = '' then
@@ -892,6 +894,11 @@ codeunit 95102 "OneDrive Manager"
             Error('No se pudo obtener el path del archivo');
 
         exit(RutaCompleta);
+    end;
+
+    internal procedure EditFile(OneDriveID: Text[250])
+    begin
+        OpenFileInBrowser(OneDriveID, true);
     end;
 
     procedure DeleteFile(GetDocumentID: Text): Boolean

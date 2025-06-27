@@ -1934,6 +1934,57 @@ codeunit 95100 "Google Drive Manager"
             exit(false);
     end;
 
+    internal procedure EditFile(GoogleDriveID: Text[250])
+    var
+        Inf: Record "Company Information";
+        Url: Text[250];
+        RequestHeaders: HttpHeaders;
+        ResponseMessage: HttpResponseMessage;
+        GoogleDrive: Codeunit "Google Drive Manager";
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        Json: Text;
+        RequestType: Option get,patch,put,post,delete;
+        JToken: JsonToken;
+        Link: Text;
+        ErrorMessage: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+
+        Inf.Get;
+        Url := Inf."Url Api GoogleDrive" + get_metadata + GoogleDriveID + '/permissions';
+        Json := '{"type": "anyone","role": "writer","allowFileDiscovery": false}';
+
+        Respuesta := RestApiToken(Url, AccessToken, RequestType::post, Json);
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de Google Drive.');
+
+        Url := Inf."Url Api GoogleDrive" + get_metadata + GoogleDriveID + '?fields=webViewLink';
+        Respuesta := RestApiToken(Url, AccessToken, RequestType::get, '');
+
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+
+        // Verificar si hay error en la respuesta
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
+        end;
+
+        if StatusInfo.Get('webViewLink', JToken) then begin
+            Link := JToken.AsValue().AsText();
+            Hyperlink(Link);
+        end else if StatusInfo.Get('webContentLink', JToken) then begin
+            Link := JToken.AsValue().AsText();
+            Hyperlink(Link);
+        end else begin
+            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+        end;
+    end;
+
     procedure RestApi(url: Text; RequestType: Option Get,patch,put,post,delete; payload: Text): Text
     var
         Ok: Boolean;

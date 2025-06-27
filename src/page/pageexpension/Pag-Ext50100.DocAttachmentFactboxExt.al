@@ -42,7 +42,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 ToolTip = 'Specifies the ID of the file in Google Drive.';
                 Caption = 'Google Drive ID';
                 Editable = false;
-                Visible = IsGoogle;
+                Visible = false;// IsGoogle;
 
                 trigger OnDrillDown()
                 var
@@ -57,12 +57,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 ToolTip = 'Specifies the ID of the file in OneDrive.';
                 Caption = 'OneDrive ID';
                 Editable = false;
-                Visible = IsOndrive;
+                Visible = false;// IsOndrive;
                 trigger OnDrillDown()
                 var
                     OneDriveManager: Codeunit "OneDrive Manager";
                 begin
-                    OneDriveManager.OpenFileInBrowser(Rec."OneDrive ID");
+                    OneDriveManager.OpenFileInBrowser(Rec."OneDrive ID", false);
                 end;
             }
             field("DropBox ID"; Rec."DropBox ID")
@@ -71,7 +71,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 ToolTip = 'Specifies the ID of the file in DropBox.';
                 Caption = 'DropBox ID';
                 Editable = false;
-                Visible = IsDropBox;
+                Visible = false;// IsDropBox;
                 trigger OnDrillDown()
                 var
                     DropBoxManager: Codeunit "DropBox Manager";
@@ -85,7 +85,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 ToolTip = 'Specifies the ID of the file in Strapi.';
                 Caption = 'Strapi ID';
                 Editable = false;
-                Visible = IsStrapi;
+                Visible = false;// IsStrapi;
                 trigger OnDrillDown()
                 var
                     StrapiManager: Codeunit "Strapi Manager";
@@ -422,6 +422,35 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
         addafter(MoveToGoogleDrive)
         {
+            action("Editar en Drive")
+            {
+                ApplicationArea = All;
+                Caption = 'Editar en Drive';
+                Image = Edit;
+                ToolTip = 'Edita el archivo en Drive.';
+                trigger OnAction()
+                var
+                    GoogleDriveManager: Codeunit "Google Drive Manager";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
+                    GoogleDrive: Codeunit "Google Drive Manager";
+                    OneDrive: Codeunit "OneDrive Manager";
+                    DropBox: Codeunit "DropBox Manager";
+                    Strapi: Codeunit "Strapi Manager";
+                begin
+                    case Rec."Storage Provider" of
+                        Rec."Storage Provider"::"Google Drive":
+                            GoogleDrive.EditFile(Rec."Google Drive ID");
+                        Rec."Storage Provider"::OneDrive:
+                            OneDrive.EditFile(Rec."OneDrive ID");
+                        Rec."Storage Provider"::DropBox:
+                            DropBox.EditFile(Rec."DropBox ID");
+                        Rec."Storage Provider"::Strapi:
+                            Strapi.EditFile(Rec."Strapi ID");
+                    end;
+                end;
+            }
             action(DownloadFile)
             {
                 ApplicationArea = All;

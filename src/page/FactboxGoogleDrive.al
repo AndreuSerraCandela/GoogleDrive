@@ -77,6 +77,37 @@ page 95100 "Google Drive Factbox"
     {
         area(Processing)
         {
+            action("Editar en Drive")
+            {
+                ApplicationArea = All;
+                Caption = 'Editar en Drive';
+                Image = Edit;
+                ToolTip = 'Edita el archivo en Drive.';
+                trigger OnAction()
+                var
+                    GoogleDriveManager: Codeunit "Google Drive Manager";
+                    OneDriveManager: Codeunit "OneDrive Manager";
+                    DropBoxManager: Codeunit "DropBox Manager";
+                    StrapiManager: Codeunit "Strapi Manager";
+                    GoogleDrive: Codeunit "Google Drive Manager";
+                    OneDrive: Codeunit "OneDrive Manager";
+                    DropBox: Codeunit "DropBox Manager";
+                    Strapi: Codeunit "Strapi Manager";
+                    CompanyInfo: Record "Company Information";
+                begin
+                    CompanyInfo.Get();
+                    case CompanyInfo."Data Storage Provider" of
+                        CompanyInfo."Data Storage Provider"::"Google Drive":
+                            GoogleDrive.EditFile(Rec."Google Drive ID");
+                        CompanyInfo."Data Storage Provider"::OneDrive:
+                            OneDrive.EditFile(Rec."Google Drive ID");
+                        CompanyInfo."Data Storage Provider"::DropBox:
+                            DropBox.EditFile(Rec."Google Drive ID");
+                        CompanyInfo."Data Storage Provider"::Strapi:
+                            Strapi.EditFile(Rec."Google Drive ID");
+                    end;
+                end;
+            }
             action("Descargar Archivo")
             {
                 ApplicationArea = All;

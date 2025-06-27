@@ -14,6 +14,7 @@ codeunit 95103 "DropBox Manager"
         grant_type_refresh_token: Label 'refresh_token';
         oauth2_token: Label 'oauth2/token';
         get_temporary_link: Label '2/files/get_temporary_link';
+        create_shared_link: Label '2/sharing/create_shared_link_with_settings';
         Upload: Label '2/files/get_temporary_upload_link';
 
     procedure Initialize()
@@ -893,6 +894,57 @@ codeunit 95103 "DropBox Manager"
             end;
         end;
         exit('');
+    end;
+
+    internal procedure EditFile(DropBoxID: Text[250])
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Settings: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        Link: Text;
+        ErrorMessage: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con DropBox. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        CompanyInfo.Get();
+
+        // Obtener enlace temporal del archivo
+        Url := CompanyInfo."Url Api DropBox" + create_shared_link;
+
+        Clear(Body);
+        Body.Add('path', DropBoxID);
+        Settings.Add('requested_visibility', 'public');
+        Body.Add('settings', Settings);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de DropBox.');
+
+        StatusInfo.ReadFrom(Respuesta);
+
+        // Verificar si hay error en la respuesta
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
+        end;
+
+        // Obtener el enlace temporal
+        if StatusInfo.Get('url', JToken) then begin
+            Link := JToken.AsValue().AsText();
+            Hyperlink(Link);
+        end else begin
+            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+        end;
     end;
 
     procedure GetFolderMapping(TableID: Integer; Var Id: Text): Record "Google Drive Folder Mapping"

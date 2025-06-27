@@ -216,7 +216,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         end;
         if DocumentAttachment."Store in OneDrive" then begin
             IsHandled := true;
-            OneDriveManager.OpenFileInBrowser(DocumentAttachment."OneDrive ID");
+            OneDriveManager.OpenFileInBrowser(DocumentAttachment."OneDrive ID", false);
         end;
         if DocumentAttachment."Store in DropBox" then begin
             IsHandled := true;
