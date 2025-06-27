@@ -9,7 +9,7 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
                 //SubPageLink = "Entry No." = field("Incoming Document Entry No.");
                 Caption = 'PDF Viewer';
                 ApplicationArea = All;
-                //Visible = Tienedatos;
+                Visible = IsExtendedFunctionalityEnabled;
             }
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
@@ -28,6 +28,8 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
         if CuentaBancaria = Rec."No." then
             exit;
         CompanyInfo.Get();
+        if not CompanyInfo."Funcionalidad extendida" then
+            exit;
         case CompanyInfo."Data Storage Provider" of
             CompanyInfo."Data Storage Provider"::"Google Drive":
                 begin
@@ -89,7 +91,12 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
     end;
 
     trigger OnAfterGetCurrRecord()
+    var
+        CompanyInfo: Record "Company Information";
     begin
+        CompanyInfo.Get();
+        if not CompanyInfo."Funcionalidad extendida" then
+            exit;
         CurrPage.Visor.Page.Update(false);
         CurrPage.GoogleDriveFiles.Page.Update(false);
     end;

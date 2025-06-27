@@ -10,6 +10,7 @@ pageextension 95102 VendorExt extends "Vendor Card"
                 //SubPageLink = "Entry No." = field("Incoming Document Entry No.");
                 Caption = 'PDF Viewer';
                 ApplicationArea = All;
+                Visible = IsExtendedFunctionalityEnabled;
                 //Visible = Tienedatos;
             }
             part(GoogleDriveFiles; "Google Drive Factbox")
@@ -31,6 +32,8 @@ pageextension 95102 VendorExt extends "Vendor Card"
         Path: Text;
     begin
         if Proveedor = Rec."No." then
+            exit;
+        if not CompanyInfo."Funcionalidad extendida" then
             exit;
         CompanyInfo.Get();
         case CompanyInfo."Data Storage Provider" of
@@ -94,7 +97,12 @@ pageextension 95102 VendorExt extends "Vendor Card"
     end;
 
     trigger OnAfterGetCurrRecord()
+    var
+        CompanyInfo: Record "Company Information";
     begin
+        CompanyInfo.Get();
+        if not CompanyInfo."Funcionalidad extendida" then
+            exit;
         CurrPage.Visor.Page.Update(false);
         CurrPage.GoogleDriveFiles.Page.Update(false);
     end;
