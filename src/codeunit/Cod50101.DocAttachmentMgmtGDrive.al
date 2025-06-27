@@ -240,19 +240,22 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         Base64: Codeunit "Base64 Convert";
     begin
         if DocumentAttachment."Store in Google Drive" then begin
-            Base64Data := GoogleDriveManager.DownloadFileB64(DocumentAttachment."Google Drive ID", DocumentAttachment."File Name", false);
+            If Not GoogleDriveManager.DownloadFileB64(DocumentAttachment."Google Drive ID", DocumentAttachment."File Name", false, Base64Data) then
+                exit;
             TempBlob.CreateOutStream(OutStream);
             Base64.FromBase64(Base64Data, OutStream);
             IsHandled := true;
         end;
         if DocumentAttachment."Store in OneDrive" then begin
-            Base64Data := OneDriveManager.DownloadFileB64(DocumentAttachment."OneDrive ID", DocumentAttachment."File Name", false);
+            If Not OneDriveManager.DownloadFileB64(DocumentAttachment."OneDrive ID", DocumentAttachment."File Name", false, Base64Data) then
+                exit;
             TempBlob.CreateOutStream(OutStream);
             Base64.FromBase64(Base64Data, OutStream);
             IsHandled := true;
         end;
         if DocumentAttachment."Store in DropBox" then begin
-            Base64Data := DropBoxManager.DownloadFileB64('', DocumentAttachment."DropBox ID", DocumentAttachment."File Name", false);
+            If Not DropBoxManager.DownloadFileB64('', DocumentAttachment."File Name", false, Base64Data) then
+                exit;
             TempBlob.CreateOutStream(OutStream);
             Base64.FromBase64(Base64Data, OutStream);
             IsHandled := true;

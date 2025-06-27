@@ -255,7 +255,7 @@ codeunit 95115 "Google Drive Manual Mgt"
             '<tr><td><strong>Default Folder Name</strong></td><td>Nombre de referencia</td><td>Clientes</td></tr>' +
             '<tr><td><strong>Default Folder ID</strong></td><td>ID de carpeta en Google Drive</td><td>1BxY...xyz</td></tr>' +
             '<tr><td><strong>Auto Create Subfolders</strong></td><td>Crear subcarpetas automáticamente</td><td>✓</td></tr>' +
-            '<tr><td><strong>Subfolder Pattern</strong></td><td>Patrón para subcarpetas</td><td>{YEAR}/{DOCNO}</td></tr>' +
+            '<tr><td><strong>Subfolder Pattern</strong></td><td>Patrón para subcarpetas</td><td>{YEAR}/{DOCNO}/{NO}</td></tr>' +
             '<tr><td><strong>Active</strong></td><td>Configuración activa</td><td>✓</td></tr>' +
             '<tr><td><strong>Description</strong></td><td>Descripción opcional</td><td>Documentos de clientes</td></tr>' +
             '</tbody>' +

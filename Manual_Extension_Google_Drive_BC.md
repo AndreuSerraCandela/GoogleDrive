@@ -214,7 +214,7 @@ Esta funcionalidad permite configurar carpetas específicas de Google Drive para
 | **Default Folder Name** | Nombre de referencia | Clientes |
 | **Default Folder ID** | ID de carpeta en Google Drive | 1BxY...xyz |
 | **Auto Create Subfolders** | Crear subcarpetas automáticamente | ✓ |
-| **Subfolder Pattern** | Patrón para subcarpetas | {YEAR}/{DOCNO} |
+| **Subfolder Pattern** | Patrón para subcarpetas | {YEAR}/{DOCNO}/{NO} |
 | **Active** | Configuración activa | ✓ |
 | **Description** | Descripción opcional | Documentos de clientes |
 
@@ -223,11 +223,10 @@ Esta funcionalidad permite configurar carpetas específicas de Google Drive para
 Puede usar los siguientes tokens en el patrón de subcarpetas:
 
 - `{DOCNO}`: Número de documento
+- `{NO}`: Código de la ficha
 - `{YEAR}`: Año actual
 - `{MONTH}`: Mes actual (01-12)
 - `{DAY}`: Día actual (01-31)
-- `{CUSTOMERNO}`: Número de cliente (si aplica)
-- `{VENDORNO}`: Número de proveedor (si aplica)
 
 #### Ejemplos de Configuración
 
@@ -242,7 +241,7 @@ Subfolder Pattern: {YEAR}/Facturas/{DOCNO}
 ```
 Table ID: 18
 Default Folder Name: Clientes
-Subfolder Pattern: {CUSTOMERNO}/{YEAR}
+Subfolder Pattern: {NO}/{YEAR}
 ```
 
 #### Acciones Disponibles

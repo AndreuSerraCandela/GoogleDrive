@@ -318,7 +318,7 @@ codeunit 95102 "OneDrive Manager"
         exit(Id);
     end;
 
-    procedure DownloadFileB64(OneDriveID: Text[250]; FileName: Text; BajarFichero: Boolean): Text
+    procedure DownloadFileB64(OneDriveID: Text[250]; FileName: Text; BajarFichero: Boolean; var Base64Data: Text): Boolean
     var
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;
@@ -332,7 +332,7 @@ codeunit 95102 "OneDrive Manager"
         InStr: InStream;
         OutStr: OutStream;
         Bs64: Codeunit "Base64 Convert";
-        Base64Data: Text;
+
     begin
         if not Authenticate() then
             Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
@@ -343,13 +343,13 @@ codeunit 95102 "OneDrive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de OneDrive.');
+            exit(false);
 
         StatusInfo.ReadFrom(Respuesta);
 
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            exit(false);
         end;
 
         if StatusInfo.Get('@microsoft.graph.downloadUrl', JToken) then begin
@@ -366,9 +366,9 @@ codeunit 95102 "OneDrive Manager"
                 DownloadFromStream(InStr, 'Guardar', 'C:\Temp', 'ALL Files (*.*)|*.*', FileName);
             end;
 
-            exit(Base64Data);
+            exit(true);
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            exit(false);
         end;
     end;
 

@@ -51,7 +51,7 @@ table 95100 "Google Drive Folder Mapping"
         {
             Caption = 'Subfolder Pattern';
             DataClassification = CustomerContent;
-            ToolTip = 'Patrón para crear subcarpetas. Use {DOCNO} para número de documento, {YEAR} para año, {MONTH} para mes.';
+            ToolTip = 'Patrón para crear subcarpetas. Use {DOCNO} para número de documento, {NO} para el Código, {YEAR} para año, {MONTH} para mes.';
         }
 
         field(7; "Active"; Boolean)
@@ -155,6 +155,8 @@ table 95100 "Google Drive Folder Mapping"
         // Replace patterns
         if StrPos(SubfolderPath, '{DOCNO}') > 0 then
             SubfolderPath := DocumentNo;
+        if StrPos(SubfolderPath, '{NO}') > 0 then
+            SubfolderPath := DocumentNo;
         if DocumentDate = 0D then
             exit(SubfolderPath);
         if StrPos(SubfolderPath, '{YEAR}') > 0 then begin
@@ -242,7 +244,8 @@ table 95100 "Google Drive Folder Mapping"
             FolderMapping.Init();
             FolderMapping."Table ID" := 18;
             FolderMapping."Default Folder Name" := 'Customers';
-            FolderMapping."Auto Create Subfolders" := false;
+            FolderMapping."Auto Create Subfolders" := true;
+            FolderMapping."Subfolder Pattern" := '{NO}';
             FolderMapping.Description := 'Customer documents';
             FolderMapping.Insert();
         end;
@@ -252,7 +255,8 @@ table 95100 "Google Drive Folder Mapping"
             FolderMapping.Init();
             FolderMapping."Table ID" := 23;
             FolderMapping."Default Folder Name" := 'Vendors';
-            FolderMapping."Auto Create Subfolders" := false;
+            FolderMapping."Auto Create Subfolders" := true;
+            FolderMapping."Subfolder Pattern" := '{NO}';
             FolderMapping.Description := 'Vendor documents';
             FolderMapping.Insert();
         end;
@@ -261,7 +265,8 @@ table 95100 "Google Drive Folder Mapping"
             FolderMapping.Init();
             FolderMapping."Table ID" := 27;
             FolderMapping."Default Folder Name" := 'Items';
-            FolderMapping."Auto Create Subfolders" := false;
+            FolderMapping."Auto Create Subfolders" := true;
+            FolderMapping."Subfolder Pattern" := '{NO}';
             FolderMapping.Description := 'Item documents';
             FolderMapping.Insert();
         end;
@@ -270,7 +275,8 @@ table 95100 "Google Drive Folder Mapping"
             FolderMapping.Init();
             FolderMapping."Table ID" := Database::Job;
             FolderMapping."Default Folder Name" := 'Jobs';
-            FolderMapping."Auto Create Subfolders" := false;
+            FolderMapping."Auto Create Subfolders" := true;
+            FolderMapping."Subfolder Pattern" := '{NO}';
             FolderMapping.Description := 'Job documents';
             FolderMapping.Insert();
         end;
@@ -279,7 +285,8 @@ table 95100 "Google Drive Folder Mapping"
             FolderMapping.Init();
             FolderMapping."Table ID" := 15;
             FolderMapping."Default Folder Name" := 'G/L Accounts';
-            FolderMapping."Auto Create Subfolders" := false;
+            FolderMapping."Auto Create Subfolders" := true;
+            FolderMapping."Subfolder Pattern" := '{NO}';
             FolderMapping.Description := 'G/L Account documents';
             FolderMapping.Insert();
         end;
@@ -288,7 +295,8 @@ table 95100 "Google Drive Folder Mapping"
             FolderMapping.Init();
             FolderMapping."Table ID" := 5600;
             FolderMapping."Default Folder Name" := 'Fixed Assets';
-            FolderMapping."Auto Create Subfolders" := false;
+            FolderMapping."Auto Create Subfolders" := true;
+            FolderMapping."Subfolder Pattern" := '{NO}';
             FolderMapping.Description := 'Fixed Asset documents';
             FolderMapping.Insert();
         end;
@@ -297,7 +305,8 @@ table 95100 "Google Drive Folder Mapping"
             FolderMapping.Init();
             FolderMapping."Table ID" := Database::Employee;
             FolderMapping."Default Folder Name" := 'Employees';
-            FolderMapping."Auto Create Subfolders" := false;
+            FolderMapping."Auto Create Subfolders" := true;
+            FolderMapping."Subfolder Pattern" := '{NO}';
             FolderMapping.Description := 'Employee documents';
             FolderMapping.Insert();
         end;

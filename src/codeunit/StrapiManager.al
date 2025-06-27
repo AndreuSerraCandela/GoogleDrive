@@ -743,6 +743,8 @@ codeunit 95104 "Strapi Manager"
         // Replace patterns
         if StrPos(SubfolderPath, '{DOCNO}') > 0 then
             SubfolderPath := DocumentNo;
+        if StrPos(SubfolderPath, '{NO}') > 0 then
+            SubfolderPath := DocumentNo;
         if DocumentDate = 0D then
             exit(SubfolderPath);
         if StrPos(SubfolderPath, '{YEAR}') > 0 then begin

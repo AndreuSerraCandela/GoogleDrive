@@ -105,7 +105,7 @@ tableextension 95100 "Doc. Attachment GoogleDrive" extends "Document Attachment"
         end;
     end;
 
-    procedure ToBase64StringOcr(bUrl: Text): Text
+    procedure ToBase64StringOcr(bUrl: Text; var Base64: Text): Boolean
     var
         GeneralLedgerSetup: Record 98;
         JsonObj: JsonObject;
@@ -113,9 +113,11 @@ tableextension 95100 "Doc. Attachment GoogleDrive" extends "Document Attachment"
         RestapiC: Codeunit "Google Drive Manager";
         RequestType: Option Get,patch,put,post,delete;
         base64Token: JsonToken;
-        base64: Text;
+
     begin
-        exit(RestapiC.DownloadFileB64(bUrl, base64, false));
+        if RestapiC.DownloadFileB64(bUrl, base64, false, base64) then
+            exit(true);
+        exit(false);
     end;
 
     procedure GetDocumentID(): Text

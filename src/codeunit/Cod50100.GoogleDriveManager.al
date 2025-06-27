@@ -1364,7 +1364,7 @@ codeunit 95100 "Google Drive Manager"
             until FilesTemp.Next() = 0;
     end;
 
-    procedure DownloadFileB64(FileId: Text; FileName: Text; BajarFichero: Boolean): Text
+    procedure DownloadFileB64(FileId: Text; FileName: Text; BajarFichero: Boolean; var Base64Data: Text): Boolean
     var
         GoogleDrive: Codeunit "Google Drive Manager";
         Ticket: Text;
@@ -1377,7 +1377,6 @@ codeunit 95100 "Google Drive Manager"
         Respuesta: Text;
         JTokO: JsonToken;
         JTok: JsonToken;
-        Base64Data: Text;
         TempBlob: Codeunit "Temp Blob";
         InStream: InStream;
         OutStream: OutStream;
@@ -1397,7 +1396,7 @@ codeunit 95100 "Google Drive Manager"
         Client.Get(Url, ResponseMessage);
 
         if not ResponseMessage.IsSuccessStatusCode() then
-            Error('Error downloading file: %1', ResponseMessage.ReasonPhrase());
+            exit(false);
 
         TempBlob.CreateInStream(InStream);
         ResponseMessage.Content().ReadAs(InStream);
@@ -1409,7 +1408,7 @@ codeunit 95100 "Google Drive Manager"
         If BajarFichero Then
             DownloadFromStream(InStream, 'Guardar', 'C:\Temp', 'ALL Files (*.*)|*.*', FileName);
 
-        exit(Base64Data);
+        exit(true);
     end;
 
     procedure RestApiToken(url: Text; Token: Text; RequestType: Option Get,patch,put,post,delete; payload: Text): Text

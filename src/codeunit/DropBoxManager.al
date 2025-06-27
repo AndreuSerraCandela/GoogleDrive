@@ -242,7 +242,7 @@ codeunit 95103 "DropBox Manager"
         exit(Id);
     end;
 
-    procedure DownloadFileB64(Carpeta: Text; var Base64Data: Text; Filename: Text; BajarFichero: Boolean): Text
+    procedure DownloadFileB64(Carpeta: Text; Filename: Text; BajarFichero: Boolean; var Base64Data: Text): Boolean
     var
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;
@@ -282,7 +282,7 @@ codeunit 95103 "DropBox Manager"
             DownloadFromStream(Int, 'Guardar', 'C:\Temp', 'ALL Files (*.*)|*.*', Filename);
         end;
 
-        exit(Base64Data);
+        exit(true);
     end;
 
 
@@ -1032,6 +1032,8 @@ codeunit 95103 "DropBox Manager"
 
         // Replace patterns
         if StrPos(SubfolderPath, '{DOCNO}') > 0 then
+            SubfolderPath := DocumentNo;
+        if StrPos(SubfolderPath, '{NO}') > 0 then
             SubfolderPath := DocumentNo;
         if DocumentDate = 0D then
             exit(SubfolderPath);

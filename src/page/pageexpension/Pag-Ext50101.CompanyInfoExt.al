@@ -1,297 +1,307 @@
-pageextension 95101 "Company Info Ext" extends "Company Information"
+page 95112 "Drive Configuration"
 {
+    Caption = 'Configuración de Almacenamiento';
+    PageType = Card;
+    ApplicationArea = All;
+    UsageCategory = Administration;
+    SourceTable = "Company Information";
+
+
     layout
     {
-        addafter(General)
+        area(Content)
         {
-            group("Proveedor de Almacenamiento")
+            group(General)
             {
-                Caption = 'Proveedor de Almacenamiento';
-
-                field("Data Storage Provider"; Rec."Data Storage Provider")
+                group("Proveedor de Almacenamiento")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Selecciona el proveedor de almacenamiento de datos a utilizar.';
-                    trigger OnValidate()
-                    begin
-                        IsGoogleDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::"Google Drive";
-                        IsOneDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::OneDrive;
-                        IsDropBox := Rec."Data Storage Provider" = Rec."Data Storage Provider"::DropBox;
-                        IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
-                        CurrPage.Update(false);
-                    end;
-                }
-                field("Funcionalidad extendida"; Rec."Funcionalidad extendida")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica si la funcionalidad extendida está habilitada.';
-                }
-            }
+                    Caption = 'Proveedor de Almacenamiento';
 
-            group("Google Drive Configuration")
-            {
-                Caption = 'Configuración Google Drive';
-                Visible = IsGoogleDrive;
-
-                field("Google Client ID"; Rec."Google Client ID")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica el Client ID de la aplicación Google OAuth.';
+                    field("Data Storage Provider"; Rec."Data Storage Provider")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Selecciona el proveedor de almacenamiento de datos a utilizar.';
+                        trigger OnValidate()
+                        begin
+                            IsGoogleDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::"Google Drive";
+                            IsOneDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::OneDrive;
+                            IsDropBox := Rec."Data Storage Provider" = Rec."Data Storage Provider"::DropBox;
+                            IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
+                            CurrPage.Update(false);
+                        end;
+                    }
+                    field("Funcionalidad extendida"; Rec."Funcionalidad extendida")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica si la funcionalidad extendida está habilitada.';
+                    }
                 }
 
-                field("Google Client Secret"; Rec."Google Client Secret")
+                group("Google Drive Configuration")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica el Client Secret de la aplicación Google OAuth.';
-                    ExtendedDatatype = Masked;
+                    Caption = 'Configuración Google Drive';
+                    Visible = IsGoogleDrive;
+
+                    field("Google Client ID"; Rec."Google Client ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el Client ID de la aplicación Google OAuth.';
+                    }
+
+                    field("Google Client Secret"; Rec."Google Client Secret")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el Client Secret de la aplicación Google OAuth.';
+                        ExtendedDatatype = Masked;
+                    }
+
+                    field("Google Project ID"; Rec."Google Project ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el Project ID de Google Cloud Console.';
+                    }
+
+                    field("Google Auth URI"; Rec."Google Auth URI")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la URI de autorización de Google OAuth.';
+                    }
+
+                    field("Google Token URI"; Rec."Google Token URI")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la URI del token de Google OAuth.';
+                    }
+
+                    field("Google Auth Provider Cert URL"; Rec."Google Auth Provider Cert URL")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la URL del certificado del proveedor de autenticación de Google.';
+                    }
+
+                    field("Url Api GoogleDrive"; Rec."Url Api GoogleDrive")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la URL base de la API de Google Drive.';
+                    }
+                    field("Google Drive Root Folder"; Rec."Root Folder")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la carpeta raíz de Google Drive.';
+                    }
+
                 }
 
-                field("Google Project ID"; Rec."Google Project ID")
+                group("Google Drive Tokens")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica el Project ID de Google Cloud Console.';
+                    Caption = 'Tokens Google Drive';
+                    Visible = IsGoogleDrive;
+
+                    field("Token GoogleDrive"; Rec."Token GoogleDrive")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Token de acceso actual de Google Drive.';
+                        ExtendedDatatype = Masked;
+                        Editable = TokenFieldsEditable;
+
+                        trigger OnValidate()
+                        begin
+                            if Rec."Token GoogleDrive" <> '' then
+                                Rec."Expiracion Token GoogleDrive" := CurrentDateTime + 3600000; // 1 hour default
+                        end;
+                    }
+
+                    field("Refresh Token GoogleDrive"; Rec."Refresh Token GoogleDrive")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Token de actualización de Google Drive.';
+                        ExtendedDatatype = Masked;
+                        Editable = TokenFieldsEditable;
+                    }
+                    field("Code GoogleDrive"; Rec."Code GoogleDrive")
+                    {
+                        ApplicationArea = All;
+                    }
+
+                    field("Fecha Expiracion Token GoogleDrive"; Rec."Expiracion Token GoogleDrive")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Fecha y hora de expiración del token de acceso.';
+                        Editable = false;
+                    }
                 }
 
-                field("Google Auth URI"; Rec."Google Auth URI")
+                group("OneDrive Configuration")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la URI de autorización de Google OAuth.';
+                    Caption = 'Configuración OneDrive';
+                    Visible = IsOneDrive;
+
+                    field("OneDrive Client ID"; Rec."OneDrive Client ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el Client ID de la aplicación OneDrive OAuth.';
+                    }
+
+                    field("OneDrive Client Secret"; Rec."OneDrive Client Secret")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el Client Secret de la aplicación OneDrive OAuth.';
+                        ExtendedDatatype = Masked;
+                    }
+
+                    field("OneDrive Tenant ID"; Rec."OneDrive Tenant ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el Tenant ID de Microsoft Azure.';
+                    }
+                    field("Url Api OneDrive"; Rec."Url Api OneDrive")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la URL base de la API de OneDrive.';
+                    }
+
+                    field("OneDrive Root Folder"; Rec."Root Folder")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la carpeta raíz de OneDrive.';
+                    }
+                    field("Code Ondrive"; Rec."Code Ondrive")
+                    {
+                        ApplicationArea = All;
+                    }
                 }
 
-                field("Google Token URI"; Rec."Google Token URI")
+                group("OneDrive Tokens")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la URI del token de Google OAuth.';
+                    Caption = 'Tokens OneDrive';
+                    Visible = IsOneDrive;
+
+                    field("OneDrive Access Token"; Rec."OneDrive Access Token")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Token de acceso actual de OneDrive.';
+                        Editable = TokenFieldsEditable;
+                    }
+
+                    field("OneDrive Refresh Token"; Rec."OneDrive Refresh Token")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Token de actualización de OneDrive.';
+                        Editable = TokenFieldsEditable;
+                    }
+
+                    field("OneDrive Token Expiration"; Rec."OneDrive Token Expiration")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Fecha y hora de expiración del token de acceso.';
+                        Editable = false;
+                    }
                 }
 
-                field("Google Auth Provider Cert URL"; Rec."Google Auth Provider Cert URL")
+                group("DropBox Configuration")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la URL del certificado del proveedor de autenticación de Google.';
+                    Caption = 'Configuración DropBox';
+                    Visible = IsDropBox;
+
+                    field("DropBox App Key"; Rec."DropBox App Key")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la App Key de la aplicación DropBox.';
+                    }
+
+                    field("DropBox App Secret"; Rec."DropBox App Secret")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la App Secret de la aplicación DropBox.';
+                        ExtendedDatatype = Masked;
+                    }
+
+                    field("Url Api DropBox"; Rec."Url Api DropBox")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la URL base de la API de DropBox.';
+                    }
+
+                    field("DropBox Root Folder"; Rec."Root Folder")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la carpeta raíz de DropBox.';
+                    }
+                    field("Code DropBox"; Rec."Code DropBox")
+                    {
+                        ApplicationArea = All;
+                    }
                 }
 
-                field("Url Api GoogleDrive"; Rec."Url Api GoogleDrive")
+                group("DropBox Tokens")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la URL base de la API de Google Drive.';
-                }
-                field("Google Drive Root Folder"; Rec."Root Folder")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la carpeta raíz de Google Drive.';
-                }
+                    Caption = 'Tokens DropBox';
+                    Visible = IsDropBox;
 
-            }
+                    field("DropBox Access Token"; TokenDropBox)
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Token de acceso actual de DropBox.';
+                        ExtendedDatatype = Masked;
+                        Editable = TokenFieldsEditable;
+                        trigger OnValidate()
+                        begin
+                            Rec.SetTokenDropbox(TokenDropBox);
+                        end;
+                    }
 
-            group("Google Drive Tokens")
-            {
-                Caption = 'Tokens Google Drive';
-                Visible = IsGoogleDrive;
+                    field("DropBox Refresh Token"; Rec."DropBox Refresh Token")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Token de actualización de DropBox.';
+                        ExtendedDatatype = Masked;
+                        Editable = TokenFieldsEditable;
+                    }
 
-                field("Token GoogleDrive"; Rec."Token GoogleDrive")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Token de acceso actual de Google Drive.';
-                    ExtendedDatatype = Masked;
-                    Editable = TokenFieldsEditable;
-
-                    trigger OnValidate()
-                    begin
-                        if Rec."Token GoogleDrive" <> '' then
-                            Rec."Expiracion Token GoogleDrive" := CurrentDateTime + 3600000; // 1 hour default
-                    end;
-                }
-
-                field("Refresh Token GoogleDrive"; Rec."Refresh Token GoogleDrive")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Token de actualización de Google Drive.';
-                    ExtendedDatatype = Masked;
-                    Editable = TokenFieldsEditable;
-                }
-                field("Code GoogleDrive"; Rec."Code GoogleDrive")
-                {
-                    ApplicationArea = All;
+                    field("DropBox Token Expiration"; Rec."DropBox Token Expiration")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Fecha y hora de expiración del token de acceso.';
+                        Editable = false;
+                    }
                 }
 
-                field("Fecha Expiracion Token GoogleDrive"; Rec."Expiracion Token GoogleDrive")
+                group("Strapi Configuration")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Fecha y hora de expiración del token de acceso.';
-                    Editable = false;
-                }
-            }
+                    Caption = 'Configuración Strapi';
+                    Visible = IsStrapi;
 
-            group("OneDrive Configuration")
-            {
-                Caption = 'Configuración OneDrive';
-                Visible = IsOneDrive;
+                    field("Strapi Base URL"; Rec."Strapi Base URL")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la URL base de la API de Strapi.';
+                    }
 
-                field("OneDrive Client ID"; Rec."OneDrive Client ID")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica el Client ID de la aplicación OneDrive OAuth.';
-                }
+                    field("Strapi API Token"; Rec."Strapi API Token")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el token de API de Strapi.';
+                        ExtendedDatatype = Masked;
+                    }
 
-                field("OneDrive Client Secret"; Rec."OneDrive Client Secret")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica el Client Secret de la aplicación OneDrive OAuth.';
-                    ExtendedDatatype = Masked;
-                }
+                    field("Strapi Username"; Rec."Strapi Username")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el nombre de usuario de Strapi.';
+                    }
 
-                field("OneDrive Tenant ID"; Rec."OneDrive Tenant ID")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica el Tenant ID de Microsoft Azure.';
-                }
-                field("Url Api OneDrive"; Rec."Url Api OneDrive")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la URL base de la API de OneDrive.';
-                }
+                    field("Strapi Password"; Rec."Strapi Password")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la contraseña de Strapi.';
+                        ExtendedDatatype = Masked;
+                    }
 
-                field("OneDrive Root Folder"; Rec."Root Folder")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la carpeta raíz de OneDrive.';
-                }
-                field("Code Ondrive"; Rec."Code Ondrive")
-                {
-                    ApplicationArea = All;
-                }
-            }
-
-            group("OneDrive Tokens")
-            {
-                Caption = 'Tokens OneDrive';
-                Visible = IsOneDrive;
-
-                field("OneDrive Access Token"; Rec."OneDrive Access Token")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Token de acceso actual de OneDrive.';
-                    Editable = TokenFieldsEditable;
-                }
-
-                field("OneDrive Refresh Token"; Rec."OneDrive Refresh Token")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Token de actualización de OneDrive.';
-                    Editable = TokenFieldsEditable;
-                }
-
-                field("OneDrive Token Expiration"; Rec."OneDrive Token Expiration")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Fecha y hora de expiración del token de acceso.';
-                    Editable = false;
-                }
-            }
-
-            group("DropBox Configuration")
-            {
-                Caption = 'Configuración DropBox';
-                Visible = IsDropBox;
-
-                field("DropBox App Key"; Rec."DropBox App Key")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la App Key de la aplicación DropBox.';
-                }
-
-                field("DropBox App Secret"; Rec."DropBox App Secret")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la App Secret de la aplicación DropBox.';
-                    ExtendedDatatype = Masked;
-                }
-
-                field("Url Api DropBox"; Rec."Url Api DropBox")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la URL base de la API de DropBox.';
-                }
-
-                field("DropBox Root Folder"; Rec."Root Folder")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la carpeta raíz de DropBox.';
-                }
-                field("Code DropBox"; Rec."Code DropBox")
-                {
-                    ApplicationArea = All;
-                }
-            }
-
-            group("DropBox Tokens")
-            {
-                Caption = 'Tokens DropBox';
-                Visible = IsDropBox;
-
-                field("DropBox Access Token"; TokenDropBox)
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Token de acceso actual de DropBox.';
-                    ExtendedDatatype = Masked;
-                    Editable = TokenFieldsEditable;
-                    trigger OnValidate()
-                    begin
-                        Rec.SetTokenDropbox(TokenDropBox);
-                    end;
-                }
-
-                field("DropBox Refresh Token"; Rec."DropBox Refresh Token")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Token de actualización de DropBox.';
-                    ExtendedDatatype = Masked;
-                    Editable = TokenFieldsEditable;
-                }
-
-                field("DropBox Token Expiration"; Rec."DropBox Token Expiration")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Fecha y hora de expiración del token de acceso.';
-                    Editable = false;
-                }
-            }
-
-            group("Strapi Configuration")
-            {
-                Caption = 'Configuración Strapi';
-                Visible = IsStrapi;
-
-                field("Strapi Base URL"; Rec."Strapi Base URL")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la URL base de la API de Strapi.';
-                }
-
-                field("Strapi API Token"; Rec."Strapi API Token")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica el token de API de Strapi.';
-                    ExtendedDatatype = Masked;
-                }
-
-                field("Strapi Username"; Rec."Strapi Username")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica el nombre de usuario de Strapi.';
-                }
-
-                field("Strapi Password"; Rec."Strapi Password")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica la contraseña de Strapi.';
-                    ExtendedDatatype = Masked;
-                }
-
-                field("Strapi Collection Name"; Rec."Strapi Collection Name")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Especifica el nombre de la colección en Strapi.';
+                    field("Strapi Collection Name"; Rec."Strapi Collection Name")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el nombre de la colección en Strapi.';
+                    }
                 }
             }
         }
@@ -299,7 +309,7 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
 
     actions
     {
-        addlast(Processing)
+        area(Processing)
         {
             group("Google Drive")
             {
@@ -342,8 +352,8 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     Caption = 'Usar OAuth Playground (Recomendado)';
                     ToolTip = 'Abre Google OAuth Playground para obtener tokens de forma manual.';
                     Image = Web;
-                    Promoted = true;
-                    PromotedCategory = Process;
+                    //Promoted = true;
+                    //PromotedCategory = Process;
 
                     trigger OnAction()
                     var
@@ -477,8 +487,8 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                     Caption = 'Diagnosticar Configuración OAuth';
                     ToolTip = 'Ejecuta un diagnóstico completo de la configuración OAuth para identificar problemas.';
                     Image = Troubleshoot;
-                    Promoted = true;
-                    PromotedCategory = Process;
+                    //Promoted = true;
+                    //PromotedCategory = Process;
 
                     trigger OnAction()
                     var
@@ -763,8 +773,8 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                 Caption = 'Configurar Mapeo de Carpetas';
                 ToolTip = 'Configura qué carpetas de Google Drive usar para cada tipo de documento.';
                 Image = Setup;
-                Promoted = true;
-                PromotedCategory = Process;
+                //Promoted = true;
+                //PromotedCategory = Process;
 
                 trigger OnAction()
                 var
@@ -779,9 +789,8 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                 Caption = 'Mostrar Manual';
                 ToolTip = 'Muestra el manual de usuario del Drive.';
                 Image = Help;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
+                //Promoted = true;
+                //PromotedCategory = Process;
 
                 trigger OnAction()
                 var
@@ -791,6 +800,17 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                 end;
             }
 
+        }
+        area(Promoted)
+        {
+            actionref(FolderMappingSetupAction; "Folder Mapping Setup") { }
+            actionref(TokenGoogleDriveAction; "Obtener Token") { }
+            actionref(TokenOneDriveAction; "Actualizar OneDrive Token") { }
+            actionref(TokenDropBoxAction; "Actualizar DropBox Token") { }
+            actionref(CreaRootGoogleDriveAction; "Crea Root Google Drive") { }
+            actionref(CreaRootOneDriveAction; "Crea Root One Drive") { }
+            actionref(CreaRootDropBoxAction; "Crea Root DropBox") { }
+            actionref(CreaRootStrapiAction; "Crea Root Strapi") { }
         }
     }
 
@@ -860,4 +880,28 @@ pageextension 95101 "Company Info Ext" extends "Company Information"
                    'Use "Actualizar Token" para renovarlo.', ExpirationText);
         end;
     end;
+}
+pageextension 95101 CompanyInfoExt extends "Company Information"
+{
+    actions
+    {
+        addlast(Processing)
+        {
+            action("Drive Configuration")
+            {
+                ApplicationArea = All;
+                Caption = 'Configuración de Almacenamiento';
+                trigger OnAction()
+                var
+                    DriveConfiguration: Page "Drive Configuration";
+                begin
+                    DriveConfiguration.Run();
+                end;
+            }
+        }
+        addlast(Promoted)
+        {
+            actionref(DriveConfigurationAction; "Drive Configuration") { }
+        }
+    }
 }

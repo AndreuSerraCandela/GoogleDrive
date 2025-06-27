@@ -130,15 +130,18 @@ page 95100 "Google Drive Factbox"
                     Accion := Accion::"Descargar Archivo";
                     CompanyInfo.Get();
                     if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::"Google Drive" then begin
-                        Base64Data := GoogleDriveManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
+                        If Not GoogleDriveManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true, Base64Data) then
+                            exit;
 
                     end;
                     if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::OneDrive then begin
-                        Base64Data := OneDriveManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
+                        If Not OneDriveManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true, Base64Data) then
+                            exit;
 
                     end;
                     if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::DropBox then begin
-                        Base64Data := DropBoxManager.DownloadFileB64('', Rec."Google Drive ID", Rec.Name, true);
+                        If Not DropBoxManager.DownloadFileB64('', Rec.Name, true, Base64Data) then
+                            exit;
 
                     end;
                     if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Strapi then begin

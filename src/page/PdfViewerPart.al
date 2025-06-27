@@ -83,7 +83,8 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                     begin
                         if PDFStoraget."Google Drive ID" <> '' then begin
                             TempBlob.CreateOutStream(DocumentStream);
-                            Base64 := PDFStoraget.ToBase64StringOcr(PDFStoraget."Google Drive ID");
+                            If Not PDFStoraget.ToBase64StringOcr(PDFStoraget."Google Drive ID", Base64) then
+                                exit;
                             Base64Convert.FromBase64(Base64, DocumentStream);
                             FileManagement.BLOBExport(TempBlob, PDFStorageT."File Name" + '.' + PDFStorageT."File Extension", true);
                         end;
@@ -148,10 +149,12 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
     local procedure SetPDFDocumentUrl(PDFAsTxt: Text; i: Integer; Pdf: Boolean);
     var
         IsVisible: Boolean;
+        Base64: Text;
     begin
-        PDFAsTxt := PDFStorageT.ToBase64StringOcr(PDFAsTxt);
+        If Not PDFStorageT.ToBase64StringOcr(PDFAsTxt, Base64) then
+            exit;
 
-        IsVisible := PDFAsTxt <> '';
+        IsVisible := Base64 <> '';
         case i of
             1:
                 begin
@@ -160,9 +163,9 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                         exit;
                     CurrPage.PDFViewer1.SetVisible(IsVisible);
                     If Pdf then
-                        CurrPage.PDFViewer1.LoadPDF(PDFAsTxt, true)
+                        CurrPage.PDFViewer1.LoadPDF(Base64, true)
                     else
-                        CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true);
+                        CurrPage.PDFViewer1.LoadOtros(Base64, true);
                     CurrPage.PDFViewer1.Fichero(a);
                     CurrPage.PDFViewer1.Ficheros(PDFStoraget.Count);
 
@@ -430,10 +433,14 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         tempblob: Codeunit "Temp Blob";
         DocumentStream: OutStream;
         Base64Convert: Codeunit "Base64 Convert";
+        Base64: Text;
         Int: InStream;
     begin
-        if PDFStorage."Google Drive ID" <> '' then
-            PDFViewerCard.LoadPdfFromBlob(PDFStorage.ToBase64StringOcr(PDFStorage."Google Drive ID"))
+        if PDFStorage."Google Drive ID" <> '' then begin
+            If Not PDFStorage.ToBase64StringOcr(PDFStorage."Google Drive ID", Base64) then
+                exit;
+            PDFViewerCard.LoadPdfFromBlob(Base64);
+        end
         else begin
             if PDFStorage.IsEmpty() then
                 exit;

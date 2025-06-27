@@ -39,6 +39,7 @@ page 95106 "Google Drive Folder Mapping"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Especifica el ID de la carpeta de Google Drive donde se almacenarán los archivos.';
+                    Editable = false;
                 }
 
                 field("Auto Create Subfolders"; Rec."Auto Create Subfolders")
@@ -50,7 +51,7 @@ page 95106 "Google Drive Folder Mapping"
                 field("Subfolder Pattern"; Rec."Subfolder Pattern")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Patrón para crear subcarpetas. Use {DOCNO} para número de documento, {YEAR} para año, {MONTH} para mes.';
+                    ToolTip = 'Patrón para crear subcarpetas. Use {DOCNO} para número de documento, {NO} para el Código, {YEAR} para año, {MONTH} para mes.';
                 }
 
                 field("Active"; Rec."Active")

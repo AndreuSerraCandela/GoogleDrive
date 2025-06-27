@@ -94,6 +94,90 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 end;
             }
         }
+        addlast(content)
+        {
+            group(Group1)
+            {
+                ShowCaption = false;
+                Visible = true;//VisibleControl1;
+                usercontrol(PDFViewer1; "PDFV PDF Viewer")
+                {
+                    ApplicationArea = All;
+
+                    trigger ControlAddinReady()
+                    var
+                        URL: Text;
+                    begin
+                        IsControlAddInReady := true;
+                        URL := Rec."Google Drive ID";
+                        if URL <> '' then
+                            SetPDFDocumentUrl(URL, 1, (Rec."File Type" = Rec."File Type"::PDF))
+                        else
+                            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF));
+                    end;
+
+                    trigger onView()
+                    begin
+                        RunFullView(Rec);
+                    end;
+
+                    trigger OnSiguiente()
+                    begin
+                        a += 1;
+                        if Rec.next() = 0 then begin
+                            If Not Rec.findlast() then exit;
+                            a := Rec.Count;
+                        end;
+                        if Rec."Google Drive ID" <> '' then
+                            SetPDFDocumentUrl(Rec."Google Drive ID", 1, (Rec."File Type" = Rec."File Type"::PDF))
+                        else
+                            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF));
+
+                    end;
+
+                    trigger OnAnterior()
+                    begin
+                        a -= 1;
+                        if Rec.Next(-1) = 0 then begin
+                            Rec.findfirst();
+                            a := 1;
+                        end;
+                        if Rec."Google Drive ID" <> '' then
+                            SetPDFDocumentUrl(Rec."Google Drive ID", 1, (Rec."File Type" = Rec."File Type"::PDF))
+                        else
+                            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF));
+
+                    end;
+
+                    trigger OnDownload()
+                    var
+                        PDFViewerCard: Page "PDF Viewer";
+                        tempblob: Codeunit "Temp Blob";
+                        DocumentStream: OutStream;
+                        Base64Convert: Codeunit "Base64 Convert";
+                        Int: InStream;
+                        DocumentInStream: Instream;
+                        FileName: Text;
+                        Base64: Text;
+                        FileManagement: Codeunit "File Management";
+                    begin
+                        if Rec."Google Drive ID" <> '' then begin
+                            TempBlob.CreateOutStream(DocumentStream);
+                            If Not Rec.ToBase64StringOcr(Rec."Google Drive ID", Base64) then
+                                exit;
+                            Base64Convert.FromBase64(Base64, DocumentStream);
+                            FileManagement.BLOBExport(TempBlob, Rec."File Name" + '.' + Rec."File Extension", true);
+                        end;
+                        if Rec.IsEmpty() then
+                            exit;
+                        TempBlob.CreateOutStream(DocumentStream);
+                        Rec.Export(true);
+
+
+                    end;
+                }
+            }
+        }
     }
 
     actions
@@ -428,6 +512,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 Caption = 'Editar en Drive';
                 Image = Edit;
                 ToolTip = 'Edita el archivo en Drive.';
+                Scope = Repeater;
                 trigger OnAction()
                 var
                     GoogleDriveManager: Codeunit "Google Drive Manager";
@@ -438,15 +523,17 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     OneDrive: Codeunit "OneDrive Manager";
                     DropBox: Codeunit "DropBox Manager";
                     Strapi: Codeunit "Strapi Manager";
+                    CompanyInfo: Record "Company Information";
                 begin
-                    case Rec."Storage Provider" of
-                        Rec."Storage Provider"::"Google Drive":
+                    CompanyInfo.Get();
+                    case CompanyInfo."Data Storage Provider" of
+                        CompanyInfo."Data Storage Provider"::"Google Drive":
                             GoogleDrive.EditFile(Rec."Google Drive ID");
-                        Rec."Storage Provider"::OneDrive:
+                        CompanyInfo."Data Storage Provider"::OneDrive:
                             OneDrive.EditFile(Rec."OneDrive ID");
-                        Rec."Storage Provider"::DropBox:
+                        CompanyInfo."Data Storage Provider"::DropBox:
                             DropBox.EditFile(Rec."DropBox ID");
-                        Rec."Storage Provider"::Strapi:
+                        CompanyInfo."Data Storage Provider"::Strapi:
                             Strapi.EditFile(Rec."Strapi ID");
                     end;
                 end;
@@ -457,6 +544,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 Caption = 'Descargar Archivo';
                 Image = Download;
                 ToolTip = 'Descarga el archivo desde el almacenamiento en la nube.';
+                Scope = Repeater;
                 trigger OnAction()
                 var
                     Base64Txt: Text;
@@ -467,11 +555,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 begin
                     case Rec."Storage Provider" of
                         Rec."Storage Provider"::"Google Drive":
-                            Base64Txt := GoogleDriveManager.DownloadFileB64(Rec.GetDocumentID(), Rec."File Name", true);
+                            If Not GoogleDriveManager.DownloadFileB64(Rec.GetDocumentID(), Rec."File Name", true, Base64Txt) then
+                                exit;
                         Rec."Storage Provider"::OneDrive:
-                            Base64Txt := OneDriveManager.DownloadFileB64(Base64Txt, Rec."File Name", true);
+                            If Not OneDriveManager.DownloadFileB64(Base64Txt, Rec."File Name", true, Base64Txt) then
+                                exit;
                         Rec."Storage Provider"::DropBox:
-                            Base64Txt := DropBoxManager.DownloadFileB64('', Base64Txt, Rec."File Name", true);
+                            If Not DropBoxManager.DownloadFileB64('', Rec."File Name", true, Base64Txt) then
+                                exit;
                         Rec."Storage Provider"::Strapi:
                             Base64Txt := StrapiManager.DownloadFileB64('', Base64Txt, Rec."File Name", true);
                     end;
@@ -826,6 +917,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             DropBoxManager.Initialize();
         if IsStrapi Then
             StrapiManager.Initialize();
+
+        a := 1;
+        SetRecord();
     end;
 
     internal procedure GetRefTable(var RecRef: RecordRef; DocumentAttachment: Record "Document Attachment"): Boolean
@@ -943,4 +1037,310 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
         exit(RecRef.Number > 0);
     end;
+
+    trigger OnAfterGetRecord()
+    begin
+        if Rec."Google Drive ID" <> '' then
+            SetPDFDocumentUrl(Rec."Google Drive ID", 1, (Rec."File Type" = Rec."File Type"::PDF))
+        else
+            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF));
+
+    end;
+
+    local procedure GetPDFAsTxt(PDFStorage: Record "Document Attachment"): Text
+    var
+        Base64Convert: Codeunit "Base64 Convert";
+        TempBlob: Codeunit "Temp Blob";
+        Int: InStream;
+        DocumentStream: OutStream;
+    begin
+        TempBlob.CreateOutStream(DocumentStream);
+        PDFStorage."Document Reference ID".ExportStream(DocumentStream);
+        TempBlob.CreateInStream(Int);
+
+
+        exit(Base64Convert.ToBase64(Int));
+    end;
+
+    local procedure SetPDFDocument(PDFAsTxt: Text; i: Integer; Pdf: Boolean);
+    var
+        IsVisible: Boolean;
+    begin
+        IsVisible := PDFAsTxt <> '';
+        case i of
+            1:
+                begin
+                    VisibleControl1 := IsVisible;
+                    if not IsVisible or not IsControlAddInReady then
+                        exit;
+                    CurrPage.PDFViewer1.SetVisible(IsVisible);
+                    If Pdf then
+                        CurrPage.PDFViewer1.LoadPDF(PDFAsTxt, true)
+                    else
+                        CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true);
+                    CurrPage.PDFViewer1.Fichero(a);
+                    CurrPage.PDFViewer1.Ficheros(Rec.Count);
+                end;
+
+        end;
+
+    end;
+
+    local procedure SetPDFDocumentUrl(PDFAsTxt: Text; i: Integer; Pdf: Boolean);
+    var
+        IsVisible: Boolean;
+        Base64: Text;
+    begin
+        If not Rec.ToBase64StringOcr(PDFAsTxt, Base64) then
+            exit;
+
+        IsVisible := Base64 <> '';
+        case i of
+            1:
+                begin
+                    VisibleControl1 := IsVisible;
+                    if not IsVisible or not IsControlAddInReady then
+                        exit;
+                    CurrPage.PDFViewer1.SetVisible(IsVisible);
+                    If Pdf then
+                        CurrPage.PDFViewer1.LoadPDF(Base64, true)
+                    else
+                        CurrPage.PDFViewer1.LoadOtros(Base64, true);
+                    CurrPage.PDFViewer1.Fichero(a);
+                    CurrPage.PDFViewer1.Ficheros(Rec.Count);
+
+
+                end;
+        end;
+    end;
+
+    local procedure SetRecord()
+    var
+
+        HandleErr: Boolean;
+        i: Integer;
+        RecRef: RecordRef;
+        DocTypeS: Enum "Sales Document Type";
+        FolderMapping: Record "Google Drive Folder Mapping";
+        GoogleDriveManager: Codeunit "Google Drive Manager";
+        Id: Text;
+        SubFolder: Text;
+        Path: Text;
+        DocTypeD: Enum "Purchase Document Type";
+        FileList: Record "Name/Value Buffer" temporary;
+        Instream: InStream;
+        CompaniInfo: Record "Company Information";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+        DocumentAttachment: Record "Document Attachment";
+    begin
+        DocumentAttachment.CopyFilters(Rec);
+        DocumentAttachment.SetRange("File Type", DocumentAttachment."File Type"::PDF);
+        CompaniInfo.Get();
+        //Clear(PDFStorageArray);
+        Clear(VisibleControl1);
+        Clear(VisibleControl2);
+        Clear(VisibleControl3);
+        Clear(VisibleControl4);
+        Clear(VisibleControl5);
+        //PDFStorage.SetRange("Source Record ID", gSourceRecordId);
+        //
+
+        if not DocumentAttachment.FindFirst() then begin
+            VisibleControl1 := false;
+            exit;
+        end;
+        case CompaniInfo."Data Storage Provider" of
+            CompaniInfo."Data Storage Provider"::"Google Drive":
+                GoogleDriveManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
+            CompaniInfo."Data Storage Provider"::OneDrive:
+                OneDriveManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
+            CompaniInfo."Data Storage Provider"::DropBox:
+                DropBoxManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
+            CompaniInfo."Data Storage Provider"::Strapi:
+                StrapiManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
+        end;
+
+        SubFolder := ObtenerSubfolder(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, SubFolder, Path);
+        IF SubFolder <> '' then begin
+            case CompaniInfo."Data Storage Provider" of
+                CompaniInfo."Data Storage Provider"::"Google Drive":
+                    begin
+                        Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
+                        GoogleDriveManager.ListFolder(Id, FileList, true);
+                    end;
+                CompaniInfo."Data Storage Provider"::OneDrive:
+                    begin
+                        IF SubFolder <> '' then begin
+                            Id := OneDriveManager.CreateFolderStructure(Id, SubFolder);
+                            Path += SubFolder + '/'
+                        end;
+                        OneDriveManager.ListFolder(Id, FileList, true);
+
+                    end;
+                CompaniInfo."Data Storage Provider"::DropBox:
+                    begin
+                        Id := DropBoxManager.CreateSubfolderStructure(Id, SubFolder);
+                        DropBoxManager.ListFolder(Id, FileList, true);
+                    end;
+                CompaniInfo."Data Storage Provider"::Strapi:
+                    begin
+                        Id := StrapiManager.CreateSubfolderStructure(Id, SubFolder);
+                        StrapiManager.ListFolder(Id, FileList, true);
+                    end;
+            end;
+        end;
+
+
+        FileList.SetFilter("Name", '*.pdf');
+        VisibleControl1 := false;
+        if Rec.FindSet() then VisibleControl1 := true;
+        // a := 0;
+        // If PDFStorageT.FindLast() then a := PDFStorageT.id;
+        // Case gSourceRecordId.TableNo of
+        //     36, 38:
+        //         Begin
+        //             if FileList.FindFirst() then
+        //                 repeat
+        //                     PDFStorageT.init;
+        //                     a += 1;
+        //                     PDFStorageT.id := a;
+        //                     PDFStorageT."Table ID" := gSourceRecordId.TableNo;
+        //                     PDFStorageT."No." := RecRef.Field(3).Value;
+        //                     PDFStorageT."Document Type" := RecRef.Field(1).Value;
+        //                     PDFStorageT."Google Drive ID" := FileList."Google Drive ID";
+        //                     PDFStorageT."File Type" := PDFStorageT."File Type"::PDF;
+        //                     PDFStorageT."File Name" := FileList."Name";
+        //                     PDFStorageT."Store in Google Drive" := True;
+        //                     VisibleControl1 := true;
+        //                     If PDFStorageT.Insert() Then;
+
+        //                 until FileList.Next() = 0;
+        //         end;
+        //     Database::Customer, Database::Vendor, Database::Item, Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
+        //         begin
+        //             if FileList.FindFirst() then
+        //                 repeat
+        //                     PDFStorageT.init;
+        //                     a += 1;
+        //                     PDFStorageT.id := a;
+        //                     PDFStorageT."Table ID" := gSourceRecordId.TableNo;
+        //                     PDFStorageT."No." := RecRef.Field(1).Value;
+        //                     PDFStorageT."Google Drive ID" := FileList."Google Drive ID";
+        //                     PDFStorageT."File Type" := PDFStorageT."File Type"::PDF;
+        //                     PDFStorageT."File Name" := FileList."Name";
+        //                     PDFStorageT."Store in Google Drive" := True;
+        //                     VisibleControl1 := true;
+        //                     If PDFStorageT.Insert() Then;
+        //                 until FileList.Next() = 0;
+        //         end;
+        //     112, 114, 122, 144:
+        //         begin
+        //             if FileList.FindFirst() then
+        //                 repeat
+        //                     PDFStorageT.init;
+        //                     a += 1;
+        //                     PDFStorageT.id := a;
+        //                     PDFStorageT."Table ID" := gSourceRecordId.TableNo;
+        //                     PDFStorageT."No." := RecRef.Field(3).Value;
+        //                     PDFStorageT."Google Drive ID" := FileList."Google Drive ID";
+        //                     PDFStorageT."File Type" := PDFStorageT."File Type"::PDF;
+        //                     PDFStorageT."File Name" := FileList."Name";
+        //                     PDFStorageT."Store in Google Drive" := True;
+        //                     VisibleControl1 := true;
+        //                     If PDFStorageT.Insert() Then;
+        //                 until FileList.Next() = 0;
+        //         end;
+        // end;
+        // commit;
+        if Rec.FindFirst() then
+            if IsControlAddInReady then
+                if Rec.Url <> '' then
+                    SetPDFDocumentUrl(Rec.Url, 1, (Rec."File Type" = Rec."File Type"::PDF))
+                else
+                    SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF));
+        // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[1]), 1);
+        // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[2]), 2);
+        // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[3]), 3);
+        // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[4]), 4);
+        // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[5]), 5);
+    end;
+
+
+
+
+    local procedure RunFullView(PDFStorage: Record "Document Attachment")
+    var
+        PDFViewerCard: Page "PDF Viewer";
+        tempblob: Codeunit "Temp Blob";
+        DocumentStream: OutStream;
+        Base64: Text;
+        Base64Convert: Codeunit "Base64 Convert";
+        Int: InStream;
+    begin
+        if PDFStorage."Google Drive ID" <> '' then begin
+            If Not PDFStorage.ToBase64StringOcr(PDFStorage."Google Drive ID", Base64) then
+                exit;
+            PDFViewerCard.LoadPdfFromBlob(Base64);
+        end
+        else begin
+            if PDFStorage.IsEmpty() then
+                exit;
+
+            TempBlob.CreateOutStream(DocumentStream);
+            PDFStorage."Document Reference ID".ExportStream(DocumentStream);
+            TempBlob.CreateInStream(Int);
+            PDFViewerCard.LoadPdfFromBlob(Base64Convert.ToBase64(Int));
+        end;
+        PDFViewerCard.Run();
+
+    end;
+
+    local procedure ObtenerSubfolder(TableNo: Integer; Value: Variant; Date: Date; var SubFolder: Text; var Path: Text): Text
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        CompanyInfo: Record "Company Information";
+        Id: Text;
+        GoogleDriveManager: Codeunit "Google Drive Manager";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+    begin
+        CompanyInfo.Get();
+        case CompanyInfo."Data Storage Provider" of
+            CompanyInfo."Data Storage Provider"::"Google Drive":
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+            CompanyInfo."Data Storage Provider"::OneDrive:
+                begin
+                    SubFolder := OneDriveManager.CreateFolderStructure(Id, SubFolder);
+                    FolderMapping.SetRange("Table ID", TableNo);
+                    if FolderMapping.FindFirst() Then Path += FolderMapping."Default Folder Name" + '/';
+                    SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+                end;
+            CompanyInfo."Data Storage Provider"::DropBox:
+                SubFolder := DropBoxManager.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+            CompanyInfo."Data Storage Provider"::Strapi:
+                SubFolder := StrapiManager.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+        end;
+        exit(SubFolder);
+    end;
+
+    var
+        //PDFStorageArray: array[5] of Record "Document Attachment";
+
+        VisibleControl1: Boolean;
+
+        VisibleControl2: Boolean;
+
+        VisibleControl3: Boolean;
+
+        VisibleControl4: Boolean;
+
+        VisibleControl5: Boolean;
+        //PDFStorageT: Record "Document Attachment" temporary;
+
+        IsControlAddInReady: Boolean;
+        l: Integer;
+        a: Integer;
 }
