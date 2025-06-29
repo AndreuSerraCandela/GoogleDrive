@@ -4,7 +4,7 @@ page 95106 "Google Drive Folder Mapping"
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "Google Drive Folder Mapping";
-    Caption = 'Google Drive Folder Mapping';
+    Caption = 'Drive Folder Mapping';
 
     layout
     {
@@ -85,7 +85,7 @@ page 95106 "Google Drive Folder Mapping"
             part(GoogleDriveFolders; "Google Drive Factbox")
             {
                 ApplicationArea = All;
-                Caption = 'Google Drive Folders';
+                Caption = 'Drive Folders';
             }
         }
     }
@@ -223,7 +223,7 @@ page 95106 "Google Drive Folder Mapping"
             action("Open Google Drive")
             {
                 ApplicationArea = All;
-                Caption = 'Abrir Google Drive';
+                Caption = 'Abrir  Drive';
                 ToolTip = 'Abre Google Drive en el navegador.';
                 Image = Web;
 

@@ -141,7 +141,7 @@ codeunit 95102 "OneDrive Manager"
         OutStr: OutStream;
     begin
         CompanyInfo.Get();
-        RedirectURI := 'https://oauth.pstmn.io/v1/callback';
+        RedirectURI := 'https://login.microsoftonline.com/common/oauth2/nativeclient';
         Url := StrSubstNo(token_endpoint, CompanyInfo."OneDrive Tenant ID");
 
         BodyText := 'grant_type=authorization_code' +
@@ -1257,7 +1257,7 @@ codeunit 95102 "OneDrive Manager"
             if StatusInfo.Get('id', JToken) then
                 NewFolderId := JToken.AsValue().AsText()
             else
-                Error('Failed to create folder in OneDrive: %1', Respuesta);
+                Error('Failed to create folder in OneDrive: %1 con esta url: %2 y este json: %3', Respuesta, Url, Json);
         end;
         exit(NewFolderId);
     end;

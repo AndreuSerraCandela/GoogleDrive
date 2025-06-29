@@ -40,7 +40,7 @@ controladdin "PDFV PDF Viewer"
     /// </summary>
     event OnDownload();
     procedure LoadPDF(PDFDocument: Text; IsFactbox: Boolean)
-    procedure LoadOtros(PDFDocument: Text; IsFactbox: Boolean)
+    procedure LoadOtros(PDFDocument: Text; IsFactbox: Boolean; DataType: Text; Url: Text)
     procedure Fichero(Numero: Integer)
     procedure Ficheros(NumerodeFicheros: Integer)
     procedure SetVisible(IsVisible: Boolean)

@@ -105,19 +105,35 @@ tableextension 95100 "Doc. Attachment GoogleDrive" extends "Document Attachment"
         end;
     end;
 
-    procedure ToBase64StringOcr(bUrl: Text; var Base64: Text): Boolean
+    procedure ToBase64StringOcr(bUrl: Text; var Base64: Text; Filename: Text; Origen: Enum "Data Storage Provider"): Boolean
     var
         GeneralLedgerSetup: Record 98;
         JsonObj: JsonObject;
         Json: Text;
         RestapiC: Codeunit "Google Drive Manager";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
         RequestType: Option Get,patch,put,post,delete;
         base64Token: JsonToken;
 
     begin
-        if RestapiC.DownloadFileB64(bUrl, base64, false, base64) then
-            exit(true);
-        exit(false);
+        case Origen of
+            Origen::"Google Drive":
+                if RestapiC.DownloadFileB64(bUrl, base64, false, base64) then
+                    exit(true);
+            Origen::OneDrive:
+                if OneDriveManager.DownloadFileB64(bUrl, base64, false, base64) then
+                    exit(true);
+            Origen::DropBox:
+                if DropBoxManager.DownloadFileB64(bUrl, base64, false, base64) then
+                    exit(true);
+            Origen::Strapi:
+                if StrapiManager.DownloadFileB64(bUrl, base64, Filename, false) <> '' then
+                    exit(true);
+            else
+                exit(false);
+        end;
     end;
 
     procedure GetDocumentID(): Text

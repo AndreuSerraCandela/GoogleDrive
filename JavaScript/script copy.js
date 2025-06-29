@@ -57,8 +57,6 @@ function LoadPDF(PDFDocument,IsFactbox){
     factboxarea = window.frameElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement,
     scale = 1.3;
 
-    // Limpiar estado anterior
-    clearViewerState();
 
     pageRendering = false;
     pageNum = 1;
@@ -232,38 +230,12 @@ function LoadPDF(PDFDocument,IsFactbox){
 
     });
 }
-
-// Función para limpiar el estado del visor
-function clearViewerState() {
-    const canvas = document.getElementById('the-canvas');
-    const iframeContainer = document.getElementById('iframe-container');
-    
-    // Restaurar canvas
-    canvas.style.display = 'block';
-    canvas.width = 0;
-    canvas.height = 0;
-    
-    // Limpiar iframe container
-    if (iframeContainer) {
-        iframeContainer.innerHTML = '';
-    }
-    
-    // Restaurar tamaño del frame
-    const iframe = window.frameElement;
-    if (iframe) {
-        iframe.style.height = 'auto';
-        iframe.style.maxHeight = 'none';
-        if (iframe.parentElement) {
-            iframe.parentElement.style.height = 'auto';
-        }
-    }
-}
-
-function LoadOtros(base64Data, IsFactbox, fileType,url) {
+function LoadOtros(base64Data, IsFactbox, fileType) {
     if (fileType == 'image') fileType = 'image/jpg';
-    //if (fileType == 'word') fileType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    if (fileType == 'word') fileType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     if (fileType == 'excel') fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
     if (fileType == 'powerpoint') fileType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+    if (fileType == 'pdf') fileType = 'application/pdf';
     if (fileType == 'text') fileType = 'text/plain';
     if (fileType == 'csv') fileType = 'text/csv';
     if (fileType == 'xml') fileType = 'application/xml';
@@ -271,10 +243,6 @@ function LoadOtros(base64Data, IsFactbox, fileType,url) {
     const canvas = document.getElementById('the-canvas');
     const ctx = canvas.getContext('2d');
     const iframeContainer = document.getElementById('iframe-container');
-    const iframe = window.frameElement;
-    
-    // Limpiar estado anterior
-    clearViewerState();
     
     // Ocultar canvas y limpiar iframe container
     canvas.style.display = 'none';
@@ -308,38 +276,30 @@ function LoadOtros(base64Data, IsFactbox, fileType,url) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
             canvas.style.display = 'block';
-            
-            // Ajustar tamaño del frame para imágenes
-            if (iframe) {
-                iframe.style.height = (canvas.height + 100) + "px";
-                if (iframe.parentElement) {
-                    iframe.parentElement.style.height = (canvas.height + 100) + "px";
-                }
-            }
         };
         image.onerror = function () {
             alert('Error al cargar la imagen.');
         };
         image.src = blobUrl;
-    }  else if (fileType === 'text/plain' || fileType === 'text/csv' || fileType === 'application/xml') {
+    } else if (fileType === 'application/pdf') {
+        // Mostrar PDFs en iframe
+        const iframe = document.createElement('iframe');
+        iframe.src = blobUrl;
+        iframe.width = '100%';
+        iframe.height = '600px';
+        iframe.style.border = 'none';
+        iframeContainer.appendChild(iframe);
+    } else if (fileType === 'text/plain' || fileType === 'text/csv' || fileType === 'application/xml') {
         // Mostrar archivos de texto en iframe
-        const textIframe = document.createElement('iframe');
-        textIframe.src = blobUrl;
-        textIframe.width = '100%';
-        textIframe.height = '600px';
-        textIframe.style.border = 'none';
-        iframeContainer.appendChild(textIframe);
-        
-        // Ajustar tamaño del frame para archivos de texto
-        if (iframe) {
-            iframe.style.height = '700px';
-            if (iframe.parentElement) {
-                iframe.parentElement.style.height = '700px';
-            }
-        }
+        const iframe = document.createElement('iframe');
+        iframe.src = blobUrl;
+        iframe.width = '100%';
+        iframe.height = '600px';
+        iframe.style.border = 'none';
+        iframeContainer.appendChild(iframe);
     } else {
         // Para archivos Word, Excel, PowerPoint y otros que no se pueden mostrar directamente
-        // Mostrar un mensaje con opciones de descarga y apertura
+        // Mostrar un mensaje con opción de descarga
         const messageDiv = document.createElement('div');
         messageDiv.style.cssText = `
             text-align: center;
@@ -357,59 +317,13 @@ function LoadOtros(base64Data, IsFactbox, fileType,url) {
         icon.style.marginBottom = '20px';
         
         const title = document.createElement('h3');
-        title.textContent = 'Archivo Word detectado';
+        title.textContent = 'Archivo no se puede previsualizar';
         title.style.marginBottom = '10px';
         
         const description = document.createElement('p');
-        description.textContent = 'Los archivos Word no se pueden previsualizar, por razones de seguridad';
+        description.textContent = 'Este tipo de archivo no se puede mostrar directamente en el navegador.';
         description.style.marginBottom = '20px';
         description.style.color = '#666';
-        
-        const buttonContainer = document.createElement('div');
-        buttonContainer.style.cssText = `
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        `;
-        
-        const openBtn = document.createElement('button');
-        openBtn.textContent = 'Abrir con aplicación';
-        openBtn.style.cssText = `
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        `;
-        openBtn.onclick = function() {
-            // Asegúrate de tener un Blob y su URL correctamente creado
-            const blobUrl = url;
-        
-            // Intentar abrir en una nueva pestaña
-            const newWindow = window.open();
-            if (newWindow) {
-                // Inyectar un iframe en la nueva pestaña para visualizar el contenido
-                newWindow.document.write(`
-                    <html>
-                        <head><title>Visualización</title></head>
-                        <body style="margin:0">
-                            <iframe src="${blobUrl}" width="100%" height="100%" style="border:none;"></iframe>
-                        </body>
-                    </html>
-                `);
-            } else {
-                // Si el navegador bloquea popups, usar un iframe dentro de la página actual
-                const iframe = document.createElement('iframe');
-                iframe.src = blobUrl;
-                iframe.style.width = '100%';
-                iframe.style.height = '600px';
-                iframe.style.border = 'none';
-                document.body.appendChild(iframe);
-            }
-        };
         
         const downloadBtn = document.createElement('button');
         downloadBtn.textContent = 'Descargar archivo';
@@ -423,33 +337,20 @@ function LoadOtros(base64Data, IsFactbox, fileType,url) {
             font-size: 14px;
         `;
         downloadBtn.onclick = function() {
-            // Forzar la descarga del archivo
             const link = document.createElement('a');
             link.href = blobUrl;
             link.download = 'archivo.' + getFileExtension(fileType);
-            link.style.display = 'none';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         };
         
-        buttonContainer.appendChild(openBtn);
-        buttonContainer.appendChild(downloadBtn);
-        
         messageDiv.appendChild(icon);
         messageDiv.appendChild(title);
         messageDiv.appendChild(description);
-        messageDiv.appendChild(buttonContainer);
+        messageDiv.appendChild(downloadBtn);
         
         iframeContainer.appendChild(messageDiv);
-        
-        // Ajustar tamaño del frame para archivos Word/Excel (más altura para mostrar botones)
-        if (iframe) {
-            iframe.style.height = '500px';
-            if (iframe.parentElement) {
-                iframe.parentElement.style.height = '500px';
-            }
-        }
     }
 }
 
@@ -470,6 +371,16 @@ function getFileExtension(mimeType) {
     };
     return extensions[mimeType] || 'bin';
 }
+
+       
+
+
+  
+        
+
+        
+    
+
 
 
 

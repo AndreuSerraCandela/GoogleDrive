@@ -27,6 +27,8 @@ page 95112 "Drive Configuration"
                             IsOneDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::OneDrive;
                             IsDropBox := Rec."Data Storage Provider" = Rec."Data Storage Provider"::DropBox;
                             IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
+                            Rec."Root Folder ID" := '';
+                            Rec."Root Folder" := '';
                             CurrPage.Update(false);
                         end;
                     }
@@ -500,18 +502,7 @@ page 95112 "Drive Configuration"
                         Message(DiagnosticResult);
                     end;
                 }
-                action("Crea Root Google Drive")
-                {
-                    ApplicationArea = All;
-                    Image = FiledPosted;
-                    trigger OnAction()
-                    var
-                        GoogleMapping: Record "Google Drive Folder Mapping";
-                    begin
-                        if Rec."Root Folder" <> '' then
-                            Rec."Root Folder ID" := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", true, true);
-                    end;
-                }
+
             }
 
             group("OneDrive")
@@ -593,18 +584,7 @@ page 95112 "Drive Configuration"
                             Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
                     end;
                 }
-                action("Crea Root One Drive")
-                {
-                    ApplicationArea = All;
-                    Image = FiledPosted;
-                    trigger OnAction()
-                    var
-                        GoogleMapping: Record "Google Drive Folder Mapping";
-                    begin
-                        if Rec."Root Folder" <> '' then
-                            Rec."Root Folder ID" := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", true, true);
-                    end;
-                }
+
             }
 
             group("DropBox")
@@ -682,18 +662,7 @@ page 95112 "Drive Configuration"
                             Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
                     end;
                 }
-                action("Crea Root DropBox")
-                {
-                    ApplicationArea = All;
-                    Image = FiledPosted;
-                    trigger OnAction()
-                    var
-                        GoogleMapping: Record "Google Drive Folder Mapping";
-                    begin
-                        if Rec."Root Folder" <> '' then
-                            Rec."Root Folder ID" := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", true, true);
-                    end;
-                }
+
             }
 
             group("Strapi")
@@ -754,18 +723,7 @@ page 95112 "Drive Configuration"
                         StrapiManager.TestAPI();
                     end;
                 }
-                action("Crea Root Strapi")
-                {
-                    ApplicationArea = All;
-                    Image = FiledPosted;
-                    trigger OnAction()
-                    var
-                        GoogleMapping: Record "Google Drive Folder Mapping";
-                    begin
-                        if Rec."Root Folder" <> '' then
-                            Rec."Root Folder ID" := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", true, true);
-                    end;
-                }
+
             }
             action("Folder Mapping Setup")
             {
@@ -781,6 +739,19 @@ page 95112 "Drive Configuration"
                     FolderMappingPage: Page "Google Drive Folder Mapping";
                 begin
                     FolderMappingPage.Run();
+                end;
+            }
+            action("Crea Root")
+            {
+                ApplicationArea = All;
+                Image = FiledPosted;
+                trigger OnAction()
+                var
+                    GoogleMapping: Record "Google Drive Folder Mapping";
+                begin
+                    if Rec."Root Folder" <> '' then
+                        Rec."Root Folder ID" := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", false, true);
+
                 end;
             }
             action("Show Manual")
@@ -807,10 +778,10 @@ page 95112 "Drive Configuration"
             actionref(TokenGoogleDriveAction; "Obtener Token") { }
             actionref(TokenOneDriveAction; "Actualizar OneDrive Token") { }
             actionref(TokenDropBoxAction; "Actualizar DropBox Token") { }
-            actionref(CreaRootGoogleDriveAction; "Crea Root Google Drive") { }
-            actionref(CreaRootOneDriveAction; "Crea Root One Drive") { }
-            actionref(CreaRootDropBoxAction; "Crea Root DropBox") { }
-            actionref(CreaRootStrapiAction; "Crea Root Strapi") { }
+            actionref(CreaRootDriveAction; "Crea Root") { }
+            //actionref(CreaRootOneDriveAction; "Crea Root One Drive") { }
+            //actionref(CreaRootDropBoxAction; "Crea Root DropBox") { }
+            //actionref(CreaRootStrapiAction; "Crea Root Strapi") { }
         }
     }
 
