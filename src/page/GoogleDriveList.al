@@ -1,6 +1,6 @@
 page 95105 "Google Drive List"
 {
-    Caption = 'Google Drive';
+    Caption = 'Drive List';
     Editable = false;
     PageType = List;
     SourceTable = "Name/Value Buffer";
@@ -214,7 +214,7 @@ page 95105 "Google Drive List"
                 Image = ToggleBreakpoint;
                 Visible = not Mueve;
                 Caption = 'Crear Carpeta';
-                ToolTip = 'Crea una carpeta en Google Drive';
+                ToolTip = 'Crea una carpeta en el Drive';
                 trigger OnAction()
                 var
                     DorpBox: Codeunit "Google Drive Manager";

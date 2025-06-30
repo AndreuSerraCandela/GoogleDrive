@@ -19,6 +19,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         Path: Text;
     begin
         CompanyInfo.Get();
+        if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Local then exit;
         case CompanyInfo."Data Storage Provider" of
             CompanyInfo."Data Storage Provider"::"Google Drive":
                 begin
@@ -74,6 +75,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
     begin
         if Rec.IsTemporary then exit;
         CompanyInfo.Get();
+        if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Local then exit;
         Case CompanyInfo."Data Storage Provider" of
             CompanyInfo."Data Storage Provider"::"Google Drive":
                 DeDonde := 'Google Drive';
@@ -209,7 +211,11 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
 
     [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeExport', '', true, true)]
     local procedure OnBeforeExport(var DocumentAttachment: Record "Document Attachment"; var IsHandled: Boolean; ShowFileDialog: Boolean)
+    var
+        CompanyInfo: Record "Company Information";
     begin
+        CompanyInfo.Get();
+        if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Local then exit;
         if DocumentAttachment."Store in Google Drive" then begin
             IsHandled := true;
             GoogleDriveManager.OpenFileInBrowser(DocumentAttachment."Google Drive ID");

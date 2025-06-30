@@ -843,7 +843,8 @@ codeunit 95100 "Google Drive Manager"
         RootFolderId := Inf."Root Folder ID";
         Url := Inf."Url Api GoogleDrive" + list_folder;
         if RootFolder = false then
-            Url := Url + '?q=' + C + RootFolderId + C + 'in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
+            //Url := Url + '?q=' + C + RootFolderId + C + 'in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
+             Url := Url + '?q=' + C + RootFolderId + C + '+in+parents&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
         else
             Url := Url + '?q=trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         //https://www.googleapis.com/drive/v3/files?q='1YCipBu7tEY2n2enB5RGxy1XXYtjID4oe'+in+parents&fields=files(id%2Cname%2CmimeType)
@@ -865,7 +866,7 @@ codeunit 95100 "Google Drive Manager"
                         Borrado := JEntryToken.AsValue().AsBoolean();
                 end;
                 if JEntry.Get('name', JEntryToken) then begin
-                    if JEntryToken.AsValue().AsText() = Carpeta then begin
+                    if (JEntryToken.AsValue().AsText() = Carpeta) and (Not Borrado) then begin
                         if JEntry.Get('id', JEntryToken) then begin
                             Id := JEntryToken.AsValue().AsText();
                             exit(Id);

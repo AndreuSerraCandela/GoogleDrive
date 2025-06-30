@@ -910,7 +910,7 @@ codeunit 95102 "OneDrive Manager"
         StatusInfo: JsonObject;
         JTokenLink: JsonToken;
     begin
-        Ticket := Format(Token());
+        Ticket := Token();
         Url := graph_endpoint + delete_endpoint;
         Url := StrSubstNo(Url, GetDocumentID);
         ResponseMessage := RestApiTokenResponse(Url, Ticket, RequestType::delete, '');
@@ -968,7 +968,7 @@ codeunit 95102 "OneDrive Manager"
         ParentFolderPath: Text;
     begin
         Files.DeleteAll();
-        Ticket := Format(Token());
+        Ticket := Token();
 
         // Construir la URL para listar el contenido de la carpeta
         if SoloSubfolder then begin
@@ -1224,7 +1224,7 @@ codeunit 95102 "OneDrive Manager"
         exit('');
     end;
 
-    procedure CreateOneDriveFolder(ParentFolderId: Text; FolderName: Text; RootFolder: Boolean): Text
+    procedure CreateOneDriveFolder(ParentFolderId: Text; Foldername: Text; RootFolder: Boolean): Text
     var
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;

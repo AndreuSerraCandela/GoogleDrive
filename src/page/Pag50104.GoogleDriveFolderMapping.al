@@ -32,13 +32,13 @@ page 95106 "Google Drive Folder Mapping"
                 field("Default Folder Name"; Rec."Default Folder Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Especifica el nombre de la carpeta de Google Drive (solo para referencia).';
+                    ToolTip = 'Especifica el nombre de la carpeta del Drive (solo para referencia).';
                 }
 
                 field("Default Folder ID"; Rec."Default Folder ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Especifica el ID de la carpeta de Google Drive donde se almacenarán los archivos.';
+                    ToolTip = 'Especifica el ID de la carpeta del Drive donde se almacenarán los archivos.';
                     Editable = false;
                 }
 
@@ -111,7 +111,7 @@ page 95106 "Google Drive Folder Mapping"
             action("Browse Google Drive Folder")
             {
                 ApplicationArea = All;
-                Caption = 'Explorar Carpeta Google Drive';
+                Caption = 'Explorar Carpeta Drive';
                 ToolTip = 'Abre el explorador de Google Drive para seleccionar una carpeta.';
                 Image = AddToHome;
                 Scope = Repeater;
@@ -224,7 +224,7 @@ page 95106 "Google Drive Folder Mapping"
             {
                 ApplicationArea = All;
                 Caption = 'Abrir  Drive';
-                ToolTip = 'Abre Google Drive en el navegador.';
+                ToolTip = 'Abre el Drive en el navegador.';
                 Image = Web;
 
                 trigger OnAction()
@@ -239,7 +239,7 @@ page 95106 "Google Drive Folder Mapping"
     begin
         // Show helpful message on first open
         if not Rec.FindFirst() then begin
-            Message('Esta página permite configurar dónde se almacenarán los archivos de diferentes tablas en Google Drive.\' +
+            Message('Esta página permite configurar dónde se almacenarán los archivos de diferentes tablas en el Drive.\' +
                    '\' +
                    'Use "Configurar Mapeos por Defecto" para crear configuraciones iniciales.');
         end;

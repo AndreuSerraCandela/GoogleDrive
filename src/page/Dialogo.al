@@ -3,6 +3,7 @@
 /// </summary>
 page 95101 "Dialogo Google Drive"
 {
+    Caption = 'Dialogo';
     PageType = StandardDialog;
     layout
     {

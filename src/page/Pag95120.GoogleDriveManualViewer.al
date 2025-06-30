@@ -3,7 +3,7 @@ page 95120 "Google Drive Manual Viewer"
     PageType = Card;
     ApplicationArea = All;
     UsageCategory = Administration;
-    Caption = 'Manual de Google Drive';
+    Caption = 'Manual del Drive';
     Editable = false;
 
     layout

@@ -1,5 +1,6 @@
 page 95100 "Google Drive Factbox"
 {
+    Caption = 'Drive Factbox';
     PageType = ListPart;
     ApplicationArea = All;
     UsageCategory = Administration;
