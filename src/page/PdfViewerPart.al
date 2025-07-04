@@ -35,7 +35,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                             SetPDFDocumentUrl(URL, 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
                         end
                         else
-                            SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '');
+                            SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '', '');
                     end;
 
                     trigger onView()
@@ -57,7 +57,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                         if PDFStorageT."Google Drive ID" <> '' then
                             SetPDFDocumentUrl(PDFStorageT."Google Drive ID", 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
                         else
-                            SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '');
+                            SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '', '');
 
                     end;
 
@@ -71,7 +71,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                         if PDFStorageT."Google Drive ID" <> '' then
                             SetPDFDocumentUrl(PDFStorageT."Google Drive ID", 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
                         else
-                            SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '');
+                            SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '', '');
 
                     end;
 
@@ -146,7 +146,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         exit(Base64Convert.ToBase64(Int));
     end;
 
-    local procedure SetPDFDocument(PDFAsTxt: Text; i: Integer; Pdf: Boolean; Url: Text);
+    local procedure SetPDFDocument(PDFAsTxt: Text; i: Integer; Pdf: Boolean; Url: Text; driveType: Text);
     var
         IsVisible: Boolean;
     begin
@@ -163,15 +163,15 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                     else begin
                         case PDFStorageT."File Type" of
                             PDFStorageT."File Type"::PDF:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'pdf', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'pdf', Url, driveType);
                             PDFStorageT."File Type"::Image:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'image', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'image', Url, driveType);
                             PDFStorageT."File Type"::Word:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'word', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'word', Url, driveType);
                             PDFStorageT."File Type"::Excel:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'excel', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'excel', Url, driveType);
                             PDFStorageT."File Type"::PowerPoint:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'powerpoint', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'powerpoint', Url, driveType);
                         end;
                     end;
                     CurrPage.PDFViewer1.Fichero(a);
@@ -193,23 +193,29 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        DriveType: Text;
     begin
         if PDFStorageT."Store in Google Drive" then begin
             StorageProvider := StorageProvider::"Google Drive";
             UrlProvider := GoogleDriveManager.GetUrl(URL);
+            DriveType := 'google';
         end;
         if PDFStorageT."Store in OneDrive" then begin
             StorageProvider := StorageProvider::OneDrive;
             UrlProvider := OneDriveManager.GetUrl(URL);
+            DriveType := 'onedrive';
         end;
         if PDFStorageT."Store in DropBox" then begin
             StorageProvider := StorageProvider::DropBox;
             UrlProvider := DropBoxManager.GetUrl(URL);
+            DriveType := 'dropbox';
         end;
         if PDFStorageT."Store in Strapi" then begin
             StorageProvider := StorageProvider::Strapi;
             UrlProvider := StrapiManager.GetUrl(URL);
+            DriveType := 'strapi';
         end;
+        UrlProvider := URL;
         If Not PDFStorageT.ToBase64StringOcr(PDFAsTxt, Base64, PDFStorageT."File Name", StorageProvider) then
             exit;
 
@@ -226,17 +232,17 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                     else begin
                         case PDFStorageT."File Type" of
                             PDFStorageT."File Type"::PDF:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'pdf', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'pdf', DriveType, UrlProvider);
                             PDFStorageT."File Type"::Image:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'image', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'image', DriveType, UrlProvider);
                             PDFStorageT."File Type"::Word:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'word', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'word', DriveType, UrlProvider);
                             PDFStorageT."File Type"::Excel:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'excel', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'excel', DriveType, UrlProvider);
                             PDFStorageT."File Type"::PowerPoint:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'powerpoint', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'powerpoint', DriveType, UrlProvider);
                             PDFStorageT."File Type"::XML:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'xml', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'xml', DriveType, UrlProvider);
                         end;
                     end;
                     CurrPage.PDFViewer1.Fichero(a);
@@ -479,7 +485,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                 if PDFStorageT.Url <> '' then
                     SetPDFDocumentUrl(PDFStorageT.Url, 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
                 else
-                    SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '');
+                    SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '', '');
         // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[1]), 1);
         // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[2]), 2);
         // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[3]), 3);

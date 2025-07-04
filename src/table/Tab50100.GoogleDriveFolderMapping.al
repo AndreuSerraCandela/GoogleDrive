@@ -108,6 +108,7 @@ table 95100 "Google Drive Folder Mapping"
         OnDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
         Files: Record "Name/Value Buffer" temporary;
         Id: Text;
         CompaiInfo: Record "Company Information";
@@ -122,6 +123,8 @@ table 95100 "Google Drive Folder Mapping"
                 exit(DropBoxManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
             CompaiInfo."Data Storage Provider"::Strapi:
                 exit(StrapiManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
+            CompaiInfo."Data Storage Provider"::SharePoint:
+                exit(SharePointManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
         end;
     end;
 

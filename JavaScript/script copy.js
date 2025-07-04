@@ -57,6 +57,8 @@ function LoadPDF(PDFDocument,IsFactbox){
     factboxarea = window.frameElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement,
     scale = 1.3;
 
+    // Limpiar estado anterior
+    clearViewerState();
 
     pageRendering = false;
     pageNum = 1;
@@ -230,35 +232,86 @@ function LoadPDF(PDFDocument,IsFactbox){
 
     });
 }
-function LoadOtros(base64Data, IsFactbox, fileType) {
-    if (fileType == 'image') fileType = 'image/jpg';
-    if (fileType == 'word') fileType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-    if (fileType == 'excel') fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-    if (fileType == 'powerpoint') fileType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-    if (fileType == 'pdf') fileType = 'application/pdf';
-    if (fileType == 'text') fileType = 'text/plain';
-    if (fileType == 'csv') fileType = 'text/csv';
-    if (fileType == 'xml') fileType = 'application/xml';
+
+// Función para limpiar el estado del visor
+function clearViewerState() {
+    const canvas = document.getElementById('the-canvas');
+    const iframeContainer = document.getElementById('iframe-container');
     
+    // Restaurar canvas
+    canvas.style.display = 'block';
+    canvas.width = 0;
+    canvas.height = 0;
+    
+    // Limpiar iframe container
+    if (iframeContainer) {
+        iframeContainer.innerHTML = '';
+    }
+    
+    // Restaurar tamaño del frame
+    const iframe = window.frameElement;
+    if (iframe) {
+        iframe.style.height = 'auto';
+        iframe.style.maxHeight = 'none';
+        if (iframe.parentElement) {
+            iframe.parentElement.style.height = 'auto';
+        }
+    }
+}
+
+function LoadOtros(base64Data, IsFactbox, fileType, driveType, driveId) {
+    if (fileType === 'image') fileType = 'image/jpg';
+    if (fileType === 'excel') fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    if (fileType === 'powerpoint') fileType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+    if (fileType === 'text') fileType = 'text/plain';
+    if (fileType === 'csv') fileType = 'text/csv';
+    if (fileType === 'xml') fileType = 'application/xml';
+
     const canvas = document.getElementById('the-canvas');
     const ctx = canvas.getContext('2d');
     const iframeContainer = document.getElementById('iframe-container');
-    
-    // Ocultar canvas y limpiar iframe container
+    const iframeRef = window.frameElement;
+
+    clearViewerState();
     canvas.style.display = 'none';
     if (iframeContainer) iframeContainer.innerHTML = '';
 
-    // Limpiar el base64
+    // VISOR ONLINE SEGÚN PROVEEDOR
+    let iframeUrl = null;
+
+    if (driveType === 'google' && driveId) {
+        iframeUrl = `https://drive.google.com/file/d/${driveId}/preview`;
+    } else if (driveType === 'dropbox' && driveId) {
+        iframeUrl = `https://dl.dropboxusercontent.com/s/${driveId}?raw=1`;
+    } else if (driveType === 'onedrive' && driveId) {
+        iframeUrl = driveId;
+    }
+
+    if (iframeUrl) {
+        const iframe = document.createElement('iframe');
+        iframe.src = iframeUrl;
+        iframe.width = '100%';
+        iframe.height = '700px';
+        iframe.style.border = 'none';
+        iframeContainer.appendChild(iframe);
+
+        if (iframeRef) {
+            iframeRef.style.height = '720px';
+            if (iframeRef.parentElement) iframeRef.parentElement.style.height = '720px';
+        }
+        return;
+    }
+
+    // CONTENIDO EN BASE64
     base64Data = base64Data.replace(/\s/g, '').replace(/^data:[^;]+;base64,/, '');
 
     let byteArray;
     try {
         const byteCharacters = atob(base64Data);
-        const byteNumbers = new Array(byteCharacters.length);
+        byteArray = new Uint8Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
+            byteArray[i] = byteCharacters.charCodeAt(i);
         }
-        byteArray = new Uint8Array(byteNumbers);
     } catch (error) {
         alert("El archivo no pudo ser decodificado. ¿Está seguro de que el base64 está bien formado?");
         return;
@@ -268,7 +321,6 @@ function LoadOtros(base64Data, IsFactbox, fileType) {
     const blobUrl = URL.createObjectURL(blob);
 
     if (fileType.startsWith('image/')) {
-        // Mostrar imágenes en canvas
         const image = new Image();
         image.onload = function () {
             canvas.width = 357;
@@ -276,30 +328,27 @@ function LoadOtros(base64Data, IsFactbox, fileType) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
             canvas.style.display = 'block';
+
+            if (iframeRef) {
+                iframeRef.style.height = (canvas.height + 100) + "px";
+                if (iframeRef.parentElement) iframeRef.parentElement.style.height = (canvas.height + 100) + "px";
+            }
         };
-        image.onerror = function () {
-            alert('Error al cargar la imagen.');
-        };
+        image.onerror = () => alert('Error al cargar la imagen.');
         image.src = blobUrl;
-    } else if (fileType === 'application/pdf') {
-        // Mostrar PDFs en iframe
-        const iframe = document.createElement('iframe');
-        iframe.src = blobUrl;
-        iframe.width = '100%';
-        iframe.height = '600px';
-        iframe.style.border = 'none';
-        iframeContainer.appendChild(iframe);
-    } else if (fileType === 'text/plain' || fileType === 'text/csv' || fileType === 'application/xml') {
-        // Mostrar archivos de texto en iframe
-        const iframe = document.createElement('iframe');
-        iframe.src = blobUrl;
-        iframe.width = '100%';
-        iframe.height = '600px';
-        iframe.style.border = 'none';
-        iframeContainer.appendChild(iframe);
+    } else if (['text/plain', 'text/csv', 'application/xml'].includes(fileType)) {
+        const textIframe = document.createElement('iframe');
+        textIframe.src = blobUrl;
+        textIframe.width = '100%';
+        textIframe.height = '600px';
+        textIframe.style.border = 'none';
+        iframeContainer.appendChild(textIframe);
+
+        if (iframeRef) {
+            iframeRef.style.height = '700px';
+            if (iframeRef.parentElement) iframeRef.parentElement.style.height = '700px';
+        }
     } else {
-        // Para archivos Word, Excel, PowerPoint y otros que no se pueden mostrar directamente
-        // Mostrar un mensaje con opción de descarga
         const messageDiv = document.createElement('div');
         messageDiv.style.cssText = `
             text-align: center;
@@ -310,21 +359,21 @@ function LoadOtros(base64Data, IsFactbox, fileType) {
             border-radius: 10px;
             margin: 20px;
         `;
-        
+
         const icon = document.createElement('div');
         icon.innerHTML = '📄';
         icon.style.fontSize = '48px';
         icon.style.marginBottom = '20px';
-        
+
         const title = document.createElement('h3');
-        title.textContent = 'Archivo no se puede previsualizar';
+        title.textContent = 'Archivo descargable';
         title.style.marginBottom = '10px';
-        
+
         const description = document.createElement('p');
-        description.textContent = 'Este tipo de archivo no se puede mostrar directamente en el navegador.';
+        description.textContent = 'Este archivo no se puede previsualizar, pero puedes descargarlo.';
         description.style.marginBottom = '20px';
         description.style.color = '#666';
-        
+
         const downloadBtn = document.createElement('button');
         downloadBtn.textContent = 'Descargar archivo';
         downloadBtn.style.cssText = `
@@ -336,7 +385,7 @@ function LoadOtros(base64Data, IsFactbox, fileType) {
             cursor: pointer;
             font-size: 14px;
         `;
-        downloadBtn.onclick = function() {
+        downloadBtn.onclick = function () {
             const link = document.createElement('a');
             link.href = blobUrl;
             link.download = 'archivo.' + getFileExtension(fileType);
@@ -344,15 +393,20 @@ function LoadOtros(base64Data, IsFactbox, fileType) {
             link.click();
             document.body.removeChild(link);
         };
-        
+
         messageDiv.appendChild(icon);
         messageDiv.appendChild(title);
         messageDiv.appendChild(description);
         messageDiv.appendChild(downloadBtn);
-        
         iframeContainer.appendChild(messageDiv);
+
+        if (iframeRef) {
+            iframeRef.style.height = '500px';
+            if (iframeRef.parentElement) iframeRef.parentElement.style.height = '500px';
+        }
     }
 }
+
 
 // Función auxiliar para obtener la extensión del archivo
 function getFileExtension(mimeType) {
@@ -371,16 +425,6 @@ function getFileExtension(mimeType) {
     };
     return extensions[mimeType] || 'bin';
 }
-
-       
-
-
-  
-        
-
-        
-    
-
 
 
 

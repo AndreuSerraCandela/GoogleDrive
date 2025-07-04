@@ -36,6 +36,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 Editable = false;
                 Visible = IsStrapi;
             }
+            field("Store in SharePoint"; Rec."Store in SharePoint")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies whether the attachment should be stored in SharePoint instead of in the database.';
+                Caption = 'Store in SharePoint';
+                Editable = false;
+                Visible = IsSharePoint;
+            }
             field("Google Drive ID"; Rec."Google Drive ID")
             {
                 ApplicationArea = All;
@@ -93,6 +101,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     StrapiManager.OpenFileInBrowser(Rec."Strapi ID");
                 end;
             }
+            field("SharePoint ID"; Rec."SharePoint ID")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the ID of the file in SharePoint.';
+                Caption = 'SharePoint ID';
+                Editable = false;
+                Visible = false;// IsSharePoint;
+            }
         }
         addlast(content)
         {
@@ -113,32 +129,45 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         OneDriveManager: Codeunit "OneDrive Manager";
                         DropBoxManager: Codeunit "DropBox Manager";
                         StrapiManager: Codeunit "Strapi Manager";
+                        Id: Integer;
+                        DriveType: Text;
                     begin
                         IsControlAddInReady := true;
                         If Rec."Store in Google Drive" then begin
                             URL := Rec."Google Drive ID";
-                            UrlProvider := GoogleDriveManager.GetUrl(URL);
+                            UrlProvider := Url;//GoogleDriveManager.GetUrl(URL);
                             StorageProvider := StorageProvider::"Google Drive";
+                            DriveType := 'google';
                         end;
                         if Rec."Store in OneDrive" then begin
                             URL := Rec."OneDrive ID";
-                            UrlProvider := OneDriveManager.GetUrl(URL);
+                            UrlProvider := OneDriveManager.GetUrlLink(URL);
                             StorageProvider := StorageProvider::OneDrive;
+                            DriveType := 'onedrive';
                         end;
                         if Rec."Store in DropBox" then begin
                             URL := Rec."DropBox ID";
-                            UrlProvider := DropBoxManager.GetUrl(URL);
+                            UrlProvider := Url;//DropBoxManager.GetUrl(URL);
                             StorageProvider := StorageProvider::DropBox;
+                            DriveType := 'dropbox';
                         end;
                         if Rec."Store in Strapi" then begin
                             URL := Rec."Strapi ID";
-                            UrlProvider := StrapiManager.GetUrl(URL);
+                            UrlProvider := url;//StrapiManager.GetUrl(URL);
                             StorageProvider := StorageProvider::Strapi;
+                            DriveType := 'strapi';
                         end;
+                        if Rec."Store in SharePoint" then begin
+                            URL := Rec."SharePoint ID";
+                            UrlProvider := Url;//SharePointManager.GetUrl(URL);
+                            StorageProvider := StorageProvider::SharePoint;
+                            DriveType := 'sharepoint';
+                        end;
+
                         if URL <> '' then
-                            SetPDFDocumentUrl(URL, 1, (Rec."File Type" = Rec."File Type"::PDF), Rec."File Name", StorageProvider, UrlProvider)
+                            SetPDFDocumentUrl(URL, 1, (Rec."File Type" = Rec."File Type"::PDF), Rec."File Name", StorageProvider, UrlProvider, DriveType)
                         else
-                            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF), UrlProvider);
+                            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF), UrlProvider, DriveType);
                     end;
 
                     trigger onView()
@@ -155,6 +184,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         OneDriveManager: Codeunit "OneDrive Manager";
                         DropBoxManager: Codeunit "DropBox Manager";
                         StrapiManager: Codeunit "Strapi Manager";
+                        DriveType: Text;
                     begin
                         a += 1;
                         if Rec.next() = 0 then begin
@@ -166,26 +196,37 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                             URL := Rec."Google Drive ID";
                             UrlProvider := GoogleDriveManager.GetUrl(URL);
                             StorageProvider := StorageProvider::"Google Drive";
+                            DriveType := 'google';
                         end;
                         if Rec."Store in OneDrive" then begin
                             URL := Rec."OneDrive ID";
                             UrlProvider := OneDriveManager.GetUrl(URL);
                             StorageProvider := StorageProvider::OneDrive;
+                            DriveType := 'onedrive';
                         end;
                         if Rec."Store in DropBox" then begin
                             URL := Rec."DropBox ID";
                             UrlProvider := DropBoxManager.GetUrl(URL);
                             StorageProvider := StorageProvider::DropBox;
+                            DriveType := 'dropbox';
                         end;
                         if Rec."Store in Strapi" then begin
                             URL := Rec."Strapi ID";
                             UrlProvider := StrapiManager.GetUrl(URL);
                             StorageProvider := StorageProvider::Strapi;
+                            DriveType := 'strapi';
                         end;
+                        if Rec."Store in SharePoint" then begin
+                            URL := Rec."SharePoint ID";
+                            UrlProvider := Url;//SharePointManager.GetUrl(URL);
+                            StorageProvider := StorageProvider::SharePoint;
+                            DriveType := 'sharepoint';
+                        end;
+                        UrlProvider := Url;
                         if URL <> '' then
-                            SetPDFDocumentUrl(URL, 1, (Rec."File Type" = Rec."File Type"::PDF), Rec."File Name", StorageProvider, UrlProvider)
+                            SetPDFDocumentUrl(URL, 1, (Rec."File Type" = Rec."File Type"::PDF), Rec."File Name", StorageProvider, UrlProvider, DriveType)
                         else
-                            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF), UrlProvider);
+                            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF), UrlProvider, DriveType);
 
                     end;
 
@@ -198,6 +239,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         OneDriveManager: Codeunit "OneDrive Manager";
                         DropBoxManager: Codeunit "DropBox Manager";
                         StrapiManager: Codeunit "Strapi Manager";
+                        DriveType: Text;
                     begin
                         a -= 1;
                         if Rec.Next(-1) = 0 then begin
@@ -208,26 +250,35 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                             URL := Rec."Google Drive ID";
                             UrlProvider := GoogleDriveManager.GetUrl(URL);
                             StorageProvider := StorageProvider::"Google Drive";
+                            DriveType := 'google';
                         end;
                         if Rec."Store in OneDrive" then begin
                             URL := Rec."OneDrive ID";
                             UrlProvider := OneDriveManager.GetUrl(URL);
                             StorageProvider := StorageProvider::OneDrive;
+                            DriveType := 'onedrive';
                         end;
                         if Rec."Store in DropBox" then begin
                             URL := Rec."DropBox ID";
                             UrlProvider := DropBoxManager.GetUrl(URL);
                             StorageProvider := StorageProvider::DropBox;
+                            DriveType := 'dropbox';
                         end;
                         if Rec."Store in Strapi" then begin
                             URL := Rec."Strapi ID";
                             UrlProvider := StrapiManager.GetUrl(URL);
                             StorageProvider := StorageProvider::Strapi;
+                            DriveType := 'strapi';
                         end;
+                        if Rec."Store in SharePoint" then begin
+                            URL := Rec."SharePoint ID";
+                            StorageProvider := StorageProvider::SharePoint;
+                        end;
+                        UrlProvider := Url;
                         if URL <> '' then
-                            SetPDFDocumentUrl(URL, 1, (Rec."File Type" = Rec."File Type"::PDF), Rec."File Name", StorageProvider, UrlProvider)
+                            SetPDFDocumentUrl(URL, 1, (Rec."File Type" = Rec."File Type"::PDF), Rec."File Name", StorageProvider, UrlProvider, DriveType)
                         else
-                            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF), UrlProvider);
+                            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF), UrlProvider, DriveType);
 
                     end;
 
@@ -260,6 +311,10 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         if Rec."Store in Strapi" then begin
                             URL := Rec."Strapi ID";
                             StorageProvider := StorageProvider::Strapi;
+                        end;
+                        if Rec."Store in SharePoint" then begin
+                            URL := Rec."SharePoint ID";
+                            StorageProvider := StorageProvider::SharePoint;
                         end;
                         if URL <> '' then begin
                             TempBlob.CreateOutStream(DocumentStream);
@@ -992,6 +1047,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         IsOndrive: Boolean;
         IsDropBox: Boolean;
         IsStrapi: Boolean;
+        IsSharePoint: Boolean;
         IsDrive: Boolean;
     // Add triggers
     trigger OnOpenPage()
@@ -1007,7 +1063,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         IsOndrive := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::OneDrive;
         IsDropBox := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::DropBox;
         IsStrapi := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Strapi;
-        IsDrive := IsGoogle or IsOndrive or IsDropBox or IsStrapi;
+        IsSharePoint := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::SharePoint;
+        IsDrive := IsGoogle or IsOndrive or IsDropBox or IsStrapi or IsSharePoint;
         // Initialize Google Drive Manager when the page opens
         If IsGoogle Then
             GoogleDriveManager.Initialize();
@@ -1149,32 +1206,42 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        DriveType: Text;
     begin
         if not IsDrive then exit;
         if Rec."Store in Google Drive" then begin
             URL := Rec."Google Drive ID";
-            UrlProvider := GoogleDriveManager.GetUrl(URL);
+            UrlProvider := Url;//GoogleDriveManager.GetUrl(URL);
             StorageProvider := StorageProvider::"Google Drive";
+            DriveType := 'google';
         end;
         if Rec."Store in OneDrive" then begin
             URL := Rec."OneDrive ID";
-            UrlProvider := OneDriveManager.GetUrl(URL);
+            UrlProvider := OneDriveManager.GetUrlLink(URL);
             StorageProvider := StorageProvider::OneDrive;
+            DriveType := 'onedrive';
         end;
         if Rec."Store in DropBox" then begin
             URL := Rec."DropBox ID";
-            UrlProvider := DropBoxManager.GetUrl(URL);
+            UrlProvider := Url;//DropBoxManager.GetUrl(URL);
             StorageProvider := StorageProvider::DropBox;
+            DriveType := 'dropbox';
         end;
         if Rec."Store in Strapi" then begin
             URL := Rec."Strapi ID";
-            UrlProvider := StrapiManager.GetUrl(URL);
+            UrlProvider := url;//StrapiManager.GetUrl(URL);
             StorageProvider := StorageProvider::Strapi;
+            DriveType := 'strapi';
+        end;
+        if Rec."Store in SharePoint" then begin
+            URL := Rec."SharePoint ID";
+            StorageProvider := StorageProvider::SharePoint;
+            DriveType := 'sharepoint';
         end;
         if URL <> '' then
-            SetPDFDocumentUrl(URL, 1, (Rec."File Type" = Rec."File Type"::PDF), Rec."File Name", StorageProvider, UrlProvider)
+            SetPDFDocumentUrl(URL, 1, (Rec."File Type" = Rec."File Type"::PDF), Rec."File Name", StorageProvider, UrlProvider, DriveType)
         else
-            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF), UrlProvider);
+            SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF), UrlProvider, DriveType);
     end;
 
     local procedure GetPDFAsTxt(PDFStorage: Record "Document Attachment"): Text
@@ -1192,7 +1259,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         exit(Base64Convert.ToBase64(Int));
     end;
 
-    local procedure SetPDFDocument(PDFAsTxt: Text; i: Integer; Pdf: Boolean; Url: Text);
+    local procedure SetPDFDocument(PDFAsTxt: Text; i: Integer; Pdf: Boolean; Url: Text; driveType: Text);
     var
         IsVisible: Boolean;
     begin
@@ -1209,17 +1276,17 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     else begin
                         case Rec."File Type" of
                             Rec."File Type"::PDF:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'pdf', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'pdf', driveType, Url);
                             Rec."File Type"::Image:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'image', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'image', '', '');
                             Rec."File Type"::Word:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'word', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'word', driveType, Url);
                             Rec."File Type"::Excel:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'excel', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'excel', driveType, Url);
                             Rec."File Type"::PowerPoint:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'powerpoint', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'powerpoint', driveType, Url);
                             Rec."File Type"::XML:
-                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'xml', Url);
+                                CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'xml', driveType, Url);
 
 
                         end;
@@ -1232,7 +1299,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
     end;
 
-    local procedure SetPDFDocumentUrl(PDFAsTxt: Text; i: Integer; Pdf: Boolean; Filename: Text; Origen: Enum "Data Storage Provider"; UrlProvider: Text);
+    local procedure SetPDFDocumentUrl(PDFAsTxt: Text; i: Integer; Pdf: Boolean; Filename: Text; Origen: Enum "Data Storage Provider"; UrlProvider: Text; DriveType: Text);
     var
         IsVisible: Boolean;
         Base64: Text;
@@ -1240,6 +1307,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
     begin
         If not Rec.ToBase64StringOcr(PDFAsTxt, Base64, Filename, Origen) then
             exit;
@@ -1257,17 +1325,17 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     else begin
                         case Rec."File Type" of
                             Rec."File Type"::PDF:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'pdf', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'pdf', DriveType, UrlProvider);
                             Rec."File Type"::Image:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'image', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'image', DriveType, UrlProvider);
                             Rec."File Type"::Word:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'word', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'word', DriveType, UrlProvider);
                             Rec."File Type"::Excel:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'excel', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'excel', DriveType, UrlProvider);
                             Rec."File Type"::PowerPoint:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'powerpoint', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'powerpoint', DriveType, UrlProvider);
                             Rec."File Type"::XML:
-                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'xml', UrlProvider);
+                                CurrPage.PDFViewer1.LoadOtros(Base64, true, 'xml', DriveType, UrlProvider);
 
                         end;
                     end;
@@ -1298,10 +1366,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
         DocumentAttachment: Record "Document Attachment";
         StorageProvider: Enum "Data Storage Provider";
         URL: Text;
         UrlProvider: Text;
+        DriveType: Text;
     begin
         DocumentAttachment.CopyFilters(Rec);
         DocumentAttachment.SetRange("File Type", DocumentAttachment."File Type"::PDF);
@@ -1328,6 +1398,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 DropBoxManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
             CompaniInfo."Data Storage Provider"::Strapi:
                 StrapiManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
+            CompaniInfo."Data Storage Provider"::SharePoint:
+                SharePointManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
         end;
 
         SubFolder := ObtenerSubfolder(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, SubFolder, Path);
@@ -1337,6 +1409,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     begin
                         Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
                         GoogleDriveManager.ListFolder(Id, FileList, true);
+                        DriveType := 'google';
                     end;
                 CompaniInfo."Data Storage Provider"::OneDrive:
                     begin
@@ -1345,17 +1418,25 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                             Path += SubFolder + '/'
                         end;
                         OneDriveManager.ListFolder(Id, FileList, true);
-
+                        DriveType := 'onedrive';
                     end;
                 CompaniInfo."Data Storage Provider"::DropBox:
                     begin
                         Id := DropBoxManager.CreateSubfolderStructure(Id, SubFolder);
                         DropBoxManager.ListFolder(Id, FileList, true);
+                        DriveType := 'dropbox';
                     end;
                 CompaniInfo."Data Storage Provider"::Strapi:
                     begin
                         Id := StrapiManager.CreateSubfolderStructure(Id, SubFolder);
                         StrapiManager.ListFolder(Id, FileList, true);
+                        DriveType := 'strapi';
+                    end;
+                CompaniInfo."Data Storage Provider"::SharePoint:
+                    begin
+                        Id := SharePointManager.CreateFolderStructure(Id, SubFolder);
+                        SharePointManager.ListFolder(Id, FileList, true);
+                        DriveType := 'sharepoint';
                     end;
             end;
         end;
@@ -1444,13 +1525,18 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     UrlProvider := StrapiManager.GetUrl(URL);
                     StorageProvider := StorageProvider::Strapi;
                 end;
+                if Rec."Store in SharePoint" then begin
+                    URL := Rec."SharePoint ID";
+                    StorageProvider := StorageProvider::SharePoint;
+                    DriveType := 'sharepoint';
+                end;
 
-
+                UrlProvider := Url;
 
                 if Url <> '' then
-                    SetPDFDocumentUrl(Url, 1, (Rec."File Type" = Rec."File Type"::PDF), Rec."File Name", StorageProvider, UrlProvider)
+                    SetPDFDocumentUrl(Url, 1, (Rec."File Type" = Rec."File Type"::PDF), Rec."File Name", StorageProvider, UrlProvider, DriveType)
                 else
-                    SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF), UrlProvider);
+                    SetPDFDocument(GetPDFAsTxt(Rec), 1, (Rec."File Type" = Rec."File Type"::PDF), UrlProvider, DriveType);
             end;
         // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[1]), 1);
         // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[2]), 2);
@@ -1472,6 +1558,11 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         Int: InStream;
         StorageProvider: Enum "Data Storage Provider";
         URL: Text;
+        GoogleDriveManager: Codeunit "Google Drive Manager";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
     begin
         if PDFStorage."Store in Google Drive" then begin
             URL := PDFStorage."Google Drive ID";
@@ -1488,6 +1579,36 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         if PDFStorage."Store in Strapi" then begin
             URL := PDFStorage."Strapi ID";
             StorageProvider := StorageProvider::Strapi;
+        end;
+        if PDFStorage."Store in SharePoint" then begin
+            URL := PDFStorage."SharePoint ID";
+            StorageProvider := StorageProvider::SharePoint;
+
+        end;
+        if PDFStorage."File Extension" <> 'pdf' then begin
+            Case StorageProvider of
+                StorageProvider::"Google Drive":
+                    begin
+                        GoogleDriveManager.OpenFileInBrowser(PDFStorage."Google Drive ID");
+                    end;
+                StorageProvider::OneDrive:
+                    begin
+                        OneDriveManager.OpenFileInBrowser(PDFStorage."OneDrive ID", false);
+                    end;
+                StorageProvider::DropBox:
+                    begin
+                        DropBoxManager.OpenFileInBrowser(PDFStorage."DropBox ID");
+                    end;
+                StorageProvider::Strapi:
+                    begin
+                        StrapiManager.OpenFileInBrowser(PDFStorage."Strapi ID");
+                    end;
+                StorageProvider::SharePoint:
+                    begin
+                        SharePointManager.OpenFileInBrowser(PDFStorage."SharePoint ID", false);
+                    end;
+            end;
+            exit;
         end;
         if URL <> '' then begin
             If Not PDFStorage.ToBase64StringOcr(URL, Base64, PDFStorage."File Name", StorageProvider) then
@@ -1516,6 +1637,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
     begin
         CompanyInfo.Get();
         case CompanyInfo."Data Storage Provider" of
@@ -1532,6 +1654,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 SubFolder := DropBoxManager.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
             CompanyInfo."Data Storage Provider"::Strapi:
                 SubFolder := StrapiManager.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+            CompanyInfo."Data Storage Provider"::SharePoint:
+                SubFolder := SharePointManager.CreateFolderStructure(Id, SubFolder);
         end;
         exit(SubFolder);
     end;

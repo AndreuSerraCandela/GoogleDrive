@@ -709,6 +709,57 @@ codeunit 95102 "OneDrive Manager"
         exit(NewFolderId);
     end;
 
+    internal procedure GetUrlLink(OneDriveID: Text[250]): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        Link: JsonObject;
+        LinkToken: JsonToken;
+        WebUrl: Text;
+        ErrorMessage: Text;
+        Json: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        // Obtener metadatos del archivo incluyendo el enlace web
+        //Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1?select=id,name,webUrl,@microsoft.graph.downloadUrl', OneDriveID);
+        Url := graph_endpoint + '/me/drive/items/' + OneDriveID + '/createLink';
+        Json := '{"type": "view","scope": "anonymous"}';
+        //if Istrue then
+        //Json := '{"type": "edit","scope": "anonymous"}';
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de OneDrive.');
+
+        StatusInfo.ReadFrom(Respuesta);
+
+        // Verificar si hay error en la respuesta
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
+        end;
+        //{"@odata.context":"https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.permission",
+        //"id":"2b09a13e-84fe-435b-a1eb-e1c1ef07132f","roles":["read"],"shareId":"u!aHR0cHM6Ly9tYWxsYXBhbG1hLW15LnNoYXJlcG9pbnQuY29tLzppOi9nL3BlcnNvbmFsL2FuZHJldXNlcnJhX21hbGxhcGFsbWFfb25taWNyb3NvZnRfY29tL0VkTVFCOFloLUJsTWp1TlVfUkRTVnA0QjQtc2JSakpBMWw3M1ZVVXBSZVhRdmc","hasPassword":false,//
+        //"link":{"scope":"anonymous","type":"view","webUrl":"https://mallapalma-my.sharepoint.com/:i:/g/personal/andreuserra_mallapalma_onmicrosoft_com/EdMQB8Yh-BlMjuNU_RDSVp4B4-sbRjJA1l73VUUpReXQvg","preventsDownload":false}}
+        // Intentar obtener el enlace web
+        if StatusInfo.Get('link', JToken) then begin
+            Link := JToken.AsObject();
+            if Link.Get('webUrl', LinkToken) then begin
+                WebUrl := LinkToken.AsValue().AsText();
+                exit(WebUrl);
+            end;
+        end else begin
+            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+        end;
+    end;
+
     internal procedure OpenFileInBrowser(OneDriveID: Text[250]; IsEdit: Boolean)
     var
         Ticket: Text;

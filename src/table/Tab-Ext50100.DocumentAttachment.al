@@ -79,6 +79,18 @@ tableextension 95100 "Doc. Attachment GoogleDrive" extends "Document Attachment"
             DataClassification = CustomerContent;
             InitValue = false;
         }
+        field(95113; "Store in SharePoint"; Boolean)
+        {
+            Caption = 'Store in SharePoint';
+            DataClassification = CustomerContent;
+            InitValue = false;
+        }
+        field(95114; "SharePoint ID"; Text[250])
+        {
+            Caption = 'SharePoint ID';
+            DataClassification = CustomerContent;
+        }
+
 
         // Campo genérico para URL del documento
 
@@ -213,4 +225,115 @@ tableextension 95100 "Doc. Attachment GoogleDrive" extends "Document Attachment"
                 exit(false);
         end;
     end;
+
+    procedure FormBase64ToUrl(Base64: text; Filename: Text; var Id: Integer) ReturnValue: Text
+    VAR
+        Outstr: OutStream;
+        GeneralLedgerSetup: Record 98;
+        Token: Text;
+        JsonObj: JsonObject;
+        UrlToken: JsonToken;
+        RequestType: Option Get,patch,put,post,delete;
+        FileMgt: Codeunit "File Management";
+        Json: Text;
+        IdToken: JsonToken;
+        Ok: Boolean;
+        Url: Text;
+    begin
+        GeneralLedgerSetup.Get();
+        case FileMgt.GetExtension(Filename) of
+            'jpg', 'png', 'bmp', 'tif':
+                Base64 := 'image/' + FileMgt.GetExtension(Filename) + ';base64,' + Base64;
+            else
+                Base64 := 'application/' + FileMgt.GetExtension(Filename) + ';base64,' + Base64;
+        end;
+
+        Repeat
+
+            JsonObj.add('base64', base64);
+            jsonobj.add('filename', filename);
+            JsonObj.WriteTo(Json);
+            Json := RestApi('https://base64-api.deploy.malla.es/save', RequestType::Post, Json);
+            Clear(JsonObj);
+            Ok := JsonObj.ReadFrom(Json);
+            if not Ok then
+                sleep(5000);
+        Until Ok;
+        JsonObj.Get('url', UrlToken);
+        JsonObj.Get('_id', IdToken);
+        Url := UrlToken.AsValue().AsText;
+        Id := IdToken.AsValue().AsInteger;
+        exit(url);
+    end;
+
+    procedure DeleteBase64(Id: Integer)
+    var
+        Client: HttpClient;
+        RequestMessage: HttpRequestMessage;
+        RequestContent: HttpContent;
+        ResponseMessage: HttpResponseMessage;
+        Url: Text;
+        RequestType: Option Get,patch,put,post,delete;
+    begin
+        Url := 'https://base64-api.deploy.malla.es/delete/' + Format(Id);
+        RestApi(Url, RequestType::Delete, '');
+    end;
+
+    procedure RestApi(url: Text; RequestType: Option Get,patch,put,post,delete; payload: Text): Text
+    var
+        Ok: Boolean;
+        Respuesta: Text;
+        Client: HttpClient;
+        RequestMessage: HttpRequestMessage;
+        RequestContent: HttpContent;
+        ResponseMessage: HttpResponseMessage;
+        RequestHeaders: HttpHeaders;
+        contentHeaders: HttpHeaders;
+        ResponseText: Text;
+    begin
+        RequestHeaders := Client.DefaultRequestHeaders();
+        //RequestHeaders.Add('Authorization', CreateBasicAuthHeader(Username, Password));
+
+        case RequestType of
+            RequestType::Get:
+                Client.Get(URL, ResponseMessage);
+            RequestType::patch:
+                begin
+                    RequestContent.WriteFrom(payload);
+
+                    RequestContent.GetHeaders(contentHeaders);
+                    contentHeaders.Clear();
+                    contentHeaders.Add('Content-Type', 'application/json-patch+json');
+
+                    RequestMessage.Content := RequestContent;
+
+                    RequestMessage.SetRequestUri(URL);
+                    RequestMessage.Method := 'PATCH';
+
+                    client.Send(RequestMessage, ResponseMessage);
+                end;
+            RequestType::post:
+                begin
+                    RequestContent.WriteFrom(payload);
+
+                    RequestContent.GetHeaders(contentHeaders);
+                    contentHeaders.Clear();
+                    contentHeaders.Add('Content-Type', 'application/json');
+
+                    Client.Post(URL, RequestContent, ResponseMessage);
+                end;
+            RequestType::delete:
+                begin
+
+
+                    Client.Delete(URL, ResponseMessage);
+                end;
+        end;
+
+        ResponseMessage.Content().ReadAs(ResponseText);
+        exit(ResponseText);
+
+    end;
+
+
 }

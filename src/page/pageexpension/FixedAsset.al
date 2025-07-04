@@ -22,68 +22,20 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
     }
     trigger OnAfterGetRecord()
     var
+        CodeuniDocAtchManager: Codeunit "Doc. Attachment Mgmt. GDrive";
         RecRef: RecordRef;
-        CompanyInfo: Record "Company Information";
-        Path: Text;
+        Recargar: Boolean;
     begin
-        if ActivoFijo = Rec."No." then
+        if Maestro = Rec."No." then
             exit;
-        CompanyInfo.Get();
-        if not CompanyInfo."Funcionalidad extendida" then
+        RecRef.GetTable(Rec);
+        If Not CodeuniDocAtchManager.OnAfterGetRecord(Maestro, Recargar, RecRef, Id, Rec."No.") then
             exit;
-        case CompanyInfo."Data Storage Provider" of
-            CompanyInfo."Data Storage Provider"::"Google Drive":
-                begin
-                    ActivoFijo := Rec."No.";
-                    GoogleDriveManager.GetFolderMapping(Database::"Fixed Asset", Id);
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Fixed Asset", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
-                    IF SubFolder <> '' then
-                        Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
-                    RecRef.GetTable(Rec);
-                    CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
-                    CurrPage.Visor.Page.SetRecord(Rec.RecordId);
-                end;
-            CompanyInfo."Data Storage Provider"::OneDrive:
-                begin
-                    ActivoFijo := Rec."No.";
-                    Path := CompanyInfo."Root Folder" + '/';
-                    FolderMapping.SetRange("Table ID", Database::"Fixed Asset");
-                    if FolderMapping.FindFirst() Then begin
-                        Id := FolderMapping."Default Folder Id";
-                        Path += FolderMapping."Default Folder Name" + '/';
-                    end;
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Fixed Asset", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
-                    IF SubFolder <> '' then
-                        Id := OneDriveManager.CreateFolderStructure(Id, SubFolder);
-                    RecRef.GetTable(Rec);
-                    CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
-                    CurrPage.Visor.Page.SetRecord(Rec.RecordId);
-                end;
-            CompanyInfo."Data Storage Provider"::DropBox:
-                begin
-                    ActivoFijo := Rec."No.";
-                    FolderMapping.SetRange("Table ID", Database::"Fixed Asset");
-                    if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Fixed Asset", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
-                    IF SubFolder <> '' then
-                        Id := DropBoxManager.CreateFolderStructure(Id, SubFolder);
-                    RecRef.GetTable(Rec);
-                    CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
-                    CurrPage.Visor.Page.SetRecord(Rec.RecordId);
-                end;
-            CompanyInfo."Data Storage Provider"::Strapi:
-                begin
-                    ActivoFijo := Rec."No.";
-                    FolderMapping.SetRange("Table ID", Database::"Fixed Asset");
-                    if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Fixed Asset", Rec."No.", 0D, CompanyInfo."Data Storage Provider");
-                    IF SubFolder <> '' then
-                        Id := StrapiManager.CreateFolderStructure(Id, SubFolder);
-                    RecRef.GetTable(Rec);
-                    CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
-                    CurrPage.Visor.Page.SetRecord(Rec.RecordId);
-                end;
-        end;
+        If Recargar Then
+            CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
+        CurrPage.Visor.Page.SetRecord(Rec.RecordId);
+
+
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -99,7 +51,7 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
 
     trigger OnOpenPage()
     begin
-        ActivoFijo := '';
+        Maestro := '';
         CheckExtendedFunctionality();
     end;
 
@@ -112,7 +64,7 @@ pageextension 95106 FixedAssetExt extends "Fixed Asset Card"
     end;
 
     var
-        ActivoFijo: Text;
+        Maestro: Text;
         GoogleDriveManager: Codeunit "Google Drive Manager";
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";

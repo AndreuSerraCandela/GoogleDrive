@@ -22,4 +22,8 @@ enum 95100 "Data Storage Provider"
     {
         Caption = 'Strapi';
     }
+    value(5; "SharePoint")
+    {
+        Caption = 'SharePoint';
+    }
 }
