@@ -305,6 +305,62 @@ page 95112 "Drive Configuration"
                         ToolTip = 'Especifica el nombre de la colección en Strapi.';
                     }
                 }
+                group("SharePoint Configuration")
+                {
+                    Caption = 'Configuración SharePoint';
+                    Visible = IsSharePoint;
+
+                    field("SharePoint Client ID"; Rec."SharePoint Client ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el Client ID de la aplicación SharePoint OAuth.';
+                    }
+
+                    field("SharePoint Client Secret"; Rec."SharePoint Client Secret")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el Client Secret de la aplicación SharePoint OAuth.';
+                        ExtendedDatatype = Masked;
+                    }
+                    field("SharePoint Tenant ID"; Rec."SharePoint Tenant ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el Tenant ID de Microsoft Azure.';
+                    }
+                    field("SharePoint Site ID"; Rec."SharePoint Site ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el Site ID de SharePoint.';
+                    }
+                    field("Url Api SharePoint"; Rec."Url Api SharePoint")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la URL base de la API de SharePoint.';
+                    }
+                }
+                group("SharePoint Tokens")
+                {
+                    Caption = 'Tokens SharePoint';
+                    Visible = IsSharePoint;
+                    field("SharePoint Access Token"; Rec."SharePoint Access Token")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Token de acceso actual de SharePoint.';
+                        Editable = TokenFieldsEditable;
+                    }
+                    field("SharePoint Refresh Token"; Rec."SharePoint Refresh Token")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Token de actualización de SharePoint.';
+                        Editable = TokenFieldsEditable;
+                    }
+                    field("SharePoint Token Expiration"; Rec."SharePoint Token Expiration")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Fecha y hora de expiración del token de acceso.';
+                        Editable = false;
+                    }
+                }       
             }
         }
     }
@@ -725,6 +781,47 @@ page 95112 "Drive Configuration"
                 }
 
             }
+            group("SharePoint")
+            {
+                Caption = 'SharePoint';
+                Visible = IsSharePoint;
+                action("SharePoint Test Connection")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Probar Conexión';
+                    ToolTip = 'Prueba la conexión con SharePoint usando la configuración actual.';
+                    Image = TestReport;
+                }
+                action("SharePoint Start OAuth")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Iniciar OAuth';
+                    ToolTip = 'Inicia el proceso de autenticación OAuth con SharePoint.';
+                    Image = Web;
+                }
+                action("Actualizar SharePoint Token")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Actualizar Token';
+                    ToolTip = 'Actualiza el token de acceso usando el refresh token.';
+                    Image = Refresh;
+                }
+                action("SharePoint Validate Configuration")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Validar Configuración';
+                    ToolTip = 'Valida que todos los campos de configuración estén completos.';
+                    Image = ValidateEmailLoggingSetup;
+                }
+                action("SharePoint Test API")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Probar API';
+                    ToolTip = 'Prueba la API de SharePoint con la configuración actual.';
+                    Image = TestReport;
+                }
+                
+            }                   
             action("Folder Mapping Setup")
             {
                 ApplicationArea = All;
@@ -791,6 +888,7 @@ page 95112 "Drive Configuration"
         IsOneDrive: Boolean;
         IsDropBox: Boolean;
         IsStrapi: Boolean;
+        IsSharePoint: Boolean;
         TokenDropBox: Text;
 
     trigger OnOpenPage()
@@ -800,7 +898,7 @@ page 95112 "Drive Configuration"
         IsOneDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::OneDrive;
         IsDropBox := Rec."Data Storage Provider" = Rec."Data Storage Provider"::DropBox;
         IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
-
+        IsSharePoint := Rec."Data Storage Provider" = Rec."Data Storage Provider"::SharePoint;
     end;
 
     trigger OnAfterGetRecord()
@@ -810,6 +908,7 @@ page 95112 "Drive Configuration"
         IsDropBox := Rec."Data Storage Provider" = Rec."Data Storage Provider"::DropBox;
         IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
         TokenDropBox := Rec.GetTokenDropbox();
+        IsSharePoint := Rec."Data Storage Provider" = Rec."Data Storage Provider"::SharePoint;
     end;
 
     local procedure SetDefaultGoogleDriveSettings()
@@ -825,6 +924,9 @@ page 95112 "Drive Configuration"
 
         if Rec."Url Api GoogleDrive" = '' then
             Rec."Url Api GoogleDrive" := 'https://www.googleapis.com/drive/v3/';
+
+        if Rec."Url Api SharePoint" = '' then
+            Rec."Url Api SharePoint" := 'https://graph.microsoft.com/v1.0/';
 
         Rec.Modify();
         Message('Valores por defecto configurados exitosamente.');

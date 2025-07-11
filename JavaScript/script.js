@@ -4,6 +4,9 @@ var pdfDoc = null,
     pageRendering = false,
     pageNumPending = null,
     IsFirstLoad = true;
+    modalOverlay = null,
+    modalContent = null,
+    selectedFiles = [];
 
 function InitializeControl(controlId) {
     var controlAddIn = document.getElementById(controlId);
@@ -19,9 +22,34 @@ function InitializeControl(controlId) {
         '<button id="Anterior" class="button-style"><i class="fas fa-fast-backward"></i></i></button>' +
         '<button id="Siguiente" class="button-style"><i class="fas fa-fast-forward"></i></i></button>' +
         '<span id="page-count-container">' +
-        '<span id="page_num"></span> / ' +
+        '<span id="page_num"></span>' +
         '<span id="page_count"></span></span>' +
         '</div>' +
+        '</div>' +
+        // Área de carga de archivos
+        '<div id="upload-section" style="background: #f8f9fa; padding: 10px; border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">' +
+        '<div class="upload-container">' +
+        '<div class="upload-section-header">' +
+        '<h3 class="upload-title">Cargar Archivos</h3>' +
+        '<button class="toggle-upload-btn" onclick="toggleUploadSection()">' +
+        '<i class="fas fa-chevron-up"></i> Ocultar' +
+        '</button>' +
+        '</div>' +
+        '<div id="upload-content">' +
+        '<div id="drop-zone" class="drop-zone">' +
+        '<i class="fas fa-cloud-upload-alt upload-icon"></i>' +
+        '<p>Coloque los archivos aquí para cargar o</p>' +
+        '<input type="file" id="fileInput" multiple class="file-input" accept=".jpg, .jpeg, .bmp, .png, .gif, .tiff, .tif, .pdf, .docx, .doc, .xlsx, .xls, .pptx, .ppt, .msg, .xml">' +
+        '<label for="fileInput" class="upload-link">haga clic aquí para examinar</label>' +
+        '</div>' +
+        '<div id="file-list-container" class="file-list-container">' +
+        '<div id="file-list" class="file-list"></div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="loading-indicator">' +
+        '<div class="spinner"></div>' +
         '</div>' +
         '<canvas id="the-canvas"></canvas>' +
         '<div id="iframe-container"></div>' +
@@ -30,7 +58,397 @@ function InitializeControl(controlId) {
         '<span id="file_num"></span> / ' +
         '<span id="file_count"></span></span>' +
         '</div>' +
-        '</div>';
+        '</div>' +
+        '<div class="modal-overlay" id="modal-overlay">' +
+        '<div class="modal-content" id="modal-content">' +
+        '<div class="modal-header">' +
+        '<h3 class="modal-title">Vista del Documento</h3>' +
+        '<button class="modal-close" id="modal-close" title="Cerrar">&times;</button>' +
+        '</div>' +
+        '<canvas id="modal-canvas" class="modal-canvas"></canvas>' +
+        '</div>' +
+        '</div>' +
+        '<style>' +
+        '.upload-container {' +
+        'background: white;' +
+        'border-radius: 8px;' +
+        'box-shadow: 0 2px 8px rgba(0,0,0,0.1);' +
+        'padding: 15px;' +
+        'width: 95%;' +
+        'max-width: 95%;' +
+        '}' +
+        '.drop-zone {' +
+        'width: 90%;' +
+        'min-height: 80px;' +
+        'border: 2px dashed #00838f;' +
+        'border-radius: 6px;' +
+        'padding: 15px;' +
+        'text-align: center;' +
+        'background: #ffffff;' +
+        'margin-bottom: 10px;' +
+        'display: flex;' +
+        'flex-direction: column;' +
+        'justify-content: center;' +
+        'align-items: center;' +
+        'transition: all 0.3s ease;' +
+        'cursor: pointer;' +
+        'position: relative;' +
+        '}' +
+        '.drop-zone:hover {' +
+        'background: #D9F0F2;' +
+        'border-color: #006d75;' +
+        '}' +
+        '.drop-zone.dragover {' +
+        'background: #F3F3F3;' +
+        'border-color: #00838f;' +
+        'transform: scale(1.02);' +
+        'box-shadow: 0 4px 12px rgba(0, 131, 143, 0.2);' +
+        '}' +
+        '.drop-zone p {' +
+        'color: #00838f;' +
+        'margin: 3px 0;' +
+        'font-size: 11pt;' +
+        'font-weight: 400;' +
+        '}' +
+        '.file-input {' +
+        'display: none;' +
+        '}' +
+        '.upload-link {' +
+        'color: #00838f;' +
+        'cursor: pointer;' +
+        'text-decoration: none;' +
+        'font-size: 11pt;' +
+        'font-weight: 500;' +
+        'padding: 5px 10px;' +
+        'border-radius: 4px;' +
+        'transition: all 0.2s ease;' +
+        '}' +
+        '.upload-link:hover {' +
+        'text-decoration: underline;' +
+        'background: #e3f2fd;' +
+        '}' +
+        '.upload-icon {' +
+        'color: #00838f;' +
+        'font-size: 24px;' +
+        'margin-bottom: 8px;' +
+        '}' +
+        '.file-list-container {' +
+        'max-height: 150px;' +
+        'overflow-y: auto;' +
+        'background: #ffffff;' +
+        'border-radius: 6px;' +
+        'margin-top: 10px;' +
+        'border: 1px solid #e9ecef;' +
+        '}' +
+        '.file-list {' +
+        'padding: 8px;' +
+        '}' +
+        '.file-list strong {' +
+        'display: block;' +
+        'margin-bottom: 6px;' +
+        'color: #333;' +
+        'font-size: 11pt;' +
+        'font-weight: 600;' +
+        '}' +
+        '.file-item {' +
+        'display: flex;' +
+        'justify-content: space-between;' +
+        'align-items: center;' +
+        'padding: 6px 8px;' +
+        'font-size: 10pt;' +
+        'color: #00838f;' +
+        'background: #f8f9fa;' +
+        'border-radius: 4px;' +
+        'margin-bottom: 4px;' +
+        'transition: all 0.2s ease;' +
+        'border: 1px solid #e9ecef;' +
+        '}' +
+        '.file-item:hover {' +
+        'background: #e9ecef;' +
+        'transform: translateX(2px);' +
+        '}' +
+        '.delete-button {' +
+        'background: none;' +
+        'border: none;' +
+        'color: #666666;' +
+        'font-size: 1.1em;' +
+        'cursor: pointer;' +
+        'padding: 4px;' +
+        'border-radius: 3px;' +
+        'transition: all 0.2s ease;' +
+        '}' +
+        '.delete-button:hover {' +
+        'color: #D83B01;' +
+        'background-color: #F3F3F3;' +
+        '}' +
+        '.file-info {' +
+        'display: flex;' +
+        'align-items: center;' +
+        'gap: 8px;' +
+        'flex: 1;' +
+        '}' +
+        '.file-icon {' +
+        'font-size: 1.1em;' +
+        'min-width: 20px;' +
+        '}' +
+        '.file-name {' +
+        'color: #00838f;' +
+        'font-size: 10pt;' +
+        'flex: 1;' +
+        'overflow: hidden;' +
+        'text-overflow: ellipsis;' +
+        'white-space: nowrap;' +
+        '}' +
+        '.file-size {' +
+        'color: #222222;' +
+        'font-size: 9pt;' +
+        'margin-left: 10px;' +
+        'font-weight: 500;' +
+        '}' +
+        '.upload-section-header {' +
+        'display: flex;' +
+        'justify-content: space-between;' +
+        'align-items: center;' +
+        'margin-bottom: 10px;' +
+        '}' +
+        '.upload-title {' +
+        'color: #00838f;' +
+        'font-size: 12pt;' +
+        'font-weight: 600;' +
+        'margin: 0;' +
+        '}' +
+        '.toggle-upload-btn {' +
+        'background: #00838f;' +
+        'color: white;' +
+        'border: none;' +
+        'border-radius: 4px;' +
+        'padding: 6px 12px;' +
+        'cursor: pointer;' +
+        'font-size: 10pt;' +
+        'transition: all 0.2s ease;' +
+        '}' +
+        '.toggle-upload-btn:hover {' +
+        'background: #006d75;' +
+        '}' +
+        '.file-icon.pdf i { color: #e13f2b; }' +
+        '.file-icon.word i { color: #2b579a; }' +
+        '.file-icon.excel i { color: #217346; }' +
+        '.file-icon.powerpoint i { color: #d24726; }' +
+        '.file-icon.image i { color: #0078d4; }' +
+        '.file-icon.archive i { color: #7e4c00; }' +
+        '.file-icon.code i { color: #474747; }' +
+        '.file-icon.audio i { color: #107c10; }' +
+        '.file-icon.video i { color: #c43e1c; }' +
+        '.file-icon.default i { color: #767676; }' +
+        '</style>';
+        // Inicializar modal
+    modalOverlay = document.getElementById('modal-overlay');
+    modalContent = document.getElementById('modal-content');
+    
+    // Event listeners para el modal
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', function(e) {
+        if (e.target === modalOverlay) {
+            closeModal();
+        }
+    });
+    
+    // Cerrar modal con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
+            closeModal();
+        }
+    });
+    
+    // Configurar los event listeners para la carga
+    setupUploadEventListeners();
+}
+function toggleUploadSection() {
+    const uploadSection = document.getElementById('upload-section');
+    const uploadContent = document.getElementById('upload-content');
+    const toggleBtn = document.querySelector('.toggle-upload-btn');
+    
+    if (uploadContent.style.display === 'none') {
+        uploadContent.style.display = 'block';
+        uploadSection.style.minHeight = '120px';
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> Ocultar';
+    } else {
+        uploadContent.style.display = 'none';
+        uploadSection.style.minHeight = '40px';
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> Mostrar';
+    }
+}
+
+function setupUploadEventListeners() {
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('fileInput');
+
+    if (!dropZone || !fileInput) return;
+
+    // Prevenir comportamiento por defecto del navegador
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // Efectos visuales durante el arrastre
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+            dropZone.classList.add('dragover');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+            dropZone.classList.remove('dragover');
+        });
+    });
+
+    // Manejar la subida de archivos
+    dropZone.addEventListener('drop', handleDrop);
+    fileInput.addEventListener('change', handleFileSelect);
+}
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    handleFiles(files);
+}
+
+function handleFileSelect(e) {
+    const files = e.target.files;
+    handleFiles(files);
+}
+
+function handleFiles(files) {
+    const filesArray = Array.from(files);
+
+    Promise.all(filesArray.map(file => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64String = reader.result.split(',')[1];
+                resolve({
+                    name: file.name,
+                    content: base64String,
+                    size: file.size
+                });
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }))
+    .then(filesData => {
+        selectedFiles = selectedFiles.concat(filesData);
+        updateFileList();
+        
+        // Enviar archivos automáticamente después de procesarlos
+        setTimeout(() => {
+            submitFiles();
+        }, 500);
+    })
+    .catch(error => {
+        console.error('Error processing files:', error);
+    });
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    updateFileList();
+}
+
+function updateFileList() {
+    const fileList = document.getElementById('file-list');
+    
+    if (!fileList) return;
+
+    if (selectedFiles.length === 0) {
+        fileList.innerHTML = '';
+        return;
+    }
+
+    fileList.innerHTML = '<strong>Archivos seleccionados</strong>' + 
+        selectedFiles.map((file, index) => `
+            <div class="file-item">
+                <div class="file-info">
+                    <span class="file-icon">${getFileIcon(file.name)}</span>
+                    <span class="file-name">${file.name}</span>
+                    <span class="file-size">${formatFileSize(file.size)}</span>
+                </div>
+                <button class="delete-button" onclick="removeFile(${index})">
+                    <i class="fas fa-eraser"></i>
+                </button>
+            </div>
+        `).join('');
+}
+
+function submitFiles() {
+    if (selectedFiles.length > 0) {
+        try {
+            const jsonString = JSON.stringify(selectedFiles);
+            Microsoft.Dynamics.NAV.InvokeExtensibilityMethod("FileUploaded", [jsonString]);
+            
+            // Limpiar archivos después del envío exitoso
+            setTimeout(() => {
+                selectedFiles = [];
+                updateFileList();
+            }, 1000);
+            
+        } catch (error) {
+            console.error("Error en submitFiles:", error);
+        }
+    }
+}
+
+function clearFiles() {
+    selectedFiles = [];
+    updateFileList();
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function getFileIcon(fileName) {
+    const extension = fileName.split('.').pop().toLowerCase();
+    const icons = {
+        'pdf': '<span class="file-icon pdf"><i class="fas fa-file-pdf"></i></span>',
+        'doc': '<span class="file-icon word"><i class="fas fa-file-word"></i></span>',
+        'docx': '<span class="file-icon word"><i class="fas fa-file-word"></i></span>',
+        'txt': '<span class="file-icon default"><i class="fas fa-file-alt"></i></span>',
+        'xls': '<span class="file-icon excel"><i class="fas fa-file-excel"></i></span>',
+        'xlsx': '<span class="file-icon excel"><i class="fas fa-file-excel"></i></span>',
+        'csv': '<span class="file-icon excel"><i class="fas fa-file-csv"></i></span>',
+        'ppt': '<span class="file-icon powerpoint"><i class="fas fa-file-powerpoint"></i></span>',
+        'pptx': '<span class="file-icon powerpoint"><i class="fas fa-file-powerpoint"></i></span>',
+        'jpg': '<span class="file-icon image"><i class="fas fa-file-image"></i></span>',
+        'jpeg': '<span class="file-icon image"><i class="fas fa-file-image"></i></span>',
+        'png': '<span class="file-icon image"><i class="fas fa-file-image"></i></span>',
+        'gif': '<span class="file-icon image"><i class="fas fa-file-image"></i></span>',
+        'bmp': '<span class="file-icon image"><i class="fas fa-file-image"></i></span>',
+        'zip': '<span class="file-icon archive"><i class="fas fa-file-archive"></i></span>',
+        'rar': '<span class="file-icon archive"><i class="fas fa-file-archive"></i></span>',
+        '7z': '<span class="file-icon archive"><i class="fas fa-file-archive"></i></span>',
+        'json': '<span class="file-icon code"><i class="fas fa-file-code"></i></span>',
+        'xml': '<span class="file-icon code"><i class="fas fa-file-code"></i></span>',
+        'html': '<span class="file-icon code"><i class="fas fa-file-code"></i></span>',
+        'js': '<span class="file-icon code"><i class="fas fa-file-code"></i></span>',
+        'css': '<span class="file-icon code"><i class="fas fa-file-code"></i></span>',
+        'mp3': '<span class="file-icon audio"><i class="fas fa-file-audio"></i></span>',
+        'wav': '<span class="file-icon audio"><i class="fas fa-file-audio"></i></span>',
+        'mp4': '<span class="file-icon video"><i class="fas fa-file-video"></i></span>',
+        'avi': '<span class="file-icon video"><i class="fas fa-file-video"></i></span>',
+        'mov': '<span class="file-icon video"><i class="fas fa-file-video"></i></span>'
+    };
+    return icons[extension] || '<span class="file-icon default"><i class="fas fa-file"></i></span>';
 }
 
 function SetVisible(IsVisible) {
@@ -184,10 +602,118 @@ function LoadPDF(PDFDocument, IsFactbox) {
 
         pdfjsLib.getDocument({ data: PDFDocument }).promise.then(function (pdfDoc_) {
             pdfDoc = pdfDoc_;
-            document.getElementById('page_count').textContent = pdfDoc.numPages;
+            document.getElementById('page_count').textContent = '/' + pdfDoc.numPages;
             renderPage(pageNum);
         });
     });
+}
+// Funciones para el modal
+function openModal() {
+    return;
+     
+     // Crear un blob del PDF para abrir en nueva pestaña
+     const binary = atob(pdfDocPrint.replace(/\s/g, ''));
+     const len = binary.length;
+     const buffer = new ArrayBuffer(len);
+     const view = new Uint8Array(buffer);
+     for (let i = 0; i < len; i++) {
+         view[i] = binary.charCodeAt(i);
+     }
+     const blob = new Blob([view], {type: "application/pdf"});
+     const url = URL.createObjectURL(blob);
+     
+     // Abrir en nueva pestaña
+     window.open(url, '_blank');
+}
+ 
+ function openModalImage() {
+     // Para imágenes, crear una nueva pestaña con la imagen en tamaño completo
+     return;
+     const canvas = document.getElementById('the-canvas');
+     const imageData = canvas.toDataURL('image/png');
+     
+     // Crear una nueva ventana con la imagen
+     const newWindow = window.open('', '_blank');
+     newWindow.document.write(`
+         <!DOCTYPE html>
+         <html>
+         <head>
+             <title>Vista del Documento</title>
+             <style>
+                 body {
+                     margin: 0;
+                     padding: 20px;
+                     background: #f5f5f5;
+                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                 }
+                 .container {
+                     max-width: 95%;
+                     margin: 0 auto;
+                     background: white;
+                     border-radius: 8px;
+                     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                     overflow: hidden;
+                 }
+                 .header {
+                     background: #007bff;
+                     color: white;
+                     padding: 15px 20px;
+                     display: flex;
+                     justify-content: space-between;
+                     align-items: center;
+                 }
+                 .header h1 {
+                     margin: 0;
+                     font-size: 18px;
+                 }
+                 .close-btn {
+                     background: #dc3545;
+                     color: white;
+                     border: none;
+                     border-radius: 50%;
+                     width: 30px;
+                     height: 30px;
+                     cursor: pointer;
+                     font-size: 16px;
+                     display: flex;
+                     align-items: center;
+                     justify-content: center;
+                 }
+                 .close-btn:hover {
+                     background: #c82333;
+                 }
+                 .content {
+                     padding: 20px;
+                     text-align: center;
+                 }
+                 img {
+                     max-width: 100%;
+                     height: auto;
+                     border-radius: 4px;
+                     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                 }
+             </style>
+         </head>
+         <body>
+             <div class="container">
+                 <div class="header">
+                     <h1>Vista del Documento</h1>
+                     <button class="close-btn" onclick="window.close()">&times;</button>
+                 </div>
+                 <div class="content">
+                     <img src="${imageData}" alt="Documento" />
+                 </div>
+             </div>
+         </body>
+         </html>
+     `);
+     newWindow.document.close();
+}
+ 
+ function closeModal() {
+     return;
+     modalOverlay.style.display = 'none';
+     document.body.style.overflow = ''; // Restaurar scroll del body
 }
 // Función para limpiar el estado del visor
 function clearViewerState() {
@@ -219,9 +745,13 @@ function LoadOtros(base64Data, IsFactbox, fileType, driveType, driveId) {
     if (fileType === 'text') fileType = 'text/plain';
     if (fileType === 'csv') fileType = 'text/csv';
     if (fileType === 'xml') fileType = 'application/xml';
-    document.getElementById('Imprimir').style.display = 'none';
     
-
+    // Restaurar visibilidad de botones
+    document.querySelector("#pdf-view").style.display = 'block';
+    document.querySelector("#Download").style.display = 'block';
+    document.querySelector("#Imprimir").style.display = 'block';
+    document.querySelector("#Anterior").style.display = 'block';
+    document.querySelector("#Siguiente").style.display = 'block';
 
     const canvas = document.getElementById('the-canvas');
     const ctx = canvas.getContext('2d');
@@ -229,12 +759,49 @@ function LoadOtros(base64Data, IsFactbox, fileType, driveType, driveId) {
     const iframeRef = window.frameElement;
 
     clearViewerState();
-    canvas.style.display = 'none';
+    
     if (iframeContainer) iframeContainer.innerHTML = '';
 
     let iframeUrl = null;
 
-    if (driveType === 'google' && driveId) {
+    // Si es imagen, nunca usar iframe externo, SIEMPRE usar canvas
+    if (fileType.startsWith('image/')) {
+        console.log('Entrando en bloque de imagen');
+        console.log('fileType:', fileType);
+        console.log('base64Data (primeros 100):', base64Data.substring(0, 100));
+        const image = new Image();
+        image.onload = function () {
+            console.log('Imagen cargada correctamente');
+            ctx = canvas.getContext('2d'),
+            iframe = window.frameElement,
+            factboxarea = window.frameElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement,// Limitar tamaño máximo del canvas
+                
+            canvas.width = 505;
+            canvas.height = 357;
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+            canvas.style.display = 'block';
+
+            if (iframe) {
+                iframe.style.height = canvas.height +100+ "px";
+                if (iframe.parentElement) iframe.parentElement.style.height = canvas.height +100+ "px";
+                iframe.style.maxHeight = "2600px";
+            }
+        };
+        image.onerror = function() {
+            console.error('Error al cargar la imagen. base64Data:', base64Data.substring(0, 200));
+            alert('Error al cargar la imagen. Revisa la consola para más detalles.');
+        };
+
+        // Mostrar la imagen desde base64
+        image.src = 'data:' + fileType + ';base64,' + base64Data;
+
+        // Asegura que los botones estén visibles
+        document.querySelector("#pdf-view").style.display = 'block';
+        document.querySelector("#Download").style.display = 'block';
+        document.querySelector("#Imprimir").style.display = 'block';
+        document.querySelector("#Anterior").style.display = 'block';
+        document.querySelector("#Siguiente").style.display = 'block';
+    } else if (driveType === 'google' && driveId) {
         iframeUrl = `https://drive.google.com/file/d/${driveId}/preview`;
     } else if (driveType === 'dropbox' && driveId) {
         iframeUrl = `https://dl.dropboxusercontent.com/s/${driveId}?raw=1`;
@@ -243,6 +810,7 @@ function LoadOtros(base64Data, IsFactbox, fileType, driveType, driveId) {
     }
 
     if (iframeUrl) {
+        canvas.style.display = 'none';
         const iframe = document.createElement('iframe');
         iframe.src = iframeUrl;
         iframe.width = '100%';
@@ -257,39 +825,57 @@ function LoadOtros(base64Data, IsFactbox, fileType, driveType, driveId) {
         return;
     }
 
-    base64Data = base64Data.replace(/\s/g, '').replace(/^data:[^;]+;base64,/, '');
-
-    let byteArray;
-    try {
-        const byteCharacters = atob(base64Data);
-        byteArray = new Uint8Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteArray[i] = byteCharacters.charCodeAt(i);
-        }
-    } catch (error) {
-        alert("El archivo no pudo ser decodificado. ¿Está seguro de que el base64 está bien formado?");
-        return;
-    }
-
-    const blob = new Blob([byteArray], { type: fileType });
-    const blobUrl = URL.createObjectURL(blob);
-
+    pdfDocPrint = PDFDocument;
     if (fileType.startsWith('image/')) {
-        const image = new Image();
-        image.onload = function () {
-            canvas.width = 357;
-            canvas.height = 505;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-            canvas.style.display = 'block';
-
-            if (iframeRef) {
-                iframeRef.style.height = (canvas.height + 100) + "px";
-                if (iframeRef.parentElement) iframeRef.parentElement.style.height = (canvas.height + 100) + "px";
-            }
-        };
+        var image = new Image();
+        image.src = 'data:image/jpeg;base64,'+base64Data;
+        PDFDocument = image.src;
         image.onerror = () => alert('Error al cargar la imagen.');
-        image.src = blobUrl;
+        canvas = document.getElementById('the-canvas'),
+        ctx = canvas.getContext('2d'),
+        iframe = window.frameElement,
+        factboxarea = window.frameElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement,
+        scale = 1.3;
+        pageRendering = false;
+        pageNum = 1;
+        pageNumPending = null;
+
+        pdfDocPrint = PDFDocument;
+        PDFDocument=PDFDocument;  
+        canvas.height = 505;
+        canvas.width = 357;
+
+        if (IsFactbox) {
+            if (factboxarea.className = "ms-nav-layout-factbox-content-area ms-nav-scrollable"){
+                factboxarea.style.paddingLeft = "5px";
+                factboxarea.style.paddingRight = "0px";
+                factboxarea.style.overflowY = "scroll";
+            }
+            scale = 0.6;
+        } else {
+            document.querySelector("#pdf-view").style.display = 'none';
+            document.querySelector("#Download").style.display = 'none';
+            document.querySelector("#Imprimir").style.display = 'none';
+            document.querySelector("#Anterior").style.display = 'none';
+            document.querySelector("#Siguiente").style.display = 'none';
+        }
+        
+       
+        image.onload = function(){
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height); 
+        }
+        if (iframe) {
+            iframe.style.height = (canvas.height + 100) + "px";
+            iframe.parentElement.style.height = (canvas.height + 100) + "px";
+            iframe.style.maxHeight = "2600px";
+        }
+        
+        iframe.style.height = canvas.height + 100 + "px";
+        iframe.parentElement.style.height = canvas.height + 100 + "px";
+        iframe.style.maxHeight = "2600px";
+
+        document.getElementById('page_num').textContent = 1;
+    
     } else if (['text/plain', 'text/csv', 'application/xml'].includes(fileType)) {
         const textIframe = document.createElement('iframe');
         textIframe.src = blobUrl;
@@ -299,8 +885,9 @@ function LoadOtros(base64Data, IsFactbox, fileType, driveType, driveId) {
         iframeContainer.appendChild(textIframe);
 
         if (iframeRef) {
-            iframeRef.style.height = '700px';
-            if (iframeRef.parentElement) iframeRef.parentElement.style.height = '700px';
+            iframe.style.height = (canvas.height + 100) + "px";
+            iframe.parentElement.style.height = (canvas.height + 100) + "px";
+            iframe.style.maxHeight = "2600px";
         }
     } else {
         const messageDiv = document.createElement('div');

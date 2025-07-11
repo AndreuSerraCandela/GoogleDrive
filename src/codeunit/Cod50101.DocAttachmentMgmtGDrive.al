@@ -8,6 +8,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
         CompanyInfo: Record "Company Information";
 
     [EventSubscriber(ObjectType::Table, Database::"Document Attachment", OnInsertAttachmentOnBeforeImportStream, '', false, false)]
@@ -198,6 +199,83 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                 FileType := FileType::Other;
         end;
         DocumentAttachment."File Type" := FileType;
+    end;
+
+    internal procedure OnAfterGetRecord(var Maestro: Text; var Recargar: Boolean; RecRef: RecordRef; var Id: Text; No: Code[20]): Boolean
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        Folder: Text;
+        SubFolder: Text;
+        Path: Text;
+
+    begin
+         CompanyInfo.Get();
+        if not CompanyInfo."Funcionalidad extendida" then
+            exit;
+        case CompanyInfo."Data Storage Provider" of
+            CompanyInfo."Data Storage Provider"::"Google Drive":
+                begin
+                    Maestro := No;
+                    GoogleDriveManager.GetFolderMapping(Database::"Bank Account", Id);
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", No, 0D, CompanyInfo."Data Storage Provider");
+                    IF SubFolder <> '' then
+                        Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
+                    if CompanyInfo."Funcionalidad extendida" then
+                        Recargar := true;
+                end;
+            CompanyInfo.
+            "Data Storage Provider"::OneDrive:
+                begin
+                    Maestro := No;
+                    Path := CompanyInfo."Root Folder" + '/';
+                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    if FolderMapping.FindFirst() Then begin
+                        Id := FolderMapping."Default Folder Id";
+                        Path += FolderMapping."Default Folder Name" + '/';
+                    end;
+
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Customer, No, 0D, CompanyInfo."Data Storage Provider");
+                    IF SubFolder <> '' then begin
+                        Id := OneDriveManager.CreateFolderStructure(Id, SubFolder);
+                        Path += SubFolder + '/'
+                    end;
+                    if CompanyInfo."Funcionalidad extendida" then
+                        Recargar := true;
+                end;
+            CompanyInfo."Data Storage Provider"::DropBox:
+                begin
+                    Maestro := No;
+                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", No, 0D, CompanyInfo."Data Storage Provider");
+                    IF SubFolder <> '' then
+                        Id := DropBoxManager.CreateFolderStructure(Id, SubFolder);
+                    if CompanyInfo."Funcionalidad extendida" then
+                        Recargar := true;
+                end;
+            CompanyInfo."Data Storage Provider"::Strapi:
+                begin
+                    Maestro := No;
+                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", No, 0D, CompanyInfo."Data Storage Provider");
+                    IF SubFolder <> '' then
+                        Id := StrapiManager.CreateFolderStructure(Id, SubFolder);
+                    if CompanyInfo."Funcionalidad extendida" then
+                        Recargar := true;
+                end;
+            CompanyInfo."Data Storage Provider"::SharePoint:
+                begin
+                    Maestro := No;
+                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
+                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", No, 0D, CompanyInfo."Data Storage Provider");
+                    IF SubFolder <> '' then
+                        Id := SharePointManager.CreateFolderStructure(Id, SubFolder);
+                    if CompanyInfo."Funcionalidad extendida" then
+                        Recargar := true;
+                end;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeHasContent', '', true, true)]

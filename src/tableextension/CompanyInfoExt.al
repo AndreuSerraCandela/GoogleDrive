@@ -204,6 +204,52 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'GoogleDrive Code';
             DataClassification = CustomerContent;
         }
+        field(95139; "Code SharePoint"; Text[1024])
+        {
+            Caption = 'SharePoint Code';
+            DataClassification = CustomerContent;
+        }
+        field(95140; "SharePoint Access Token"; Blob)
+        {
+            Caption = 'SharePoint Access Token';
+            DataClassification = CustomerContent;
+        }
+        field(95141; "SharePoint Refresh Token"; Blob)
+        {
+            Caption = 'SharePoint Refresh Token';
+            DataClassification = CustomerContent;
+        }
+        field(95142; "SharePoint Token Expiration"; DateTime)
+        {
+            Caption = 'SharePoint Token Expiration';
+            DataClassification = CustomerContent;
+        }
+        field(95145; "SharePoint Tenant ID"; Text[250])
+        {
+            Caption = 'SharePoint Tenant ID';
+            DataClassification = CustomerContent;
+        }
+        field(95146; "SharePoint Client ID"; Text[250])
+        {
+            Caption = 'SharePoint Client ID';
+            DataClassification = CustomerContent;
+        }
+        field(95147; "SharePoint Client Secret"; Text[250])
+        {
+            Caption = 'SharePoint Client Secret';
+            DataClassification = CustomerContent;
+        }
+        field(95148; "Url Api SharePoint"; Text[250])
+        {
+            Caption = 'SharePoint API URL';
+            DataClassification = CustomerContent;
+        }
+        field(95149; "SharePoint Site ID"; Text[250])
+        {
+            Caption = 'SharePoint Site ID';
+            DataClassification = CustomerContent;
+        }
+        
     }
 
     procedure GetTokenGoogleDrive(): Text

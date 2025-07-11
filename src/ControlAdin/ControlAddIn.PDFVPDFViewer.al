@@ -8,9 +8,10 @@ controladdin "PDFV PDF Viewer"
     StyleSheets = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css', 'JavaScript/stylesheet.css';
 
 
-    MinimumHeight = 1;
+    MinimumHeight = 160;
+    RequestedHeight = 260;
     MinimumWidth = 1;
-    MaximumHeight = 2000;
+    MaximumHeight = 2260;
     HorizontalStretch = true;
     VerticalStretch = true;
     VerticalShrink = true;
@@ -39,6 +40,9 @@ controladdin "PDFV PDF Viewer"
     /// OnDowload.
     /// </summary>
     event OnDownload();
+    event FileUploaded(filesJson: Text);
+    event FileSelected(filesJson: Text);
+    procedure ClearFiles();
     procedure LoadPDF(PDFDocument: Text; IsFactbox: Boolean)
     procedure LoadOtros(PDFDocument: Text; IsFactbox: Boolean; fileType: Text; driveType: Text; url: Text)
     procedure Fichero(Numero: Integer)

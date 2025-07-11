@@ -94,6 +94,7 @@ page 95100 "Google Drive Factbox"
                     OneDrive: Codeunit "OneDrive Manager";
                     DropBox: Codeunit "DropBox Manager";
                     Strapi: Codeunit "Strapi Manager";
+                    SharePoint: Codeunit "SharePoint Manager";
                     CompanyInfo: Record "Company Information";
                 begin
                     CompanyInfo.Get();
@@ -106,6 +107,8 @@ page 95100 "Google Drive Factbox"
                             DropBox.EditFile(Rec."Google Drive ID");
                         CompanyInfo."Data Storage Provider"::Strapi:
                             Strapi.EditFile(Rec."Google Drive ID");
+                        CompanyInfo."Data Storage Provider"::SharePoint:
+                            SharePoint.EditFile(Rec."Google Drive ID");
                     end;
                 end;
             }
@@ -123,6 +126,7 @@ page 95100 "Google Drive Factbox"
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                     a: Integer;
                     Nombre: Text;
 
@@ -147,6 +151,9 @@ page 95100 "Google Drive Factbox"
                     end;
                     if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Strapi then begin
                         Base64Data := StrapiManager.DownloadFileB64('', Rec."Google Drive ID", Rec.Name, true);
+                    end;
+                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::SharePoint then begin
+                        SharePointManager.DownloadFileB64( Rec."Google Drive ID", Rec.Name, true, Base64Data);
                     end;
                     Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
                 end;
