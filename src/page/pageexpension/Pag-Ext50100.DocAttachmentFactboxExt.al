@@ -688,6 +688,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     Path: Text;
                     FolderMapping: Record "Google Drive Folder Mapping";
                     Folder: Text;
+                    AccessToken: Text;
                 begin
                     if not Confirm(ConfirmMsg) then
                         exit;

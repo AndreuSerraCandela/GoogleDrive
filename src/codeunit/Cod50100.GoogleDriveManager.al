@@ -1122,14 +1122,16 @@ codeunit 95100 "Google Drive Manager"
     begin
         Inf.Get();
         SharedDriveId := Inf."Google Shared Drive ID";
-        if SharedDriveId <> '' then
-            exit(UploadFileB64ToSharedDrive(SharedDriveId, Base64Data, Filename, FileExtension));
+        //if SharedDriveId <> '' then
+        //  exit(UploadFileB64ToSharedDrive(SharedDriveId, Base64Data, Filename, FileExtension));
         //https://api-drive.app.elingenierojefe.es/upload
         If Not Authenticate() Then
             Error('No se pudo obtener el token');
         Url := 'https://api-drive.app.elingenierojefe.es/upload';
         Body.Add('fileName', Filename);
         Body.Add('fileType', GetMimeType(FileExtension));
+        if SharedDriveId <> '' then
+            Body.Add('driveId', SharedDriveId);
         Body.Add('token', Token());
         if Carpeta <> '' then begin
             JCarpetas.Add(Carpeta);

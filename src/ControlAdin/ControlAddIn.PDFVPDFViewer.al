@@ -48,4 +48,5 @@ controladdin "PDFV PDF Viewer"
     procedure Fichero(Numero: Integer)
     procedure Ficheros(NumerodeFicheros: Integer)
     procedure SetVisible(IsVisible: Boolean)
+
 }

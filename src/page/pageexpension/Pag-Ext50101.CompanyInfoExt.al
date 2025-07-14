@@ -584,6 +584,21 @@ page 95112 "Drive Configuration"
                         Rec.Modify();
                     end;
                 }
+                action("Liberar Google Drive Id")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Liberar Google Drive Id';
+                    ToolTip = 'Liberar el Google Drive Id.';
+                    Image = Web;
+
+                    trigger OnAction()
+                    var
+                        GoogleDriveManager: Codeunit "Google Drive Manager";
+                    begin
+                        Rec."Google Shared Drive ID" := '';
+                        Rec.Modify();
+                    end;
+                }
 
             }
 

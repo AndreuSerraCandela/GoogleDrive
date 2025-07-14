@@ -950,3 +950,5 @@ function getFileExtension(mimeType) {
     };
     return extensions[mimeType] || 'bin';
 }
+
+
