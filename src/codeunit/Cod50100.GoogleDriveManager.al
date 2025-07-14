@@ -592,7 +592,21 @@ codeunit 95100 "Google Drive Manager"
         URL: Text;
         RequestHeaders: HttpHeaders;
         CrLf: Text;
+        CompanyInfo: Record "Company Information";
+        SharedDriveId: Text;
     begin
+        CompanyInfo.GET();
+        SharedDriveId := CompanyInfo."Google Shared Drive ID";
+        if SharedDriveId <> '' then begin
+            FileId := UploadFileToSharedDrive(SharedDriveId, DocumentAttachment);
+            if FileId <> '' then begin
+                DocumentAttachment."Google Drive ID" := FileId;
+                DocumentAttachment."Store in Google Drive" := true;
+                DocumentAttachment.Modify();
+                exit(true);
+            end;
+            exit(false);
+        end;
         CrLf := FORMAT(13) + FORMAT(10);
         if not Authenticate() then
             exit(false);
@@ -775,6 +789,8 @@ codeunit 95100 "Google Drive Manager"
         Inf: Record "Company Information";
     begin
         Inf.Get;
+        if Inf."Google Shared Drive ID" <> '' then
+            exit(RecuperarCarpetaSharedDrive(Inf."Google Shared Drive ID", FileId, OldParent));
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
         Ticket := AccessToken;
@@ -833,7 +849,12 @@ codeunit 95100 "Google Drive Manager"
         Borrado: Boolean;
         RootFolderId: Text;
         C: Label '''';
+        SharedDriveId: Text;
     begin
+        CompanyInfo.GET();
+        SharedDriveId := CompanyInfo."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(RecuperaIdFolderSharedDrive(SharedDriveId, IdCarpeta, Carpeta, Files, Crear, RootFolder));
         Files.DeleteAll();
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
@@ -844,7 +865,7 @@ codeunit 95100 "Google Drive Manager"
         Url := Inf."Url Api GoogleDrive" + list_folder;
         if RootFolder = false then
             //Url := Url + '?q=' + C + RootFolderId + C + 'in+parents&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
-             Url := Url + '?q=' + C + RootFolderId + C + '+in+parents&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
+            Url := Url + '?q=' + C + RootFolderId + C + '+in+parents&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
         else
             Url := Url + '?q=trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         //https://www.googleapis.com/drive/v3/files?q='1YCipBu7tEY2n2enB5RGxy1XXYtjID4oe'+in+parents&fields=files(id%2Cname%2CmimeType)
@@ -924,7 +945,14 @@ codeunit 95100 "Google Drive Manager"
         FilesTemp: Record "Name/Value Buffer" temporary;
         C: Label '''';
         Borrado: Boolean;
+        SharedDriveId: Text;
     begin
+        CompanyInfo.GET();
+        SharedDriveId := CompanyInfo."Google Shared Drive ID";
+        if SharedDriveId <> '' then begin
+            CarpetasSharedDrive(SharedDriveId, IdCarpeta, Files);
+            exit;
+        end;
         Files.DeleteAll();
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
@@ -1015,7 +1043,12 @@ codeunit 95100 "Google Drive Manager"
         JTok: JsonToken;
         Id: Text;
         ParentsArray: JsonArray;
+        SharedDriveId: Text;
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(CreateFolderSharedDrive(SharedDriveId, Carpeta, ParentId, RootFolder));
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
 
@@ -1085,8 +1118,12 @@ codeunit 95100 "Google Drive Manager"
         Base64Txt: Text;
         Convert: Codeunit "Base64 Convert";
         JCarpetas: JsonArray;
+        SharedDriveId: Text;
     begin
-
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(UploadFileB64ToSharedDrive(SharedDriveId, Base64Data, Filename, FileExtension));
         //https://api-drive.app.elingenierojefe.es/upload
         If Not Authenticate() Then
             Error('No se pudo obtener el token');
@@ -1129,7 +1166,12 @@ codeunit 95100 "Google Drive Manager"
         JTokO: JsonToken;
         JTok: JsonToken;
         Id: Text;
+        SharedDriveId: Text;
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(DeleteFolderSharedDrive(SharedDriveId, Carpeta, HideDialog));
         If Not HideDialog Then
             If Not Confirm('¿Está seguro de que desea eliminar la carpeta?', true) Then
                 exit('');
@@ -1157,7 +1199,12 @@ codeunit 95100 "Google Drive Manager"
         JTokO: JsonToken;
         JTok: JsonToken;
         Id: Text;
+        SharedDriveId: Text;
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(MoveFolderSharedDrive(SharedDriveId, FolderId, NewParentId));
         Ticket := GoogleDrive.Token();
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + move_folder + FolderId;
@@ -1197,7 +1244,12 @@ codeunit 95100 "Google Drive Manager"
         JTokO: JsonToken;
         JTok: JsonToken;
         Id: Text;
+        SharedDriveId: Text;
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(MoveFileSharedDrive(SharedDriveId, FileId, NewParentId, OldParent));
         Ticket := GoogleDrive.Token();
         Inf.Get;
         if OldParent = '' then begin
@@ -1244,7 +1296,12 @@ codeunit 95100 "Google Drive Manager"
         JTok: JsonToken;
         Id: Text;
         ParentsArray: JsonArray;
+        SharedDriveId: Text;
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(CopyFileSharedDrive(SharedDriveId, FileId, NewParentId));
         Ticket := GoogleDrive.Token();
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + move_folder + FileId + '/copy';
@@ -1293,8 +1350,14 @@ codeunit 95100 "Google Drive Manager"
         C: Label '''';
         FilesTemp: Record "Name/Value Buffer" temporary;
         Borrado: Boolean;
-
+        SharedDriveId: Text;
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then begin
+            ListFolderSharedDrive(SharedDriveId, FolderId, Files, SoloSubfolder);
+            exit;
+        end;
         Files.DeleteAll();
         Ticket := GoogleDrive.Token();
         Inf.Get;
@@ -1386,11 +1449,14 @@ codeunit 95100 "Google Drive Manager"
         ResponseMessage: HttpResponseMessage;
         ResponseText: Text;
         Convert: Codeunit "Base64 Convert";
+        SharedDriveId: Text;
     begin
         Ticket := GoogleDrive.Token();
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + get_metadata + FileId + '?alt=media';
-
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(DownloadFileB64SharedDrive(SharedDriveId, FileId, FileName, BajarFichero, Base64Data));
         RequestHeaders := Client.DefaultRequestHeaders();
         RequestHeaders.Add('Authorization', StrSubstNo('Bearer %1', Ticket));
 
@@ -1728,7 +1794,13 @@ codeunit 95100 "Google Drive Manager"
         InStream: InStream;
         FileContent: Text;
         Convert: Codeunit "Base64 Convert";
+        SharedDriveId: Text;
+        Inf: Record "Company Information";
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(UploadFileB64ToFolderSharedDrive(SharedDriveId, TempBlob, FileName, FolderId));
         Boundary := 'foo_bar_baz';
         CrLf := FORMAT(13) + FORMAT(10);
 
@@ -1824,7 +1896,14 @@ codeunit 95100 "Google Drive Manager"
         JToken: JsonToken;
         Link: Text;
         ErrorMessage: Text;
+        SharedDriveId: Text;
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then begin
+            OpenFileInBrowserSharedDrive(SharedDriveId, GoogleDriveID);
+            exit('');
+        end;
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
 
@@ -1873,7 +1952,12 @@ codeunit 95100 "Google Drive Manager"
         JToken: JsonToken;
         Link: Text;
         ErrorMessage: Text;
+        SharedDriveId: Text;
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(GetUrlSharedDrive(SharedDriveId, GoogleDriveID));
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
 
@@ -1920,7 +2004,12 @@ codeunit 95100 "Google Drive Manager"
         Url: Text[250];
         RequestType: Option get,patch,put,post,delete;
         Respuesta: Text;
+        SharedDriveId: Text;
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then
+            exit(DeleteFileSharedDrive(SharedDriveId, GoogleDriveID));
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
 
@@ -1948,7 +2037,14 @@ codeunit 95100 "Google Drive Manager"
         JToken: JsonToken;
         Link: Text;
         ErrorMessage: Text;
+        SharedDriveId: Text;
     begin
+        Inf.Get();
+        SharedDriveId := Inf."Google Shared Drive ID";
+        if SharedDriveId <> '' then begin
+            EditFileSharedDrive(SharedDriveId, GoogleDriveID);
+            exit;
+        end;
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
 
@@ -2041,6 +2137,1136 @@ codeunit 95100 "Google Drive Manager"
 
     end;
 
+    // Métodos para drives compartidos de Google Drive
+    procedure GetSharedDrives(var Drives: Record "Name/Value Buffer" temporary)
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        JEntries: JsonArray;
+        JEntry: JsonObject;
+        JEntryTokens: JsonToken;
+        DriveId: Text;
+        DriveName: Text;
+        a: Integer;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
 
+        Ticket := Token();
+
+        // Obtener lista de drives compartidos
+        Url := GoogleDriveBaseURL + '/drives';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de Google Drive.');
+
+        StatusInfo.ReadFrom(Respuesta);
+
+        // Verificar si hay error en la respuesta
+        if StatusInfo.Get('error', JToken) then begin
+            Error('Error al obtener drives compartidos: %1', JToken.AsValue().AsText());
+        end;
+
+        // Procesar los resultados
+        if StatusInfo.Get('drives', JToken) then begin
+            JEntries := JToken.AsArray();
+            a := 0;
+
+            foreach JEntryTokens in JEntries do begin
+                JEntry := JEntryTokens.AsObject();
+                a += 1;
+
+                Drives.Init();
+                Drives.ID := a;
+
+                // Obtener el ID del drive
+                if JEntry.Get('id', JToken) then
+                    Drives."Google Drive ID" := JToken.AsValue().AsText();
+
+                // Obtener el nombre del drive
+                if JEntry.Get('name', JToken) then
+                    Drives.Name := JToken.AsValue().AsText();
+
+                // Obtener el tipo (compartido)
+                Drives.Value := 'Shared Drive';
+
+                Drives.Insert();
+            end;
+        end;
+    end;
+
+    procedure GetSharedDriveId(DriveName: Text): Text
+    var
+        Drives: Record "Name/Value Buffer" temporary;
+        DriveId: Text;
+    begin
+        GetSharedDrives(Drives);
+
+        if Drives.FindSet() then begin
+            repeat
+                if Drives.Name = DriveName then begin
+                    DriveId := Drives."Google Drive ID";
+                    exit(DriveId);
+                end;
+            until Drives.Next() = 0;
+        end;
+
+        exit('');
+    end;
+
+    procedure ListSharedDriveFiles(DriveId: Text; var Files: Record "Name/Value Buffer" temporary)
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JEntries: JsonArray;
+        JEntry: JsonObject;
+        JEntryToken: JsonToken;
+        JEntryTokens: JsonToken;
+        a: Integer;
+        ItemType: Text;
+        ItemName: Text;
+        ItemId: Text;
+        FilesTemp: Record "Name/Value Buffer" temporary;
+        FileMang: Codeunit "File Management";
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Files.DeleteAll();
+        Ticket := Token();
+
+        // Listar archivos del drive compartido
+        Url := GoogleDriveBaseURL + '/files?q=' + UrlEncode('''') + DriveId + UrlEncode('''') + '+in+parents&fields=files(id,name,mimeType,parents)';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+
+            if StatusInfo.Get('files', JEntryToken) then begin
+                JEntries := JEntryToken.AsArray();
+
+                foreach JEntryTokens in JEntries do begin
+                    JEntry := JEntryTokens.AsObject();
+
+                    // Obtener el ID del elemento
+                    if JEntry.Get('id', JEntryToken) then
+                        ItemId := JEntryToken.AsValue().AsText()
+                    else
+                        ItemId := '';
+
+                    // Obtener el nombre del elemento
+                    if JEntry.Get('name', JEntryToken) then
+                        ItemName := JEntryToken.AsValue().AsText()
+                    else
+                        ItemName := '';
+
+                    // Determinar si es carpeta o archivo
+                    if JEntry.Get('mimeType', JEntryToken) then begin
+                        if JEntryToken.AsValue().AsText() = 'application/vnd.google-apps.folder' then
+                            ItemType := 'Carpeta'
+                        else
+                            ItemType := '';
+                    end else begin
+                        ItemType := '';
+                    end;
+
+                    // Crear registro temporal
+                    FilesTemp.Init();
+                    a += 1;
+                    FilesTemp.ID := a;
+                    FilesTemp.Name := ItemName;
+                    FilesTemp."Google Drive ID" := ItemId;
+                    FilesTemp.Value := ItemType;
+
+                    // Si es archivo, obtener la extensión
+                    if ItemType = '' then begin
+                        FilesTemp."File Extension" := FileMang.GetExtension(ItemName);
+                    end;
+
+                    FilesTemp.Insert();
+                end;
+            end;
+        end;
+
+        // Ordenar: primero carpetas, luego archivos
+        a := 0;
+        FilesTemp.SetRange(Value, 'Carpeta');
+        if FilesTemp.FindSet() then
+            repeat
+                a += 1;
+                Files := FilesTemp;
+                Files.ID := a;
+                Files.Insert();
+            until FilesTemp.Next() = 0;
+
+        FilesTemp.SetRange(Value, '');
+        if FilesTemp.FindSet() then
+            repeat
+                a += 1;
+                Files := FilesTemp;
+                Files.ID := a;
+                Files.Insert();
+            until FilesTemp.Next() = 0;
+    end;
+
+    procedure UploadFileToSharedDrive(SharedDriveId: Text; var DocumentAttach: Record "Document Attachment"): Text
+    var
+        DocumentStream: OutStream;
+        TempBlob: Codeunit "Temp Blob";
+        Int: Instream;
+        FileMang: Codeunit "File Management";
+        Extension: Text;
+    begin
+        TempBlob.CreateOutStream(DocumentStream);
+        DocumentAttach."Document Reference ID".ExportStream(DocumentStream);
+        If DocumentAttach."File Extension" = '' then
+            Extension := FileMang.GetExtension(DocumentAttach."File Name")
+        else
+            Extension := DocumentAttach."File Extension";
+        TempBlob.CreateInStream(Int);
+
+        exit(UploadFileB64ToSharedDrive(SharedDriveId, Int, DocumentAttach."File Name", Extension));
+    end;
+
+    procedure UploadFileB64ToSharedDrive(SharedDriveId: Text; Base64Data: InStream; Filename: Text; FileExtension: Text[30]): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JTokenLink: JsonToken;
+        Id: Text;
+        Body: JsonObject;
+        Json: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+
+        // Construir el JSON para subir archivo al drive compartido
+        Clear(Body);
+        Body.Add('name', Filename + '.' + FileExtension);
+        Body.Add('parents', SharedDriveId);
+        Body.WriteTo(Json);
+
+        // URL para subir archivo
+        Url := GoogleDriveUploadURL;
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Base64Data);
+
+        StatusInfo.ReadFrom(Respuesta);
+
+        if StatusInfo.Get('id', JTokenLink) then begin
+            Id := JTokenLink.AsValue().AsText();
+        end else
+            Error('Error al subir archivo al drive compartido: %1', Respuesta);
+
+        exit(Id);
+    end;
+
+    procedure CreateFolderInSharedDrive(DriveId: Text; ParentFolderId: Text; FolderName: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        NewFolderId: Text;
+    begin
+        Ticket := Token();
+
+        Url := GoogleDriveBaseURL + '/files';
+
+        Clear(Body);
+        Body.Add('name', FolderName);
+        Body.Add('mimeType', 'application/vnd.google-apps.folder');
+        if ParentFolderId <> '' then
+            Body.Add('parents', ParentFolderId);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('id', JToken) then
+                NewFolderId := JToken.AsValue().AsText()
+            else
+                Error('Error al crear carpeta en drive compartido: %1 con esta url: %2 y este json: %3', Respuesta, Url, Json);
+        end;
+        exit(NewFolderId);
+    end;
+
+    procedure GetSharedDriveFileUrl(DriveId: Text; FileId: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        StatusInfo: JsonObject;
+        Respuesta: Text;
+        JTokenLink: JsonToken;
+        WebUrl: Text;
+    begin
+        Ticket := Token();
+
+        Url := GoogleDriveBaseURL + '/files/' + FileId + '?fields=webViewLink';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+        StatusInfo.ReadFrom(Respuesta);
+
+        if StatusInfo.Get('webViewLink', JTokenLink) then begin
+            WebUrl := JTokenLink.AsValue().AsText();
+        end;
+
+        exit(WebUrl);
+    end;
+
+    procedure DeleteFileFromSharedDrive(DriveId: Text; FileId: Text): Boolean
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        ResponseMessage: HttpResponseMessage;
+    begin
+        Ticket := Token();
+        Url := GoogleDriveBaseURL + '/files/' + FileId;
+        ResponseMessage := RestApiTokenResponse(Url, Ticket, RequestType::delete, '');
+
+        if ResponseMessage.IsSuccessStatusCode() then
+            exit(true)
+        else
+            exit(false);
+    end;
+
+    // Métodos que faltan para Google Drive Shared Drives
+    procedure RecuperarCarpetaSharedDrive(SharedDriveId: Text; FileId: Text; OldParent: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        NewParentId: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+
+        // Obtener información del archivo para encontrar su carpeta padre
+        Url := GoogleDriveBaseURL + '/files/' + FileId + '?fields=parents';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+        StatusInfo.ReadFrom(Respuesta);
+
+        if StatusInfo.Get('parents', JToken) then begin
+            if JToken.IsArray() then begin
+                if JToken.AsArray().Get(0, JToken) then begin
+                    NewParentId := JToken.AsValue().AsText();
+                end;
+            end;
+        end;
+
+        exit(NewParentId);
+    end;
+
+    procedure RecuperaIdFolderSharedDrive(SharedDriveId: Text; IdCarpeta: Text; Carpeta: Text; var Files: Record "Name/Value Buffer" temporary; Crear: Boolean; RootFolder: Boolean): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JValue: JsonArray;
+        JEntry: JsonObject;
+        JToken: JsonToken;
+        JEntryTokens: JsonToken;
+        ItemName: Text;
+        Found: Boolean;
+        ResultId: Text;
+        a: Integer;
+        Extension: Text;
+        Query: Text;
+        FileMang: Codeunit "File Management";
+    begin
+        Files.DeleteAll();
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+
+        if RootFolder then
+            Query := 'q=' + UrlEncode('''') + SharedDriveId + UrlEncode('''') + '+in+parents+and+mimeType=''application/vnd.google-apps.folder'''
+        else
+            Query := 'q=' + UrlEncode('''') + IdCarpeta + UrlEncode('''') + '+in+parents+and+mimeType=''application/vnd.google-apps.folder''';
+
+        Url := GoogleDriveBaseURL + '/files?' + Query + '&fields=files(id,name,mimeType)';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('files', JToken) then begin
+                JValue := JToken.AsArray();
+                a := 0;
+                foreach JEntryTokens in JValue do begin
+                    JEntry := JEntryTokens.AsObject();
+                    a += 1;
+                    Files.Init();
+                    Files.ID := a;
+
+                    if JEntry.Get('name', JToken) then
+                        Files.Name := JToken.AsValue().AsText();
+
+                    if JEntry.Get('id', JToken) then
+                        Files."Google Drive ID" := JToken.AsValue().AsText();
+
+                    if JEntry.Get('mimeType', JToken) then begin
+                        if JToken.AsValue().AsText() = 'application/vnd.google-apps.folder' then begin
+                            Files.Value := 'Carpeta';
+                            if Files.Name = Carpeta then begin
+                                Found := true;
+                                ResultId := Files."Google Drive ID";
+                            end;
+                        end else begin
+                            Files.Value := '';
+                            Extension := FileMang.GetExtension(Files.Name);
+                            if StrLen(Extension) < 30 then
+                                Files."File Extension" := Extension;
+                        end;
+                    end;
+                    Files.Insert();
+                end;
+            end;
+        end;
+
+        if Found then
+            exit(ResultId);
+
+        if Crear then begin
+            ResultId := CreateFolderSharedDrive(SharedDriveId, IdCarpeta, Carpeta, RootFolder);
+            exit(ResultId);
+        end;
+
+        exit('');
+    end;
+
+    procedure CarpetasSharedDrive(SharedDriveId: Text; IdCarpeta: Text; var Files: Record "Name/Value Buffer" temporary)
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JValue: JsonArray;
+        JEntry: JsonObject;
+        JToken: JsonToken;
+        JEntryTokens: JsonToken;
+        a: Integer;
+        Extension: Text;
+        Query: Text;
+        FileMang: Codeunit "File Management";
+    begin
+        Files.DeleteAll();
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+
+        if IdCarpeta = '' then
+            Query := 'q=' + UrlEncode('''') + SharedDriveId + UrlEncode('''') + '+in+parents'
+        else
+            Query := 'q=' + UrlEncode('''') + IdCarpeta + UrlEncode('''') + '+in+parents';
+
+        Url := GoogleDriveBaseURL + '/files?' + Query + '&fields=files(id,name,mimeType)';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('files', JToken) then begin
+                JValue := JToken.AsArray();
+                a := 0;
+                foreach JEntryTokens in JValue do begin
+                    JEntry := JEntryTokens.AsObject();
+                    a += 1;
+                    Files.Init();
+                    Files.ID := a;
+
+                    if JEntry.Get('name', JToken) then
+                        Files.Name := JToken.AsValue().AsText();
+
+                    if JEntry.Get('id', JToken) then
+                        Files."Google Drive ID" := JToken.AsValue().AsText();
+
+                    if JEntry.Get('mimeType', JToken) then begin
+                        if JToken.AsValue().AsText() = 'application/vnd.google-apps.folder' then begin
+                            Files.Value := 'Carpeta';
+                        end else begin
+                            Files.Value := '';
+                            Extension := FileMang.GetExtension(Files.Name);
+                            if StrLen(Extension) < 30 then
+                                Files."File Extension" := Extension;
+                        end;
+                    end;
+                    Files.Insert();
+                end;
+            end;
+        end;
+    end;
+
+    procedure CreateFolderSharedDrive(SharedDriveId: Text; Carpeta: Text; ParentId: Text; RootFolder: Boolean): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        NewFolderId: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        Url := GoogleDriveBaseURL + '/files';
+
+        Clear(Body);
+        Body.Add('name', Carpeta);
+        Body.Add('mimeType', 'application/vnd.google-apps.folder');
+
+        if RootFolder then
+            Body.Add('parents', SharedDriveId)
+        else if ParentId <> '' then
+            Body.Add('parents', ParentId);
+
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+            if StatusInfo.Get('id', JToken) then
+                NewFolderId := JToken.AsValue().AsText()
+            else
+                Error('Error al crear carpeta en drive compartido: %1 con esta url: %2 y este json: %3', Respuesta, Url, Json);
+        end;
+        exit(NewFolderId);
+    end;
+
+    procedure UploadFileB64ToFolderSharedDrive(SharedDriveId: Text; TempBlob: Codeunit "Temp Blob"; FileName: Text; FolderId: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JTokenLink: JsonToken;
+        Id: Text;
+        Body: JsonObject;
+        Json: Text;
+        InStr: InStream;
+        Boundary: Text;
+        CrLf: Text;
+        FileContent: Text;
+        ContentText: Text;
+        RequestHeaders: HttpHeaders;
+        RequestContent: HttpContent;
+        Client: HttpClient;
+        ResponseMessage: HttpResponseMessage;
+        ResponseText: Text;
+        JResponse: JsonObject;
+        JToken: JsonToken;
+        InStream: InStream;
+        Convert: Codeunit "Base64 Convert";
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        TempBlob.CreateInStream(InStr);
+
+        // Construir el JSON para subir archivo a la carpeta específica
+        TempBlob.CreateInStream(InStream);
+        FileContent := Convert.ToBase64(InStream);
+
+        // Prepare multipart upload
+        URL := GoogleDriveUploadURL + '?uploadType=multipart&supportsAllDrives=true';
+
+        // Build multipart content
+        ContentText := '--' + Boundary + CrLf;
+        ContentText += 'Content-Type: application/json; charset=UTF-8' + CrLf + CrLf;
+        ContentText += '{"name": "' + FileName + '"';
+        if FolderId <> '' then
+            ContentText += ', "parents": ["' + FolderId + '"]';
+        ContentText += '}' + CrLf;
+        ContentText += '--' + Boundary + CrLf;
+        ContentText += 'Content-Type: application/octet-stream' + CrLf;
+        ContentText += 'Content-Transfer-Encoding: base64' + CrLf + CrLf;
+        ContentText += FileContent + CrLf;
+        ContentText += '--' + Boundary + '--';
+
+        RequestContent.WriteFrom(ContentText);
+        RequestContent.GetHeaders(RequestHeaders);
+        RequestHeaders.Clear();
+        RequestHeaders.Add('Content-Type', 'multipart/related; boundary=' + Boundary);
+
+        Client.DefaultRequestHeaders().Add('Authorization', StrSubstNo('Bearer %1', AccessToken));
+
+        if Client.Post(URL, RequestContent, ResponseMessage) then begin
+            if ResponseMessage.IsSuccessStatusCode() then begin
+                ResponseMessage.Content().ReadAs(ResponseText);
+                if JResponse.ReadFrom(ResponseText) then begin
+                    if JResponse.Get('id', JToken) then
+                        exit(JToken.AsValue().AsText());
+                end;
+            end else begin
+                ResponseMessage.Content().ReadAs(ResponseText);
+                Message('Error uploading file: %1', ResponseText);
+            end;
+        end;
+
+        exit('');
+    end;
+
+    procedure DeleteFolderSharedDrive(SharedDriveId: Text; IdCarpeta: Text; HideDialog: Boolean): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+
+    begin
+        if not HideDialog then
+            if not Confirm('¿Está seguro de que desea eliminar la carpeta?', true) then
+                exit('');
+
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+
+        // Obtener el ID del archivo/carpeta
+        // Id := GetFileIdSharedDrive(Carpeta, SharedDriveId);
+
+        // if Id = '' then
+        //     Error('Carpeta no encontrada: %1', Carpeta);
+
+        Url := GoogleDriveBaseURL + '/files/' + IdCarpeta + '?supportsAllDrives=true';
+        //https://www.googleapis.com/drive/v3/files/{fileId}?supportsAllDrives=true
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::delete, '');
+
+        exit('');
+    end;
+
+    procedure MoveFolderSharedDrive(SharedDriveId: Text; FolderId: Text; NewParentId: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JTokenLink: JsonToken;
+        Id: Text;
+        Body: JsonObject;
+        Json: Text;
+        JTokO: JsonToken;
+        JTok: JsonToken;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+
+        // Mover carpeta
+        Url := GoogleDriveBaseURL + '/files/' + FolderId + '&supportsAllDrives=true';
+        //PATCH https://www.googleapis.com/drive/v3/files/{fileId}?addParents={newFolderId}&removeParents={oldFolderId}&supportsAllDrives=true
+
+        Body.Add('addParents', NewParentId);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::patch, Json);
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+
+        If StatusInfo.Get('id', JTokO) Then begin
+            Id := JTokO.AsValue().AsText();
+        end;
+
+        if Id = '' then begin
+            if StatusInfo.Get('error', JTok) then begin
+                Error(JTok.AsValue().AsText());
+            end;
+            Error('Error al mover la carpeta');
+        end;
+
+        exit(Id);
+    end;
+
+    procedure MoveFileSharedDrive(SharedDriveId: Text; FileId: Text; NewParentId: Text; OldParent: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JTokenLink: JsonToken;
+        Id: Text;
+        Body: JsonObject;
+        Json: Text;
+        JTokO: JsonToken;
+        JTok: JsonToken;
+        Inf: Record "Company Information";
+    begin
+        Inf.Get();
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+
+        // Mover archivo
+        Url := Inf."Url Api GoogleDrive" + move_folder + FileId +
+                '?addParents=' + NewParentId +
+                '&removeParents=' + OldParent + '&supportsAllDrives=true';
+
+        // La API de Google Drive espera un cuerpo vacío para esta operación
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::patch, '');
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+
+        If StatusInfo.Get('id', JTokO) Then begin
+            Id := JTokO.AsValue().AsText();
+        end;
+
+        if Id = '' then begin
+            if StatusInfo.Get('error', JTok) then begin
+                Error(JTok.AsValue().AsText());
+            end;
+            Error('Error al mover el archivo');
+        end;
+
+        exit(Id);
+    end;
+
+    procedure CopyFileSharedDrive(SharedDriveId: Text; FileId: Text; NewParentId: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JTokenLink: JsonToken;
+        Id: Text;
+        Body: JsonObject;
+        Json: Text;
+        JTokO: JsonToken;
+        JTok: JsonToken;
+        Inf: Record "Company Information";
+        GoogleDrive: Codeunit "Google Drive Manager";
+        ParentsArray: JsonArray;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+
+        // Copiar archivo
+        Ticket := GoogleDrive.Token();
+        Inf.Get;
+        Url := Inf."Url Api GoogleDrive" + move_folder + FileId + '/copy?supportsAllDrives=true';
+        //NewParentId es un array
+        ParentsArray.Add(NewParentId);
+        Body.Add('parents', ParentsArray);
+        Body.WriteTo(Json);
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+
+        If StatusInfo.Get('id', JTokO) Then begin
+            Id := JTokO.AsValue().AsText();
+        end;
+
+        if Id = '' then begin
+            if StatusInfo.Get('error', JTok) then begin
+                Error(JTok.AsValue().AsText());
+            end;
+            Error('Error al copiar el archivo');
+        end;
+
+        exit(Id);
+    end;
+
+    procedure ListFolderSharedDrive(SharedDriveId: Text; FolderId: Text; var Files: Record "Name/Value Buffer" temporary; SoloSubfolder: Boolean)
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JEntries: JsonArray;
+        JEntry: JsonObject;
+        JEntryToken: JsonToken;
+        JEntryTokens: JsonToken;
+        a: Integer;
+        ItemType: Text;
+        ItemName: Text;
+        ItemId: Text;
+        FilesTemp: Record "Name/Value Buffer" temporary;
+        Query: Text;
+        FileMang: Codeunit "File Management";
+        Inf: Record "Company Information";
+        C: Label '''';
+    begin
+        Inf.Get();
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Files.DeleteAll();
+        Ticket := Token();
+        Url := Inf."Url Api GoogleDrive" + list_folder;
+        //GET https://www.googleapis.com/drive/v3/files?q='PARENT_ID'+in+parents&driveId=DRIVE_ID&corpora=drive&includeItemsFromAllDrives=true&supportsAllDrives=true&fields=files(id,name,mimeType)
+
+        if SoloSubfolder then begin
+            If FolderId <> '' Then
+                Url := Url + '?q=' + C + FolderId + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
+            else
+                Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
+
+        end else
+            Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+
+        if Respuesta <> '' then begin
+            StatusInfo.ReadFrom(Respuesta);
+
+            if StatusInfo.Get('files', JEntryToken) then begin
+                JEntries := JEntryToken.AsArray();
+
+                foreach JEntryTokens in JEntries do begin
+                    JEntry := JEntryTokens.AsObject();
+
+                    // Obtener el ID del elemento
+                    if JEntry.Get('id', JEntryToken) then
+                        ItemId := JEntryToken.AsValue().AsText()
+                    else
+                        ItemId := '';
+
+                    // Obtener el nombre del elemento
+                    if JEntry.Get('name', JEntryToken) then
+                        ItemName := JEntryToken.AsValue().AsText()
+                    else
+                        ItemName := '';
+
+                    // Determinar si es carpeta o archivo
+                    if JEntry.Get('mimeType', JEntryToken) then begin
+                        if JEntryToken.AsValue().AsText() = 'application/vnd.google-apps.folder' then begin
+                            ItemType := 'Carpeta';
+                        end else begin
+                            ItemType := '';
+                        end;
+                    end else begin
+                        ItemType := '';
+                    end;
+
+                    // Crear registro temporal
+                    FilesTemp.Init();
+                    a += 1;
+                    FilesTemp.ID := a;
+                    FilesTemp.Name := ItemName;
+                    FilesTemp."Google Drive ID" := ItemId;
+                    FilesTemp.Value := ItemType;
+
+                    // Si es archivo, obtener la extensión
+                    if ItemType = '' then begin
+                        FilesTemp."File Extension" := FileMang.GetExtension(ItemName);
+                    end;
+
+                    FilesTemp.Insert();
+                end;
+            end;
+        end;
+
+        // Ordenar: primero carpetas, luego archivos
+        a := 0;
+        FilesTemp.SetRange(Value, 'Carpeta');
+        if FilesTemp.FindSet() then
+            repeat
+                a += 1;
+                Files := FilesTemp;
+                Files.ID := a;
+                Files.Insert();
+            until FilesTemp.Next() = 0;
+
+        FilesTemp.SetRange(Value, '');
+        if FilesTemp.FindSet() then
+            repeat
+                a += 1;
+                Files := FilesTemp;
+                Files.ID := a;
+                Files.Insert();
+            until FilesTemp.Next() = 0;
+    end;
+
+    procedure DownloadFileB64SharedDrive(SharedDriveId: Text; FileId: Text; FileName: Text; BajarFichero: Boolean; var Base64Data: Text): Boolean
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        Link: Text;
+        ErrorMessage: Text;
+        TempBlob: Codeunit "Temp Blob";
+        InStr: InStream;
+        OutStr: OutStream;
+        Bs64: Codeunit "Base64 Convert";
+        Client: HttpClient;
+        RequestHeaders: HttpHeaders;
+        ResponseMessage: HttpResponseMessage;
+        InStream: InStream;
+        OutStream: OutStream;
+        Convert: Codeunit "Base64 Convert";
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        Url := GoogleDriveBaseURL + '/files/' + FileId + '?alt=media&supportsAllDrives=true';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+
+        if Respuesta = '' then
+            exit(false);
+
+        StatusInfo.ReadFrom(Respuesta);
+
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            exit(false);
+        end;
+        RequestHeaders := Client.DefaultRequestHeaders();
+        RequestHeaders.Add('Authorization', StrSubstNo('Bearer %1', Ticket));
+
+        Client.Get(Url, ResponseMessage);
+
+        if not ResponseMessage.IsSuccessStatusCode() then
+            exit(false);
+
+        if not ResponseMessage.IsSuccessStatusCode() then
+            exit(false);
+
+        TempBlob.CreateInStream(InStream);
+        ResponseMessage.Content().ReadAs(InStream);
+        Base64Data := Convert.ToBase64(InStream);
+        TempBlob.CreateOutStream(OutStream);
+        Convert.FromBase64(Base64Data, OutStream);
+        Clear(InStream);
+        TempBlob.CreateInStream(InStream);
+        If BajarFichero Then
+            DownloadFromStream(InStream, 'Guardar', 'C:\Temp', 'ALL Files (*.*)|*.*', FileName);
+
+        exit(true);
+    end;
+
+    procedure OpenFileInBrowserSharedDrive(SharedDriveId: Text; GoogleDriveID: Text)
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        WebUrl: Text;
+        ErrorMessage: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        Url := GoogleDriveBaseURL + '/files/' + GoogleDriveID + '?fields=webViewLink&supportsAllDrives=true';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de Google Drive.');
+
+        StatusInfo.ReadFrom(Respuesta);
+
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
+        end;
+
+        if StatusInfo.Get('webViewLink', JToken) then begin
+            WebUrl := JToken.AsValue().AsText();
+            Hyperlink(WebUrl);
+        end else begin
+            Error('No se pudo obtener el enlace del archivo.');
+        end;
+    end;
+
+    procedure GetUrlSharedDrive(SharedDriveId: Text; GoogleDriveID: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        WebUrl: Text;
+        ErrorMessage: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        // Para drives compartidos, necesitamos especificar el drive en la URL
+        Url := GoogleDriveBaseURL + '/files/' + GoogleDriveID + '?fields=webViewLink&supportsAllDrives=true';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de Google Drive.');
+
+        StatusInfo.ReadFrom(Respuesta);
+
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
+        end;
+
+        if StatusInfo.Get('webViewLink', JToken) then begin
+            WebUrl := JToken.AsValue().AsText();
+            exit(WebUrl);
+        end else begin
+            Error('No se pudo obtener el enlace del archivo.');
+        end;
+    end;
+
+    procedure DeleteFileSharedDrive(SharedDriveId: Text; GoogleDriveID: Text): Boolean
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        ResponseMessage: HttpResponseMessage;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        Url := GoogleDriveBaseURL + '/files/' + GoogleDriveID + '?supportsAllDrives=true';
+        ResponseMessage := RestApiTokenResponse(Url, Ticket, RequestType::delete, '');
+
+        if ResponseMessage.IsSuccessStatusCode() then
+            exit(true)
+        else
+            exit(false);
+    end;
+
+    procedure EditFileSharedDrive(SharedDriveId: Text; GoogleDriveID: Text)
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        WebUrl: Text;
+        ErrorMessage: Text;
+        Inf: Record "Company Information";
+        Json: Text;
+    begin
+        Inf.Get();
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+        Url := Inf."Url Api GoogleDrive" + get_metadata + GoogleDriveID + '/permissions';
+        Json := '{"type": "anyone","role": "writer","allowFileDiscovery": false}';
+
+        Respuesta := RestApiToken(Url, AccessToken, RequestType::post, Json);
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de Google Drive.');
+        Url := GoogleDriveBaseURL + '/files/' + GoogleDriveID + '?fields=webViewLink&supportsAllDrives=true';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de Google Drive.');
+
+        StatusInfo.ReadFrom(Respuesta);
+
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
+        end;
+
+        if StatusInfo.Get('webViewLink', JToken) then begin
+            WebUrl := JToken.AsValue().AsText();
+            Hyperlink(WebUrl);
+        end else begin
+            Error('No se pudo obtener el enlace del archivo.');
+        end;
+    end;
+
+    procedure GetFileIdSharedDrive(FilePath: Text; SharedDriveId: Text): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        StatusInfo: JsonObject;
+        Respuesta: Text;
+        JTokenLink: JsonToken;
+        Id: Text;
+        Query: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Ticket := Token();
+
+        // Obtener información del archivo en drive compartido
+        Query := 'q=' + UrlEncode('name=''' + FilePath + ''' and ''' + SharedDriveId + ''' in parents');
+        Url := GoogleDriveBaseURL + '/files?' + Query + '&fields=files(id,name)&supportsAllDrives=true';
+
+        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
+        StatusInfo.ReadFrom(Respuesta);
+
+        if StatusInfo.Get('files', JTokenLink) then begin
+            if JTokenLink.IsArray() then begin
+                if JTokenLink.AsArray().Get(0, JTokenLink) then begin
+                    if JTokenLink.IsObject() then begin
+                        if JTokenLink.AsObject().Get('id', JTokenLink) then begin
+                            Id := JTokenLink.AsValue().AsText();
+                        end;
+                    end;
+                end;
+            end;
+        end;
+
+        exit(Id);
+    end;
 
 }

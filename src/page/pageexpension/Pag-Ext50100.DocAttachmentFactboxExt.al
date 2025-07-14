@@ -141,8 +141,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         end;
                         if Rec."Store in OneDrive" then begin
                             URL := Rec."OneDrive ID";
-                            UrlProvider := OneDriveManager.GetUrlLink(URL);
-                            StorageProvider := StorageProvider::OneDrive;
+                            UrlProvider := OneDriveManager.GetPdfBase64(URL);
+                            URL := UrlProvider;
                             DriveType := 'onedrive';
                         end;
                         if Rec."Store in DropBox" then begin
@@ -1420,7 +1420,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         end;
         if Rec."Store in OneDrive" then begin
             URL := Rec."OneDrive ID";
-            UrlProvider := OneDriveManager.GetUrlLink(URL);
+            UrlProvider := OneDriveManager.GetPdfBase64(URL);
+            URL := UrlProvider;
             StorageProvider := StorageProvider::OneDrive;
             DriveType := 'onedrive';
         end;
@@ -1512,8 +1513,13 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         StrapiManager: Codeunit "Strapi Manager";
         SharePointManager: Codeunit "SharePoint Manager";
     begin
-        If not Rec.ToBase64StringOcr(PDFAsTxt, Base64, Filename, Origen) then
-            exit;
+        if DriveType = 'onedrive' then begin
+            Base64 := PDFAsTxt;
+            Pdf := true;
+        end
+        else
+            If not Rec.ToBase64StringOcr(PDFAsTxt, Base64, Filename, Origen) then
+                exit;
 
         IsVisible := Base64 <> '';
         case i of

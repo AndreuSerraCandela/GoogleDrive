@@ -82,24 +82,4 @@ pdf-meta {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-#iframe-container {
-    position: relative;
-    width: 100%;
-    height: 1020px;
-    overflow: hidden;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
 
-/* Los iframes hijos deben tener height: 100% y no usar position: absolute */
-#iframe-container iframe {
-    width: 100%;
-    height: 100%;
-    display: block;
-    background: #fff;
-    border: none;
-    border-radius: 10px;
-    box-sizing: border-box;
-    overflow-x: auto;
-}

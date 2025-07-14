@@ -249,7 +249,27 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'SharePoint Site ID';
             DataClassification = CustomerContent;
         }
-        
+        field(95150; "OneDrive Site ID"; Text[250])
+        {
+            Caption = 'OneDrive Site ID';
+            DataClassification = CustomerContent;
+        }
+        field(95151; "OneDrive Site Url"; Text[250])
+        {
+            Caption = 'OneDrive Site Url';
+            DataClassification = CustomerContent;
+        }
+        field(95152; "Google Shared Drive ID"; Text[250])
+        {
+            Caption = 'Google Shared Drive ID';
+            DataClassification = CustomerContent;
+        }
+        field(95153; "Google Shared Drive Name"; Text[250])
+        {
+            Caption = 'Google Shared Drive Name';
+            DataClassification = CustomerContent;
+        }
+
     }
 
     procedure GetTokenGoogleDrive(): Text

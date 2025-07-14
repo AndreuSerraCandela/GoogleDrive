@@ -750,32 +750,17 @@ function LoadOtros(base64Data, IsFactbox, fileType, driveType, driveId) {
     if (iframeUrl) {
         const externalIframe = document.createElement('iframe');
         externalIframe.src = iframeUrl;
-        console.log(iframeUrl);
         externalIframe.width = '100%';
         externalIframe.style.width = '100%';
-        externalIframe.style.height = '100%';
-        externalIframe.style.position = 'static';
-        externalIframe.style.display = 'block';
-        externalIframe.style.backgroundColor = '#fff';
-        externalIframe.style.border = 'none';
-        externalIframe.style.borderRadius = '10px';
-        if (driveType === 'ondrive') {
-            externalIframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-forms');
-            externalIframe.allowFullscreen = true;
-            externalIframe.style.width = '100%';
-            externalIframe.style.minWidth = '100%';
-            externalIframe.style.maxWidth = '100%';
-            externalIframe.style.overflow = 'auto';
-            externalIframe.style.transform = 'scale(1.1)';
-            externalIframe.style.transformOrigin = 'top left';
-        }
         externalIframe.style.boxSizing = 'border-box';
+        externalIframe.style.height = '1020px';
+        externalIframe.style.maxHeight = '1020px';
+
+        // La altura la controla el CSS (1020px)
+        externalIframe.style.border = 'none';
         iframeContainer.appendChild(externalIframe);
 
-       
-
         if (iframe) {
-            iframe.style.width = '100%';
             iframe.style.height = '1020px';
             iframe.style.maxHeight = '1020px';
             if (iframe.parentElement) {

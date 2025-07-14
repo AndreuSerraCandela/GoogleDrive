@@ -91,6 +91,11 @@ page 95112 "Drive Configuration"
                         ApplicationArea = All;
                         ToolTip = 'Especifica la carpeta raíz de Google Drive.';
                     }
+                    field("Google Shared Drive Name"; Rec."Google Shared Drive Name")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el nombre de la carpeta compartida de Google Drive.';
+                    }
 
                 }
 
@@ -166,6 +171,11 @@ page 95112 "Drive Configuration"
                     {
                         ApplicationArea = All;
                         ToolTip = 'Especifica la carpeta raíz de OneDrive.';
+                    }
+                    field("OneDrive Site Url"; Rec."OneDrive Site Url")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica la URL del sitio de OneDrive.';
                     }
                     field("Code Ondrive"; Rec."Code Ondrive")
                     {
@@ -360,7 +370,7 @@ page 95112 "Drive Configuration"
                         ToolTip = 'Fecha y hora de expiración del token de acceso.';
                         Editable = false;
                     }
-                }       
+                }
             }
         }
     }
@@ -558,6 +568,22 @@ page 95112 "Drive Configuration"
                         Message(DiagnosticResult);
                     end;
                 }
+                action("Google Drive Id Drive")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Id Drive';
+                    ToolTip = 'Obtiene el id del sitio de Google Drive.';
+                    Image = Web;
+
+                    trigger OnAction()
+                    var
+                        GoogleDriveManager: Codeunit "Google Drive Manager";
+                    begin
+                        GoogleDriveManager.Initialize();
+                        Rec."Google Shared Drive ID" := GoogleDriveManager.GetSharedDriveId(Rec."Google Shared Drive Name");
+                        Rec.Modify();
+                    end;
+                }
 
             }
 
@@ -638,6 +664,22 @@ page 95112 "Drive Configuration"
                             Message('✅ Configuración válida.')
                         else
                             Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
+                    end;
+                }
+
+                action("OneDrive Id Site")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Id Site';
+                    ToolTip = 'Obtiene el id del sitio de OneDrive.';
+                    Image = Web;
+
+                    trigger OnAction()
+                    var
+                        OneDriveManager: Codeunit "OneDrive Manager";
+                    begin
+                        Rec."OneDrive Site ID" := OneDriveManager.GetSharedSiteId(Rec."OneDrive Site Url");
+                        Rec.Modify();
                     end;
                 }
 
@@ -820,8 +862,8 @@ page 95112 "Drive Configuration"
                     ToolTip = 'Prueba la API de SharePoint con la configuración actual.';
                     Image = TestReport;
                 }
-                
-            }                   
+
+            }
             action("Folder Mapping Setup")
             {
                 ApplicationArea = All;
@@ -953,6 +995,23 @@ page 95112 "Drive Configuration"
                    'Use "Actualizar Token" para renovarlo.', ExpirationText);
         end;
     end;
+
+    local procedure GetOneDriveSiteId()
+    var
+        OneDriveManager: Codeunit "OneDrive Manager";
+    begin
+        Rec."OneDrive Site ID" := OneDriveManager.GetSharedSiteId(Rec."OneDrive Site Url");
+    end;
+
+    procedure CargaTipoDive(Info: Record "Company Information")
+    begin
+        IsGoogleDrive := Info."Data Storage Provider" = Info."Data Storage Provider"::"Google Drive";
+        IsOneDrive := Info."Data Storage Provider" = Info."Data Storage Provider"::OneDrive;
+        IsDropBox := Info."Data Storage Provider" = Info."Data Storage Provider"::DropBox;
+        IsStrapi := Info."Data Storage Provider" = Info."Data Storage Provider"::Strapi;
+        IsSharePoint := Info."Data Storage Provider" = Info."Data Storage Provider"::SharePoint;
+
+    end;
 }
 pageextension 95101 CompanyInfoExt extends "Company Information"
 {
@@ -966,9 +1025,10 @@ pageextension 95101 CompanyInfoExt extends "Company Information"
                 Caption = 'Configuración de Almacenamiento';
                 trigger OnAction()
                 var
-                    DriveConfiguration: Page "Drive Configuration";
+
+
                 begin
-                    DriveConfiguration.Run();
+                    Page.Run(Page::"Drive Configuration", Rec);
                 end;
             }
         }
