@@ -1092,6 +1092,38 @@ codeunit 95102 "OneDrive Manager"
         OpenFileInBrowser(OneDriveID, true);
     end;
 
+    internal procedure RenameFolder(RootFolderID: Text[250]; RootFolder: Text[250]): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JTokenLink: JsonToken;
+        JsonParent: JsonObject;
+        Name: JsonToken;
+        Parent: JsonToken;
+        PathBase: JsonToken;
+        RutaCompleta: Text;
+        Inf: Record "Company Information";
+        SiteId: Text;
+        Json: Text;
+
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+        Ticket := Token();
+        Inf.Get();
+        SiteId := Inf."OneDrive Site ID";
+        if SiteId <> '' then
+            Url := graph_endpoint + '/sites/' + SiteId + '/drive/items/' + RootFolderID
+        else
+            Url := graph_endpoint + '/me/drive/items/' + RootFolderID;
+        Json := '{"name":"' + RootFolder + '"}';
+        Respuesta := RestApiToken(Url, Ticket, RequestType::patch, Json);
+        exit(Respuesta);
+    end;
+
     procedure DeleteFile(GetDocumentID: Text): Boolean
     var
         Ticket: Text;

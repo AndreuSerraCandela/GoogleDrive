@@ -947,6 +947,25 @@ codeunit 95103 "DropBox Manager"
         end;
     end;
 
+    internal procedure RenameFolder(RootFolderID: Text[250]; RootFolder: Text[250]): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+    begin
+        Ticket := Token();
+        Url := CompanyInfo."Url Api DropBox" + move_folder;
+        Clear(Body);
+        Body.Add('from_path', RootFolderID);
+        Body.Add('to_path', RootFolder);
+        Body.WriteTo(Json);
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+        exit(Respuesta);
+    end;
+
     procedure GetFolderMapping(TableID: Integer; Var Id: Text): Record "Google Drive Folder Mapping"
     var
         FolderMapping: Record "Google Drive Folder Mapping";

@@ -2247,7 +2247,7 @@ codeunit 95100 "Google Drive Manager"
         Ticket := Token();
 
         // Listar archivos del drive compartido
-        Url := GoogleDriveBaseURL + '/files?q=' + UrlEncode('''') + DriveId + UrlEncode('''') + '+in+parents&fields=files(id,name,mimeType,parents)';
+        Url := GoogleDriveBaseURL + '/files?q=' + UrlEncode('''') + DriveId + UrlEncode('''') + '+in+parents&di&fields=files(id,name,mimeType,parents)';
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
@@ -2505,19 +2505,24 @@ codeunit 95100 "Google Drive Manager"
         Extension: Text;
         Query: Text;
         FileMang: Codeunit "File Management";
+        CompanyInfo: Record "Company Information";
     begin
         Files.DeleteAll();
+        CompanyInfo.GET();
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
-
+        if Not RootFolder then
+            if IdCarpeta = '' then
+                IdCarpeta := CompanyInfo."Root Folder ID";
         Ticket := Token();
+        //https://www.googleapis.com/drive/v3/files?q='0AI4bGevdrPtQUk9PVA'+in+parents+and+mimeType='application/vnd.google-apps.folder'&driveId=0AI4bGevdrPtQUk9PVA&corpora=drive&includeItemsFromAllDrives=true&supportsAllDrives=true&fields=files(id,name,mimeType)
 
         if RootFolder then
-            Query := 'q=' + UrlEncode('''') + SharedDriveId + UrlEncode('''') + '+in+parents+and+mimeType=''application/vnd.google-apps.folder'''
+            Query := 'q=' + UrlEncode('''') + SharedDriveId + UrlEncode('''') + '+in+parents+and+mimeType=''application/vnd.google-apps.folder''+&driveId=' + SharedDriveId + '&corpora=drive&includeItemsFromAllDrives=true'
         else
             Query := 'q=' + UrlEncode('''') + IdCarpeta + UrlEncode('''') + '+in+parents+and+mimeType=''application/vnd.google-apps.folder''';
 
-        Url := GoogleDriveBaseURL + '/files?' + Query + '&fields=files(id,name,mimeType)';
+        Url := GoogleDriveBaseURL + '/files?' + Query + '&supportsAllDrives=true&fields=files(id,name,mimeType)';
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
         if Respuesta <> '' then begin
@@ -2560,7 +2565,7 @@ codeunit 95100 "Google Drive Manager"
             exit(ResultId);
 
         if Crear then begin
-            ResultId := CreateFolderSharedDrive(SharedDriveId, IdCarpeta, Carpeta, RootFolder);
+            ResultId := CreateFolderSharedDrive(SharedDriveId, Carpeta, IdCarpeta, RootFolder);
             exit(ResultId);
         end;
 
@@ -2590,9 +2595,9 @@ codeunit 95100 "Google Drive Manager"
         Ticket := Token();
 
         if IdCarpeta = '' then
-            Query := 'q=' + UrlEncode('''') + SharedDriveId + UrlEncode('''') + '+in+parents'
+            Query := 'q=' + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive'
         else
-            Query := 'q=' + UrlEncode('''') + IdCarpeta + UrlEncode('''') + '+in+parents';
+            Query := 'q=' + UrlEncode('''') + IdCarpeta + UrlEncode('''') + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive';
 
         Url := GoogleDriveBaseURL + '/files?' + Query + '&fields=files(id,name,mimeType)';
 
@@ -2641,21 +2646,22 @@ codeunit 95100 "Google Drive Manager"
         StatusInfo: JsonObject;
         JToken: JsonToken;
         NewFolderId: Text;
+        JsonArray: JsonArray;
     begin
         if not Authenticate() then
             Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
 
         Ticket := Token();
-        Url := GoogleDriveBaseURL + '/files';
+        Url := GoogleDriveBaseURL + '/files?supportsAllDrives=true';
 
         Clear(Body);
         Body.Add('name', Carpeta);
         Body.Add('mimeType', 'application/vnd.google-apps.folder');
-
         if RootFolder then
-            Body.Add('parents', SharedDriveId)
-        else if ParentId <> '' then
-            Body.Add('parents', ParentId);
+            JsonArray.Add(SharedDriveId)
+        else
+            JsonArray.Add(ParentId);
+        Body.Add('parents', JsonArray);
 
         Body.WriteTo(Json);
 
@@ -2949,20 +2955,12 @@ codeunit 95100 "Google Drive Manager"
 
         if SoloSubfolder then begin
             If FolderId <> '' Then
-                Url := Url + '?q=' + C + FolderId + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
+                Url := Url + '?q=' + C + FolderId + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&includeItemsFromAllDrives=true&supportsAllDrives=true&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
             else
-                Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
+                Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&includeItemsFromAllDrives=true&supportsAllDrives=true&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
 
         end else
-            Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
-        if SoloSubfolder then begin
-            If FolderId <> '' Then
-                Url := Url + '?q=' + C + FolderId + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
-            else
-                Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
-
-        end else
-            Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
+            Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&includeItemsFromAllDrives=true&supportsAllDrives=true&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta <> '' then begin
@@ -3063,24 +3061,10 @@ codeunit 95100 "Google Drive Manager"
         Ticket := Token();
         Url := GoogleDriveBaseURL + '/files/' + FileId + '?alt=media&supportsAllDrives=true';
 
-        Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
-
-        if Respuesta = '' then
-            exit(false);
-
-        StatusInfo.ReadFrom(Respuesta);
-
-        if StatusInfo.Get('error', JToken) then begin
-            ErrorMessage := JToken.AsValue().AsText();
-            exit(false);
-        end;
         RequestHeaders := Client.DefaultRequestHeaders();
         RequestHeaders.Add('Authorization', StrSubstNo('Bearer %1', Ticket));
 
         Client.Get(Url, ResponseMessage);
-
-        if not ResponseMessage.IsSuccessStatusCode() then
-            exit(false);
 
         if not ResponseMessage.IsSuccessStatusCode() then
             exit(false);
@@ -3257,7 +3241,7 @@ codeunit 95100 "Google Drive Manager"
         Ticket := Token();
 
         // Obtener información del archivo en drive compartido
-        Query := 'q=' + UrlEncode('name=''' + FilePath + ''' and ''' + SharedDriveId + ''' in parents');
+        Query := 'q=' + UrlEncode('name=''' + FilePath + ''' in parents&driveId=' + SharedDriveId + '&corpora=drive');
         Url := GoogleDriveBaseURL + '/files?' + Query + '&fields=files(id,name)&supportsAllDrives=true';
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
@@ -3278,4 +3262,33 @@ codeunit 95100 "Google Drive Manager"
         exit(Id);
     end;
 
+    procedure RenameFolder(RootFolderID: Text[250]; RootFolder: Text[250]): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+        ErrorMessage: Text;
+        CompanyInfo: Record "Company Information";
+        Json: Text;
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+        CompanyInfo.Get();
+        Ticket := Token();
+        if CompanyInfo."Google Shared Drive ID" <> '' then
+            Url := GoogleDriveBaseURL + '/files/' + RootFolderID + '?supportsAllDrives=true'
+        else
+            Url := GoogleDriveBaseURL + '/files/' + RootFolderID;
+        Json := '{"name":"' + RootFolder + '"}';
+        Respuesta := RestApiToken(Url, Ticket, RequestType::patch, Json);
+        StatusInfo.ReadFrom(Respuesta);
+        if StatusInfo.Get('error', JToken) then begin
+            ErrorMessage := JToken.AsValue().AsText();
+            Error('Error al acceder al archivo: %1', ErrorMessage);
+        end;
+        exit('');
+    end;
 }

@@ -316,4 +316,30 @@ table 95100 "Google Drive Folder Mapping"
 
         Message('Configuraciones por defecto creadas exitosamente.');
     end;
+
+    internal procedure RenameFolder(RootFolderID: Text[250]; RootFolder: Text[250]): text
+    var
+        GoogleDriveManager: Codeunit "Google Drive Manager";
+        OnDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
+        Files: Record "Name/Value Buffer" temporary;
+        Id: Text;
+        CompaiInfo: Record "Company Information";
+    begin
+        CompaiInfo.Get();
+        case CompaiInfo."Data Storage Provider" of
+            CompaiInfo."Data Storage Provider"::"Google Drive":
+                exit(GoogleDriveManager.RenameFolder(RootFolderID, RootFolder));
+            CompaiInfo."Data Storage Provider"::OneDrive:
+                exit(OnDriveManager.RenameFolder(RootFolderID, RootFolder));
+            CompaiInfo."Data Storage Provider"::DropBox:
+                exit(DropBoxManager.RenameFolder(RootFolderID, RootFolder));
+            CompaiInfo."Data Storage Provider"::Strapi:
+                exit(StrapiManager.RenameFolder(RootFolderID, RootFolder));
+            CompaiInfo."Data Storage Provider"::SharePoint:
+                exit(SharePointManager.RenameFolder(RootFolderID, RootFolder));
+        end;
+    end;
 }

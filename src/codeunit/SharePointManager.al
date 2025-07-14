@@ -1189,4 +1189,17 @@ codeunit 95106 "SharePoint Manager"
             Id := FolderMapping."Default Folder ID";
         exit(FolderMapping);
     end;
+
+    internal procedure RenameFolder(RootFolderID: Text[250]; RootFolder: Text[250]): Text
+    var
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+    begin
+        Url := graph_endpoint + '/sites/' + CompanyInfo."SharePoint Site ID" + '/drive/items/' + RootFolderID;
+        Respuesta := RestApiToken(Url, Token(), RequestType::patch, RootFolder);
+        exit(Respuesta);
+    end;
 }

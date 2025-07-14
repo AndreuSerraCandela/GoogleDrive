@@ -67,6 +67,15 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             var
                 GoogleMapping: Record "Google Drive Folder Mapping";
             begin
+                If Rec."Root Folder" = '' Then
+                    If Confirm('¿Desea eliminar el ID de la carpeta raíz?', false) then
+                        "Root Folder ID" := '';
+                exit;
+                If (xRec."Root Folder" <> "Root Folder") and
+                ("Root Folder ID" <> '') and (xRec."Root Folder ID" <> '') then begin
+                    If Confirm('¿Desea renombrar la carpeta raíz?', false) Then
+                        GoogleMapping.RenameFolder("Root Folder ID", "Root Folder");
+                end;
                 if "Root Folder" <> '' then
                     "Root Folder ID" := GoogleMapping.RecuperarIdFolder("Root Folder", true, true);
             end;
