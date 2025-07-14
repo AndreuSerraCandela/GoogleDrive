@@ -2955,7 +2955,14 @@ codeunit 95100 "Google Drive Manager"
 
         end else
             Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
+        if SoloSubfolder then begin
+            If FolderId <> '' Then
+                Url := Url + '?q=' + C + FolderId + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&fields=files(id%2Cname%2CmimeType%2Ctrashed)'
+            else
+                Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
 
+        end else
+            Url := Url + '?q=' + C + Inf."Root Folder ID" + C + '+in+parents&driveId=' + SharedDriveId + '&corpora=drive&trashed=false&fields=files(id%2Cname%2CmimeType%2Ctrashed)';
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta <> '' then begin
