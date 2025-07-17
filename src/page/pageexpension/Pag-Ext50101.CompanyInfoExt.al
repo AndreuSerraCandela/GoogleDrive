@@ -472,9 +472,9 @@ page 95112 "Drive Configuration"
                     begin
                         GoogleDriveManager.Initialize();
                         if GoogleDriveManager.Authenticate() then
-                            Message('✅ Google Drive connection successful.')
+                            Message(GoogleDriveConnectionSuccessLbl)
                         else
-                            Message('❌ Connection error. Check configuration.');
+                            Message(GoogleDriveConnectionErrorLbl);
                     end;
                 }
 
@@ -518,7 +518,7 @@ page 95112 "Drive Configuration"
                     var
                         GoogleDriveManager: Codeunit "Google Drive Manager";
                     begin
-                        if Confirm('Are you sure you want to revoke Google Drive access?', false) then begin
+                        if Confirm(RevokeAccessConfirmLbl, false) then begin
                             GoogleDriveManager.Initialize();
                             GoogleDriveManager.RevokeAccess();
                         end;
@@ -538,9 +538,9 @@ page 95112 "Drive Configuration"
                     begin
                         GoogleDriveManager.Initialize();
                         if GoogleDriveManager.ValidateConfiguration() then
-                            Message('✅ Configuration valid.')
+                            Message(ConfigurationValidLbl)
                         else
-                            Message('❌ Incomplete configuration. Please ensure all fields are filled.');
+                            Message(ConfigurationIncompleteLbl);
                     end;
                 }
 
@@ -631,9 +631,9 @@ page 95112 "Drive Configuration"
                     begin
                         OneDriveManager.Initialize();
                         if OneDriveManager.Authenticate() then
-                            Message('✅ OneDrive connection successful.')
+                            Message(OneDriveConnectionSuccessLbl)
                         else
-                            Message('❌ Connection error. Check configuration.');
+                            Message(OneDriveConnectionErrorLbl);
                     end;
                 }
 
@@ -687,9 +687,9 @@ page 95112 "Drive Configuration"
                     begin
                         OneDriveManager.Initialize();
                         if OneDriveManager.ValidateConfiguration() then
-                            Message('✅ Configuration valid.')
+                            Message(ConfigurationValidLbl)
                         else
-                            Message('❌ Incomplete configuration. Please ensure all fields are filled.');
+                            Message(ConfigurationIncompleteLbl);
                     end;
                 }
 
@@ -729,9 +729,9 @@ page 95112 "Drive Configuration"
                     begin
                         DropBoxManager.Initialize();
                         if DropBoxManager.Authenticate() then
-                            Message('✅ DropBox connection successful.')
+                            Message(DropBoxConnectionSuccessLbl)
                         else
-                            Message('❌ Connection error. Check configuration.');
+                            Message(DropBoxConnectionErrorLbl);
                     end;
                 }
 
@@ -781,9 +781,9 @@ page 95112 "Drive Configuration"
                     begin
                         DropBoxManager.Initialize();
                         if DropBoxManager.ValidateConfiguration() then
-                            Message('✅ Configuration valid.')
+                            Message(ConfigurationValidLbl)
                         else
-                            Message('❌ Incomplete configuration. Please ensure all fields are filled.');
+                            Message(ConfigurationIncompleteLbl);
                     end;
                 }
 
@@ -807,9 +807,9 @@ page 95112 "Drive Configuration"
                     begin
                         StrapiManager.Initialize();
                         if StrapiManager.Authenticate() then
-                            Message('✅ Strapi connection successful.')
+                            Message(StrapiConnectionSuccessLbl)
                         else
-                            Message('❌ Connection error. Check configuration.');
+                            Message(StrapiConnectionErrorLbl);
                     end;
                 }
 
@@ -826,9 +826,9 @@ page 95112 "Drive Configuration"
                     begin
                         StrapiManager.Initialize();
                         if StrapiManager.ValidateConfiguration() then
-                            Message('✅ Configuration valid.')
+                            Message(ConfigurationValidLbl)
                         else
-                            Message('❌ Incomplete configuration. Please ensure all fields are filled.');
+                            Message(ConfigurationIncompleteLbl);
                     end;
                 }
 
@@ -958,6 +958,23 @@ page 95112 "Drive Configuration"
         IsStrapi: Boolean;
         IsSharePoint: Boolean;
         TokenDropBox: Text;
+        // Labels for messages
+        GoogleDriveConnectionSuccessLbl: Label '✅ Google Drive connection successful.';
+        GoogleDriveConnectionErrorLbl: Label '❌ Connection error. Check configuration.';
+        ConfigurationValidLbl: Label '✅ Configuration valid.';
+        ConfigurationIncompleteLbl: Label '❌ Incomplete configuration. Please ensure all fields are filled.';
+        OneDriveConnectionSuccessLbl: Label '✅ OneDrive connection successful.';
+        OneDriveConnectionErrorLbl: Label '❌ Connection error. Check configuration.';
+        DropBoxConnectionSuccessLbl: Label '✅ DropBox connection successful.';
+        DropBoxConnectionErrorLbl: Label '❌ Connection error. Check configuration.';
+        StrapiConnectionSuccessLbl: Label '✅ Strapi connection successful.';
+        StrapiConnectionErrorLbl: Label '❌ Connection error. Check configuration.';
+        DefaultValuesConfiguredLbl: Label 'Default values configured successfully.';
+        NoTokenConfiguredLbl: Label '❌ No token configured.';
+        TokenValidUntilLbl: Label '✅ Token valid until: %1';
+        TokenExpiredSinceLbl: Label '❌ Token expired since: %1. Use "Refresh Token" to renew it.';
+        RevokeAccessConfirmLbl: Label 'Are you sure you want to revoke Google Drive access?';
+        ChooseStorageTypeCaptionLbl: Label 'Choose storage type';
 
     trigger OnOpenPage()
     begin
@@ -997,7 +1014,7 @@ page 95112 "Drive Configuration"
             Rec."Url Api SharePoint" := 'https://graph.microsoft.com/v1.0/';
 
         Rec.Modify();
-        Message('Default values configured successfully.');
+        Message(DefaultValuesConfiguredLbl);
     end;
 
     local procedure TestTokenValidity()
@@ -1006,7 +1023,7 @@ page 95112 "Drive Configuration"
         ExpirationText: Text;
     begin
         if Rec."Token GoogleDrive" = '' then begin
-            Message('❌ No token configured.');
+            Message(NoTokenConfiguredLbl);
             exit;
         end;
 
@@ -1014,11 +1031,10 @@ page 95112 "Drive Configuration"
 
         if IsValid then begin
             ExpirationText := Format(Rec."Expiracion Token GoogleDrive");
-            Message('✅ Token valid until: %1', ExpirationText);
+            Message(TokenValidUntilLbl, ExpirationText);
         end else begin
             ExpirationText := Format(Rec."Expiracion Token GoogleDrive");
-            Message('❌ Token expired since: %1\' +
-                   'Use "Refresh Token" to renew it.', ExpirationText);
+            Message(TokenExpiredSinceLbl, ExpirationText);
         end;
     end;
 

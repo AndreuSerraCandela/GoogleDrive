@@ -36,7 +36,7 @@ page 95105 "Google Drive List"
                             Indice := Indice - 1;
                             if Indice < 1 then begin
                                 Indice := 1;
-                                Message('No se puede subir al nivel anterior, esta en la raiz para esta ficha');
+                                Message(NoRootLevelErr);
                             end;
                             Rec.Value := 'Carpeta';
                             Rec."Google Drive ID" := root;
@@ -280,7 +280,7 @@ page 95105 "Google Drive List"
                                         SharePoint.CreateSharePointFolder(Carpeta, root, false);
                                 end;
                         end;
-                        Message('Carpeta "%1" creada correctamente.', Carpeta);
+                        Message(FolderCreatedSuccessfullyMsg, Carpeta);
                     end;
                     Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
@@ -362,6 +362,11 @@ page 95105 "Google Drive List"
     }
 
     var
+        // Labels for messages
+        NoRootLevelErr: Label 'Cannot go up to previous level, you are at the root level for this record.';
+        NoDestinationSelectedErr: Label 'No destination selected.';
+        FolderCreatedSuccessfullyMsg: Label 'Folder "%1" created successfully.';
+
         GoogleDrive: Codeunit "Google Drive Manager";
         OneDrive: Codeunit "OneDrive Manager";
         DropBox: Codeunit "DropBox Manager";

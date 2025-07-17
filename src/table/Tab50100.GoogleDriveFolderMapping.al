@@ -41,7 +41,7 @@ table 95100 "Google Drive Folder Mapping"
             begin
                 If (xRec."Default Folder Name" <> "Default Folder Name") and
                 ("Default Folder ID" <> '') and (xRec."Default Folder Name" <> '') then begin
-                    If Confirm('¿Desea renombrar la carpeta?', false) Then
+                    If Confirm(RenameFolderMsg, false) Then
                         RenameFolder("Default Folder ID", "Default Folder Name");
                 end;
             end;
@@ -327,7 +327,7 @@ table 95100 "Google Drive Folder Mapping"
             FolderMapping.Insert();
         end;
 
-        Message('Configuraciones por defecto creadas exitosamente.');
+        Message(SetupDefaultMappingsMsg);
     end;
 
     internal procedure RenameFolder(RootFolderID: Text[250]; RootFolder: Text[250]): text
@@ -423,4 +423,7 @@ table 95100 "Google Drive Folder Mapping"
     end;
 
 
+    var
+        SetupDefaultMappingsMsg: Label 'Default mappings created successfully.';
+        RenameFolderMsg: Label 'Are you sure you want to rename folder?';
 }

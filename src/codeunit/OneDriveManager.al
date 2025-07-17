@@ -45,6 +45,20 @@ codeunit 95102 "OneDrive Manager"
         // Confirmation Labels
         DeleteFolderConfirmMsg: Label 'Are you sure you want to delete the folder?';
 
+        // Error Labels
+        TokenRequestFailedErr: Label 'The request to the token endpoint failed.';
+        TokenEndpointErrorErr: Label 'The token endpoint returned an error. Status: %1, Body: %2';
+        NotAuthenticatedErr: Label 'Could not authenticate with OneDrive. Please verify your credentials.';
+        NoServerResponseErr: Label 'No response received from OneDrive server.';
+        FileAccessErrorErr: Label 'Error accessing file: %1';
+        FileLinkErrorErr: Label 'Could not get file link. Verify that the file ID is correct and you have permission to access it.';
+        CopyFileErrorErr: Label 'Error copying file: %1. Complete response: %2';
+        FileCopiedButNotDeletedErr: Label 'File was copied but could not delete original. Copied file ID: %1';
+        CopyFileFailedErr: Label 'Could not copy file';
+        GetFilePathErrorErr: Label 'Could not get file path';
+        CreateFolderErrorErr: Label 'Failed to create folder in OneDrive: %1 with this URL: %2 and this JSON: %3';
+        GetSiteErrorErr: Label 'Error getting site: %1';
+
     procedure Initialize()
     begin
         CompanyInfo.Get();
@@ -197,12 +211,11 @@ codeunit 95102 "OneDrive Manager"
         HttpRequest.Content := HttpContent;
 
         if not HttpClient.Send(HttpRequest, HttpResponse) then
-            Error('The request to the token endpoint failed.');
+            Error(TokenRequestFailedErr);
 
         HttpResponse.Content().ReadAs(JsonText);
-
         if not HttpResponse.IsSuccessStatusCode() then
-            Error('The token endpoint returned an error. Status: %1, Body: %2', HttpResponse.HttpStatusCode(), JsonText);
+            Error(TokenEndpointErrorErr, HttpResponse.HttpStatusCode(), JsonText);
 
         StatusInfo.ReadFrom(JsonText);
 
@@ -273,12 +286,12 @@ codeunit 95102 "OneDrive Manager"
         HttpRequest.Content := HttpContent;
 
         if not HttpClient.Send(HttpRequest, HttpResponse) then
-            Error('The request to the token endpoint failed.');
+            Error(TokenRequestFailedErr);
 
         HttpResponse.Content().ReadAs(JsonText);
 
         if not HttpResponse.IsSuccessStatusCode() then
-            Error('The token endpoint returned an error. Status: %1, Body: %2', HttpResponse.HttpStatusCode(), JsonText);
+            Error(TokenEndpointErrorErr, HttpResponse.HttpStatusCode(), JsonText);
 
         StatusInfo.ReadFrom(JsonText);
 
@@ -382,7 +395,7 @@ codeunit 95102 "OneDrive Manager"
             exit(DownloadFileB64Site(OneDriveID, FileName, BajarFichero, Base64Data, SiteId));
 
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1?select=id,name,webUrl,@microsoft.graph.downloadUrl', OneDriveID);
@@ -410,7 +423,7 @@ codeunit 95102 "OneDrive Manager"
             Base64Data := Bs64.ToBase64(InStr);
 
             if BajarFichero then begin
-                DownloadFromStream(InStr, 'Guardar', 'C:\Temp', 'ALL Files (*.*)|*.*', FileName);
+                DownloadFromStream(InStr, SaveAsDialogTxt, 'C:\Temp', 'ALL Files (*.*)|*.*', FileName);
             end;
 
             exit(true);
@@ -434,7 +447,7 @@ codeunit 95102 "OneDrive Manager"
         if SiteId <> '' then
             exit(DeleteFolderSite(Carpeta, HideDialog, SiteId));
         if not HideDialog then
-            if not Confirm('¿Está seguro de que desea eliminar la carpeta?', true) then
+            if not Confirm(DeleteFolderMsg, true) then
                 exit('');
 
         Ticket := Format(Token());
@@ -834,7 +847,7 @@ codeunit 95102 "OneDrive Manager"
         if SiteId <> '' then
             exit(GetPdfBase64Site(OneDriveID, SiteId));
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         // Obtener metadatos del archivo incluyendo el enlace web
@@ -871,7 +884,7 @@ codeunit 95102 "OneDrive Manager"
         if SiteId <> '' then
             exit(GetUrlLinkSite(OneDriveID, SiteId));
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         // Obtener metadatos del archivo incluyendo el enlace web
@@ -883,14 +896,13 @@ codeunit 95102 "OneDrive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de OneDrive.');
-
+            Error(NoServerResponseErr);
         StatusInfo.ReadFrom(Respuesta);
-
-        // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
-            ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            if JToken.AsObject().Get('message', JToken) then begin
+                ErrorMessage := JToken.AsValue().AsText();
+                Error(FileAccessErrorErr, ErrorMessage);
+            end;
         end;
         //{"@odata.context":"https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.permission",
         //"id":"2b09a13e-84fe-435b-a1eb-e1c1ef07132f","roles":["read"],"shareId":"u!aHR0cHM6Ly9tYWxsYXBhbG1hLW15LnNoYXJlcG9pbnQuY29tLzppOi9nL3BlcnNvbmFsL2FuZHJldXNlcnJhX21hbGxhcGFsbWFfb25taWNyb3NvZnRfY29tL0VkTVFCOFloLUJsTWp1TlVfUkRTVnA0QjQtc2JSakpBMWw3M1ZVVXBSZVhRdmc","hasPassword":false,//
@@ -903,7 +915,7 @@ codeunit 95102 "OneDrive Manager"
                 exit(WebUrl);
             end;
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            Error(FileLinkErrorErr);
         end;
     end;
 
@@ -930,7 +942,7 @@ codeunit 95102 "OneDrive Manager"
             exit;
         end;
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         // Obtener metadatos del archivo incluyendo el enlace web
@@ -942,14 +954,13 @@ codeunit 95102 "OneDrive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de OneDrive.');
-
+            Error(NoServerResponseErr);
         StatusInfo.ReadFrom(Respuesta);
-
-        // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
-            ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            if JToken.AsObject().Get('message', JToken) then begin
+                ErrorMessage := JToken.AsValue().AsText();
+                Error(FileAccessErrorErr, ErrorMessage);
+            end;
         end;
         //{"@odata.context":"https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.permission",
         //"id":"2b09a13e-84fe-435b-a1eb-e1c1ef07132f","roles":["read"],"shareId":"u!aHR0cHM6Ly9tYWxsYXBhbG1hLW15LnNoYXJlcG9pbnQuY29tLzppOi9nL3BlcnNvbmFsL2FuZHJldXNlcnJhX21hbGxhcGFsbWFfb25taWNyb3NvZnRfY29tL0VkTVFCOFloLUJsTWp1TlVfUkRTVnA0QjQtc2JSakpBMWw3M1ZVVXBSZVhRdmc","hasPassword":false,//
@@ -962,7 +973,7 @@ codeunit 95102 "OneDrive Manager"
                 Hyperlink(WebUrl);
             end;
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            Error(FileLinkErrorErr);
         end;
     end;
 
@@ -1003,7 +1014,7 @@ codeunit 95102 "OneDrive Manager"
         if SiteId <> '' then
             exit(MovefileSite(OneDriveID, Destino, Nombre, Mover, Filename, SiteId));
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -1024,7 +1035,7 @@ codeunit 95102 "OneDrive Manager"
             StatusInfo.ReadFrom(Respuesta);
             if StatusInfo.Get('error', JTokenLink) then begin
                 ErrorMessage := JTokenLink.AsValue().AsText();
-                Error('Error al copiar el archivo: %1. Respuesta completa: %2', ErrorMessage, Respuesta);
+                Error(CopyFileErrorErr, ErrorMessage, Respuesta);
             end;
 
             // Obtener el ID del archivo copiado
@@ -1065,10 +1076,10 @@ codeunit 95102 "OneDrive Manager"
         // Si la copia fue exitosa, eliminar el archivo original
         if (Mover) and (CopiedFileId <> '') then begin
             if not DeleteFile(OneDriveID) then begin
-                Error('El archivo se copió pero no se pudo eliminar el original. ID del archivo copiado: %1', Filename);
+                Error(FileCopiedButNotDeletedMsg, Filename);
             end;
         end;
-        if CopiedFileId = '' then Error('No se pudo copiar el archivo');
+        if CopiedFileId = '' then Error(CopyFileFailedMsg);
         exit(CopiedFileId);
     end;
 
@@ -1094,7 +1105,7 @@ codeunit 95102 "OneDrive Manager"
         if SiteId <> '' then
             exit(OptenerPathSite(OneDriveID, SiteId));
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         //GET https://graph.microsoft.com/v1.0/me/drive/items/{item-id}
@@ -1109,7 +1120,7 @@ codeunit 95102 "OneDrive Manager"
                 RutaCompleta := PathBase.AsValue().AsText();
         end
         else
-            Error('No se pudo obtener el path del archivo');
+            Error(GetFilePathErrorErr);
 
         exit(RutaCompleta);
     end;
@@ -1138,7 +1149,7 @@ codeunit 95102 "OneDrive Manager"
 
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
         Ticket := Token();
         Inf.Get();
         SiteId := Inf."OneDrive Site ID";
@@ -1585,7 +1596,7 @@ codeunit 95102 "OneDrive Manager"
     begin
         Files.DeleteAll();
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         CompanyInfo.Get();
@@ -1665,7 +1676,7 @@ codeunit 95102 "OneDrive Manager"
     begin
         Files.DeleteAll();
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         CompanyInfo.Get();
@@ -1764,7 +1775,7 @@ codeunit 95102 "OneDrive Manager"
             if StatusInfo.Get('id', JToken) then
                 NewFolderId := JToken.AsValue().AsText()
             else
-                Error('Failed to create folder in OneDrive: %1 con esta url: %2 y este json: %3', Respuesta, Url, Json);
+                Error(CreateFolderErrorErr, Respuesta, Url, Json);
         end;
         exit(NewFolderId);
     end;
@@ -1782,7 +1793,7 @@ codeunit 95102 "OneDrive Manager"
         ErrorMessage: Text;
     begin
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -1799,7 +1810,7 @@ codeunit 95102 "OneDrive Manager"
         // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al obtener el sitio: %1', ErrorMessage);
+            Error(GetSiteErrorErr, ErrorMessage);
         end;
 
         // Obtener el ID del sitio
@@ -1824,7 +1835,7 @@ codeunit 95102 "OneDrive Manager"
         FullSiteUrl: Text;
     begin
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -1847,7 +1858,7 @@ codeunit 95102 "OneDrive Manager"
         // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error(GetSiteErrorMsg, ErrorMessage);
+            Error(GetSiteErrorErr, ErrorMessage);
         end;
 
         // Obtener el ID del sitio
@@ -1876,7 +1887,7 @@ codeunit 95102 "OneDrive Manager"
         a: Integer;
     begin
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -1936,7 +1947,7 @@ codeunit 95102 "OneDrive Manager"
         ErrorMessage: Text;
     begin
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -1983,7 +1994,7 @@ codeunit 95102 "OneDrive Manager"
         FilesTemp: Record "Name/Value Buffer" temporary;
     begin
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Files.DeleteAll();
         Ticket := Token();
@@ -2306,7 +2317,7 @@ codeunit 95102 "OneDrive Manager"
         Bs64: Codeunit "Base64 Convert";
     begin
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         Url := StrSubstNo(graph_endpoint + '/sites/%1/drive/items/%2?select=id,name,webUrl,@microsoft.graph.downloadUrl', SiteId, OneDriveID);
@@ -2352,7 +2363,7 @@ codeunit 95102 "OneDrive Manager"
         Id: Text;
     begin
         if not HideDialog then
-            if not Confirm('¿Está seguro de que desea eliminar la carpeta?', true) then
+            if not Confirm(DeleteFolderMsg, true) then
                 exit('');
 
         Ticket := Format(Token());
@@ -2416,7 +2427,7 @@ codeunit 95102 "OneDrive Manager"
         Base64Convert: Codeunit "Base64 Convert";
     begin
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         // Obtener metadatos del archivo incluyendo el enlace web
@@ -2445,7 +2456,7 @@ codeunit 95102 "OneDrive Manager"
         ErrorCode: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         // Obtener metadatos del archivo incluyendo el enlace web
@@ -2517,7 +2528,7 @@ codeunit 95102 "OneDrive Manager"
         ErrorJson: JsonObject;
     begin
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         // Obtener metadatos del archivo incluyendo el enlace web
@@ -2592,7 +2603,7 @@ codeunit 95102 "OneDrive Manager"
         ItemName: Text;
     begin
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -2676,7 +2687,7 @@ codeunit 95102 "OneDrive Manager"
         RutaCompleta: Text;
     begin
         if not Authenticate() then
-            Error(AuthenticationErrorMsg);
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         //GET https://graph.microsoft.com/v1.0/sites/{site-id}/drive/items/{item-id}
@@ -2691,7 +2702,7 @@ codeunit 95102 "OneDrive Manager"
                 RutaCompleta := PathBase.AsValue().AsText();
         end
         else
-            Error(GetFilePathErrorMsg);
+            Error(GetFilePathErrorErr);
 
         exit(RutaCompleta);
     end;
@@ -2714,5 +2725,9 @@ codeunit 95102 "OneDrive Manager"
         else
             exit(false);
     end;
+
+    var
+        DeleteFolderMsg: Label 'Are you sure you want to delete folder?';
+        SaveAsDialogTxt: Label 'Save';
 
 }

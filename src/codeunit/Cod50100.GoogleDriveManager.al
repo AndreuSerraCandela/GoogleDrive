@@ -55,11 +55,98 @@ codeunit 95100 "Google Drive Manager"
         PlaygroundInstructionsMsg: Label 'CONFIGURE OAUTH PLAYGROUND WITH YOUR CREDENTIALS:\⚠️ IMPORTANT: You must configure YOUR credentials, not playground ones\1. Open this URL: %1\2. 🔧 CONFIGURE CREDENTIALS (CRITICAL STEP):\   - In the UPPER RIGHT corner, click the ⚙️ icon (Settings)\   - ✅ Check the "Use your own OAuth credentials" box\   - OAuth Client ID: %2\   - OAuth Client Secret: %3\   - Click "Close" to save\3. 📋 SELECT APIS:\   - In the left panel, search for "Drive API v3"\   - Expand the section and select:\     ✅ https://www.googleapis.com/auth/drive\     ✅ https://www.googleapis.com/auth/drive.file\4. 🔐 AUTHORIZE:\   - Click "Authorize APIs"\   - Sign in with your Google account\   - Authorize access\5. 🎫 GET TOKENS:\   - Click "Exchange authorization code for tokens"\   - Copy the "access_token" and "refresh_token"\6. 📝 CONFIGURE IN BUSINESS CENTRAL:\   - Paste the tokens in the corresponding fields\   - Use "Test Token Validity" to verify';
         PlaygroundOpenedMsg: Label 'Google OAuth Playground has been opened.\⚠️ REMEMBER: You must configure YOUR credentials in Settings (⚙️)\Complete instructions: %1';
         TokensConfiguredMsg: Label 'Tokens configured manually successfully.';
+        TokensConfiguredManuallyMsg: Label 'Tokens configured manually successfully.';
         FileUploadErrorMsg: Label 'Error uploading file: %1';
         SharedDriveErrorMsg: Label 'Error accessing shared drive: %1';
+        SharedDriveAccessErrorMsg: Label 'Error accessing shared drive: %1';
         FileAccessErrorMsg: Label 'Error accessing file: %1';
         // Confirmation Labels
+        DeleteFolderMsg: Label 'Are you sure you want to delete forder?';
+        NotAuthenticatedErr: Label 'Error authenticating with Google Drive. Please check your credentials.';
         DeleteFolderConfirmMsg: Label 'Are you sure you want to delete the folder?';
+
+        // Error Labels
+        ConfigurationIncompleteErr: Label 'Google Drive configuration is incomplete. Please configure Client ID and Client Secret in company information.';
+        InvalidSecurityStateErr: Label 'Invalid security state. Please restart the authentication process.';
+        AuthenticationErrorErr: Label 'Authentication error: %1';
+        ServerConnectionErrorErr: Label 'Could not connect to Google authentication server.';
+        SharedDriveNotConfiguredErr: Label 'Shared drive ID is not configured. Please configure the shared drive ID in the company.';
+        TokenNotFoundErr: Label 'Could not get token';
+        CreateFolderErrorErr: Label 'Error creating folder';
+        UploadFileErrorErr: Label 'Error uploading file';
+        MoveFolderErrorErr: Label 'Error moving folder';
+        MoveFileErrorErr: Label 'Error moving file';
+        CopyFileErrorErr: Label 'Error copying file';
+        NoServerResponseErr: Label 'No response received from Google Drive server.';
+        FileAccessErrorErr: Label 'Error accessing file: %1';
+        FileLinkErrorErr: Label 'Could not get file link. Verify that the file ID is correct and you have permission to access it.';
+        SharedDriveAccessErrorErr: Label 'Error accessing shared drive: %1';
+        UploadSharedDriveErrorErr: Label 'Error uploading file to shared drive: %1';
+        CreateSharedFolderErrorErr: Label 'Error creating folder in shared drive: %1 with this URL: %2 and this JSON: %3';
+        GetFileLinkErrorErr: Label 'Could not get file link.';
+        GetSharedDrivesErrorErr: Label 'Error getting shared drives: %1';
+        UploadSharedFileErrorErr: Label 'Error uploading file to shared drive: %1';
+
+        // Diagnostic Labels
+        ClientIdEmptyErr: Label 'Client ID is empty';
+        ClientIdTooShortErr: Label 'Client ID seems too short (should be ~72 characters)';
+        ClientSecretEmptyErr: Label 'Client Secret is empty';
+        ClientSecretTooShortErr: Label 'Client Secret seems too short (should be ~24 characters)';
+        RefreshTokenEmptyErr: Label 'Refresh Token is empty';
+        AllCredentialsValidMsg: Label '✅ All credentials are present and have appropriate length';
+
+        // OAuth Configuration Diagnostic Labels
+        DiagnosticTitleMsg: Label '🔍 OAUTH CONFIGURATION DIAGNOSTIC';
+        CredentialsSectionMsg: Label '📋 CREDENTIALS:';
+        ClientIdLengthMsg: Label 'Client ID: %1 characters';
+        ClientIdEmptyStatusMsg: Label ' ❌ EMPTY';
+        ClientIdTooShortStatusMsg: Label ' ⚠️ TOO SHORT';
+        ClientIdTooLongStatusMsg: Label ' ⚠️ TOO LONG';
+        ClientIdOkStatusMsg: Label ' ✅ LENGTH OK';
+        ClientSecretLengthMsg: Label 'Client Secret: %1 characters';
+        ClientSecretEmptyStatusMsg: Label ' ❌ EMPTY';
+        ClientSecretTooShortStatusMsg: Label ' ⚠️ TOO SHORT';
+        ClientSecretTooLongStatusMsg: Label ' ⚠️ TOO LONG';
+        ClientSecretOkStatusMsg: Label ' ✅ LENGTH OK';
+        RefreshTokenLengthMsg: Label 'Refresh Token: %1 characters';
+        RefreshTokenEmptyStatusMsg: Label ' ❌ EMPTY';
+        RefreshTokenTooShortStatusMsg: Label ' ⚠️ TOO SHORT';
+        RefreshTokenOkStatusMsg: Label ' ✅ LENGTH OK';
+        UrlsSectionMsg: Label '📡 URLs:';
+        AuthUriMsg: Label 'Auth URI: %1';
+        TokenUriMsg: Label 'Token URI: %1';
+        TokenStatusSectionMsg: Label '⏰ TOKEN STATUS:';
+        NoExpirationDateMsg: Label 'No expiration date ❌';
+        TokenExpiredMsg: Label 'Expired since: %1 ❌';
+        TokenValidMsg: Label 'Valid until: %1 ✅';
+        UnknowErrorMsg: Label 'Unknown error';
+
+        // OAuth Playground Instructions Labels
+        PlaygroundInstructionsTitleMsg: Label 'CONFIGURE OAUTH PLAYGROUND WITH YOUR CREDENTIALS:';
+        PlaygroundImportantNoteMsg: Label '⚠️ IMPORTANT: You must configure YOUR credentials, not playground ones';
+        PlaygroundStep1Msg: Label '1. Open this URL: %1';
+        PlaygroundStep2TitleMsg: Label '2. 🔧 CONFIGURE CREDENTIALS (CRITICAL STEP):';
+        PlaygroundStep2aMsg: Label '   - In the UPPER RIGHT corner, click the ⚙️ icon (Settings)';
+        PlaygroundStep2bMsg: Label '   - ✅ Check the "Use your own OAuth credentials" box';
+        PlaygroundStep2cMsg: Label '   - OAuth Client ID: %1';
+        PlaygroundStep2dMsg: Label '   - OAuth Client Secret: %2';
+        PlaygroundStep2eMsg: Label '   - Click "Close" to save';
+        PlaygroundStep3TitleMsg: Label '3. 📋 SELECT APIS:';
+        PlaygroundStep3aMsg: Label '   - In the left panel, search for "Drive API v3"';
+        PlaygroundStep3bMsg: Label '   - Expand the section and select:';
+        PlaygroundStep3cMsg: Label '     ✅ https://www.googleapis.com/auth/drive';
+        PlaygroundStep3dMsg: Label '     ✅ https://www.googleapis.com/auth/drive.file';
+        PlaygroundStep4TitleMsg: Label '4. 🔐 AUTHORIZE:';
+        PlaygroundStep4aMsg: Label '   - Click "Authorize APIs"';
+        PlaygroundStep4bMsg: Label '   - Sign in with your Google account';
+        PlaygroundStep4cMsg: Label '   - Authorize access';
+        PlaygroundStep5TitleMsg: Label '5. 🎫 GET TOKENS:';
+        PlaygroundStep5aMsg: Label '   - Click "Exchange authorization code for tokens"';
+        PlaygroundStep5bMsg: Label '   - Copy the "access_token" and "refresh_token"';
+        PlaygroundStep6TitleMsg: Label '6. 📝 CONFIGURE IN BUSINESS CENTRAL:';
+        PlaygroundStep6aMsg: Label '   - Paste the tokens in the corresponding fields';
+        PlaygroundStep6bMsg: Label '   - Use "Test Token Validity" to verify';
+
 
     procedure Initialize()
     var
@@ -113,7 +200,7 @@ codeunit 95100 "Google Drive Manager"
 
         // Validate required configuration
         if (CompanyInfo."Google Client ID" = '') or (CompanyInfo."Google Client Secret" = '') then begin
-            Error('La configuración de Google Drive no está completa. Por favor, configure Client ID y Client Secret en la información de la empresa.');
+            Error(ConfigurationIncompleteErr);
         end;
 
         // Set default Auth URI if not configured
@@ -257,7 +344,7 @@ codeunit 95100 "Google Drive Manager"
 
         // Validate state parameter
         if CompanyInfo."Google Project ID" <> State then begin
-            Error('Estado de seguridad inválido. Por favor, reinicie el proceso de autenticación.');
+            Error(InvalidSecurityStateErr);
         end;
 
         // Prepare token exchange request
@@ -309,10 +396,10 @@ codeunit 95100 "Google Drive Manager"
                 end;
             end else begin
                 ResponseMessage.Content().ReadAs(ResponseText);
-                Error('Error en la autenticación: %1', ResponseText);
+                Error(AuthenticationErrorErr, ResponseText);
             end;
         end else begin
-            Error('No se pudo conectar con el servidor de autenticación de Google.');
+            Error(ServerConnectionErrorErr);
         end;
 
         exit(false);
@@ -402,7 +489,7 @@ codeunit 95100 "Google Drive Manager"
                     else if ErrorJObject.Get('error', ErrorToken) then
                         ErrorDescription := ErrorToken.AsValue().AsText()
                     else
-                        ErrorDescription := 'Error desconocido';
+                        ErrorDescription := UnknowerrorMsg;
 
                     // Provide specific guidance based on error type
                     if StrPos(ErrorDescription, 'invalid_client') > 0 then begin
@@ -433,32 +520,32 @@ codeunit 95100 "Google Drive Manager"
         DiagnosticInfo := '';
 
         if CompanyInfo."Google Client ID" = '' then begin
-            DiagnosticInfo += '- Client ID está vacío\';
+            DiagnosticInfo += '- ' + ClientIdEmptyErr + '\';
             IsValid := false;
         end else begin
             if StrLen(CompanyInfo."Google Client ID") < 50 then begin
-                DiagnosticInfo += '- Client ID parece demasiado corto (debe ser ~72 caracteres)\';
+                DiagnosticInfo += '- ' + ClientIdTooShortErr + '\';
                 IsValid := false;
             end;
         end;
 
         if CompanyInfo."Google Client Secret" = '' then begin
-            DiagnosticInfo += '- Client Secret está vacío\';
+            DiagnosticInfo += '- ' + ClientSecretEmptyErr + '\';
             IsValid := false;
         end else begin
             if StrLen(CompanyInfo."Google Client Secret") < 20 then begin
-                DiagnosticInfo += '- Client Secret parece demasiado corto (debe ser ~24 caracteres)\';
+                DiagnosticInfo += '- ' + ClientSecretTooShortErr + '\';
                 IsValid := false;
             end;
         end;
 
         if CompanyInfo."Refresh Token GoogleDrive" = '' then begin
-            DiagnosticInfo += '- Refresh Token está vacío\';
+            DiagnosticInfo += '- ' + RefreshTokenEmptyErr + '\';
             IsValid := false;
         end;
 
         if IsValid then
-            DiagnosticInfo := '✅ Todas las credenciales están presentes y tienen longitud apropiada';
+            DiagnosticInfo := AllCredentialsValidMsg;
 
         exit(IsValid);
     end;
@@ -473,60 +560,60 @@ codeunit 95100 "Google Drive Manager"
     begin
         CompanyInfo.GET();
 
-        DiagnosticText := '🔍 DIAGNÓSTICO DE CONFIGURACIÓN OAUTH\' +
+        DiagnosticText := DiagnosticTitleMsg + '\' +
                          '\' +
-                         '📋 CREDENCIALES:\';
+                         CredentialsSectionMsg + '\';
 
         // Client ID Analysis
         ClientIdLength := StrLen(CompanyInfo."Google Client ID");
-        DiagnosticText += StrSubstNo('Client ID: %1 caracteres', ClientIdLength);
+        DiagnosticText += StrSubstNo(ClientIdLengthMsg, ClientIdLength);
         if ClientIdLength = 0 then
-            DiagnosticText += ' ❌ VACÍO'
+            DiagnosticText += ClientIdEmptyStatusMsg
         else if ClientIdLength < 50 then
-            DiagnosticText += ' ⚠️ DEMASIADO CORTO'
+            DiagnosticText += ClientIdTooShortStatusMsg
         else if ClientIdLength > 80 then
-            DiagnosticText += ' ⚠️ DEMASIADO LARGO'
+            DiagnosticText += ClientIdTooLongStatusMsg
         else
-            DiagnosticText += ' ✅ LONGITUD OK';
+            DiagnosticText += ClientIdOkStatusMsg;
         DiagnosticText += '\';
 
         // Client Secret Analysis
         ClientSecretLength := StrLen(CompanyInfo."Google Client Secret");
-        DiagnosticText += StrSubstNo('Client Secret: %1 caracteres', ClientSecretLength);
+        DiagnosticText += StrSubstNo(ClientSecretLengthMsg, ClientSecretLength);
         if ClientSecretLength = 0 then
-            DiagnosticText += ' ❌ VACÍO'
+            DiagnosticText += ClientSecretEmptyStatusMsg
         else if ClientSecretLength < 20 then
-            DiagnosticText += ' ⚠️ DEMASIADO CORTO'
+            DiagnosticText += ClientSecretTooShortStatusMsg
         else if ClientSecretLength > 50 then
-            DiagnosticText += ' ⚠️ DEMASIADO LARGO'
+            DiagnosticText += ClientSecretTooLongStatusMsg
         else
-            DiagnosticText += ' ✅ LONGITUD OK';
+            DiagnosticText += ClientSecretOkStatusMsg;
         DiagnosticText += '\';
 
         // Refresh Token Analysis
         RefreshTokenLength := StrLen(CompanyInfo."Refresh Token GoogleDrive");
-        DiagnosticText += StrSubstNo('Refresh Token: %1 caracteres', RefreshTokenLength);
+        DiagnosticText += StrSubstNo(RefreshTokenLengthMsg, RefreshTokenLength);
         if RefreshTokenLength = 0 then
-            DiagnosticText += ' ❌ VACÍO'
+            DiagnosticText += RefreshTokenEmptyStatusMsg
         else if RefreshTokenLength < 50 then
-            DiagnosticText += ' ⚠️ DEMASIADO CORTO'
+            DiagnosticText += RefreshTokenTooShortStatusMsg
         else
-            DiagnosticText += ' ✅ LONGITUD OK';
+            DiagnosticText += RefreshTokenOkStatusMsg;
         DiagnosticText += '\';
 
         // URLs
-        DiagnosticText += '\📡 URLs:\';
-        DiagnosticText += 'Auth URI: ' + CompanyInfo."Google Auth URI" + '\';
-        DiagnosticText += 'Token URI: ' + CompanyInfo."Google Token URI" + '\';
+        DiagnosticText += '\' + UrlsSectionMsg + '\';
+        DiagnosticText += StrSubstNo(AuthUriMsg, CompanyInfo."Google Auth URI") + '\';
+        DiagnosticText += StrSubstNo(TokenUriMsg, CompanyInfo."Google Token URI") + '\';
 
         // Token Status
-        DiagnosticText += '\⏰ ESTADO DEL TOKEN:\';
+        DiagnosticText += '\' + TokenStatusSectionMsg + '\';
         if CompanyInfo."Expiracion Token GoogleDrive" = 0DT then
-            DiagnosticText += 'Sin fecha de expiración ❌\'
+            DiagnosticText += NoExpirationDateMsg + '\'
         else if CompanyInfo."Expiracion Token GoogleDrive" < CurrentDateTime then
-            DiagnosticText += StrSubstNo('Expirado desde: %1 ❌\', CompanyInfo."Expiracion Token GoogleDrive")
+            DiagnosticText += StrSubstNo(TokenExpiredMsg, CompanyInfo."Expiracion Token GoogleDrive") + '\'
         else
-            DiagnosticText += StrSubstNo('Válido hasta: %1 ✅\', CompanyInfo."Expiracion Token GoogleDrive");
+            DiagnosticText += StrSubstNo(TokenValidMsg, CompanyInfo."Expiracion Token GoogleDrive") + '\';
 
         exit(DiagnosticText);
     end;
@@ -793,7 +880,7 @@ codeunit 95100 "Google Drive Manager"
         if Inf."Google Shared Drive ID" <> '' then
             exit(RecuperarCarpetaSharedDrive(Inf."Google Shared Drive ID", FileId, OldParent));
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
         Ticket := AccessToken;
         Url := Inf."Url Api GoogleDrive" + list_folder + '/' + FileId + '?fields=parents';
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
@@ -855,12 +942,12 @@ codeunit 95100 "Google Drive Manager"
         CompanyInfo.GET();
         SharedDriveId := CompanyInfo."Google Shared Drive ID";
         if (SharedDriveId = '') and (CompanyInfo."Google Shared Drive Name" <> '') then
-            Error('No se ha configurado el ID de la carpeta compartida. Por favor, configure el ID de la carpeta compartida en la empresa.');
+            Error(SharedDriveNotConfiguredErr);
         if SharedDriveId <> '' then
             exit(RecuperaIdFolderSharedDrive(SharedDriveId, IdCarpeta, Carpeta, Files, Crear, RootFolder));
         Files.DeleteAll();
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := AccessToken;
         Inf.Get;
@@ -958,7 +1045,7 @@ codeunit 95100 "Google Drive Manager"
         end;
         Files.DeleteAll();
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := AccessToken;
         Inf.Get;
@@ -1053,7 +1140,7 @@ codeunit 95100 "Google Drive Manager"
         if SharedDriveId <> '' then
             exit(CreateFolderSharedDrive(SharedDriveId, Carpeta, ParentId, RootFolder));
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := AccessToken;
         Inf.Get;
@@ -1086,7 +1173,7 @@ codeunit 95100 "Google Drive Manager"
             if StatusInfo.Get('error', JTokO) then begin
                 Error(JTokO.AsValue().AsText());
             end;
-            Error('Error al crear la carpeta');
+            Error(CreateFolderErrorErr);
         end;
 
         exit(Id);
@@ -1129,7 +1216,7 @@ codeunit 95100 "Google Drive Manager"
         //  exit(UploadFileB64ToSharedDrive(SharedDriveId, Base64Data, Filename, FileExtension));
         //https://api-drive.app.elingenierojefe.es/upload
         If Not Authenticate() Then
-            Error('No se pudo obtener el token');
+            Error(TokenNotFoundErr);
         Url := 'https://api-drive.app.elingenierojefe.es/upload';
         Body.Add('fileName', Filename);
         Body.Add('fileType', GetMimeType(FileExtension));
@@ -1152,7 +1239,7 @@ codeunit 95100 "Google Drive Manager"
         end;
 
         if Id = '' then begin
-            Error('Error al subir el archivo');
+            Error(UploadFileErrorErr);
         end;
         exit(Id);
     end;
@@ -1178,7 +1265,7 @@ codeunit 95100 "Google Drive Manager"
         if SharedDriveId <> '' then
             exit(DeleteFolderSharedDrive(SharedDriveId, Carpeta, HideDialog));
         If Not HideDialog Then
-            If Not Confirm('¿Está seguro de que desea eliminar la carpeta?', true) Then
+            If Not Confirm(DeleteFolderMsg, true) Then
                 exit('');
 
         Ticket := GoogleDrive.Token();
@@ -1229,7 +1316,7 @@ codeunit 95100 "Google Drive Manager"
             if StatusInfo.Get('error', JTok) then begin
                 Error(JTok.AsValue().AsText());
             end;
-            Error('Error al mover la carpeta');
+            Error(MoveFolderErrorErr);
         end;
 
         exit(Id);
@@ -1280,7 +1367,7 @@ codeunit 95100 "Google Drive Manager"
             if StatusInfo.Get('error', JTok) then begin
                 Error(JTok.AsValue().AsText());
             end;
-            Error('Error al mover el archivo');
+            Error(MoveFileErrorErr);
         end;
 
         exit(Id);
@@ -1327,7 +1414,7 @@ codeunit 95100 "Google Drive Manager"
             if StatusInfo.Get('error', JTok) then begin
                 Error(JTok.AsValue().AsText());
             end;
-            Error('Error al copiar el archivo');
+            Error(CopyFileErrorErr);
         end;
 
         exit(Id);
@@ -1599,42 +1686,42 @@ codeunit 95100 "Google Drive Manager"
 
         // Validate required configuration
         if (CompanyInfo."Google Client ID" = '') or (CompanyInfo."Google Client Secret" = '') then begin
-            Error('La configuración de Google Drive no está completa. Por favor, configure Client ID y Client Secret en la información de la empresa.');
+            Error(ConfigurationIncompleteErr);
         end;
 
         PlaygroundUrl := 'https://developers.google.com/oauthplayground/';
 
-        InstructionText := 'CONFIGURAR OAUTH PLAYGROUND CON SUS CREDENCIALES:\' +
+        InstructionText := PlaygroundInstructionsTitleMsg + '\' +
                           '\' +
-                          '⚠️ IMPORTANTE: Debe configurar SUS credenciales, no las del playground\' +
+                          PlaygroundImportantNoteMsg + '\' +
                           '\' +
-                          '1. Abra esta URL: ' + PlaygroundUrl + '\' +
+                          StrSubstNo(PlaygroundStep1Msg, PlaygroundUrl) + '\' +
                           '\' +
-                          '2. 🔧 CONFIGURAR CREDENCIALES (PASO CRÍTICO):\' +
-                          '   - En la esquina SUPERIOR DERECHA, haga clic en el ícono ⚙️ (Settings)\' +
-                          '   - ✅ Marque la casilla "Use your own OAuth credentials"\' +
-                          '   - OAuth Client ID: ' + CompanyInfo."Google Client ID" + '\' +
-                          '   - OAuth Client Secret: ' + CompanyInfo."Google Client Secret" + '\' +
-                          '   - Haga clic en "Close" para guardar\' +
+                          PlaygroundStep2TitleMsg + '\' +
+                          PlaygroundStep2aMsg + '\' +
+                          PlaygroundStep2bMsg + '\' +
+                          StrSubstNo(PlaygroundStep2cMsg, CompanyInfo."Google Client ID") + '\' +
+                          StrSubstNo(PlaygroundStep2dMsg, CompanyInfo."Google Client Secret") + '\' +
+                          PlaygroundStep2eMsg + '\' +
                           '\' +
-                          '3. 📋 SELECCIONAR APIS:\' +
-                          '   - En el panel izquierdo, busque "Drive API v3"\' +
-                          '   - Expanda la sección y seleccione:\' +
-                          '     ✅ https://www.googleapis.com/auth/drive\' +
-                          '     ✅ https://www.googleapis.com/auth/drive.file\' +
+                          PlaygroundStep3TitleMsg + '\' +
+                          PlaygroundStep3aMsg + '\' +
+                          PlaygroundStep3bMsg + '\' +
+                          PlaygroundStep3cMsg + '\' +
+                          PlaygroundStep3dMsg + '\' +
                           '\' +
-                          '4. 🔐 AUTORIZAR:\' +
-                          '   - Haga clic en "Authorize APIs"\' +
-                          '   - Inicie sesión con su cuenta Google\' +
-                          '   - Autorice el acceso\' +
+                          PlaygroundStep4TitleMsg + '\' +
+                          PlaygroundStep4aMsg + '\' +
+                          PlaygroundStep4bMsg + '\' +
+                          PlaygroundStep4cMsg + '\' +
                           '\' +
-                          '5. 🎫 OBTENER TOKENS:\' +
-                          '   - Haga clic en "Exchange authorization code for tokens"\' +
-                          '   - Copie el "access_token" y "refresh_token"\' +
+                          PlaygroundStep5TitleMsg + '\' +
+                          PlaygroundStep5aMsg + '\' +
+                          PlaygroundStep5bMsg + '\' +
                           '\' +
-                          '6. 📝 CONFIGURAR EN BUSINESS CENTRAL:\' +
-                          '   - Pegue los tokens en los campos correspondientes\' +
-                          '   - Use "Probar Validez del Token" para verificar';
+                          PlaygroundStep6TitleMsg + '\' +
+                          PlaygroundStep6aMsg + '\' +
+                          PlaygroundStep6bMsg;
 
         // Try to open playground
         if not TryOpenBrowser(PlaygroundUrl) then begin
@@ -1662,7 +1749,7 @@ codeunit 95100 "Google Drive Manager"
 
         CompanyInfo.Modify();
 
-        Message('Tokens configurados manualmente exitosamente.');
+        Message(TokensConfiguredManuallyMsg);
     end;
 
     procedure GetTargetFolderForDocument(TableID: Integer; DocumentNo: Text; DocumentDate: Date; Origen: Enum "Data Storage Provider"): Text
@@ -1841,7 +1928,7 @@ codeunit 95100 "Google Drive Manager"
                 end;
             end else begin
                 ResponseMessage.Content().ReadAs(ResponseText);
-                Message('Error uploading file: %1', ResponseText);
+                Message(FileUploadErrorMsg, ResponseText);
             end;
         end;
 
@@ -1906,7 +1993,7 @@ codeunit 95100 "Google Drive Manager"
             exit('');
         end;
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
 
         Inf.Get;
@@ -1915,7 +2002,7 @@ codeunit 95100 "Google Drive Manager"
         Respuesta := RestApiToken(Url, AccessToken, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de Google Drive.');
+            Error(NoServerResponseErr);
 
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
@@ -1923,7 +2010,7 @@ codeunit 95100 "Google Drive Manager"
         // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            Error(FileAccessErrorErr, ErrorMessage);
         end;
 
         if StatusInfo.Get('webViewLink', JToken) then begin
@@ -1933,7 +2020,7 @@ codeunit 95100 "Google Drive Manager"
             Link := JToken.AsValue().AsText();
             Hyperlink(Link);
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            Error(GetFileLinkErrorErr);
         end;
 
         exit('');
@@ -1960,7 +2047,7 @@ codeunit 95100 "Google Drive Manager"
         if SharedDriveId <> '' then
             exit(GetUrlSharedDrive(SharedDriveId, GoogleDriveID));
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
 
         Inf.Get;
@@ -1969,7 +2056,7 @@ codeunit 95100 "Google Drive Manager"
         Respuesta := RestApiToken(Url, AccessToken, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de Google Drive.');
+            Error(NoServerResponseErr);
 
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
@@ -2012,7 +2099,7 @@ codeunit 95100 "Google Drive Manager"
         if SharedDriveId <> '' then
             exit(DeleteFileSharedDrive(SharedDriveId, GoogleDriveID));
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Inf.Get;
         Url := Inf."Url Api GoogleDrive" + get_metadata + GoogleDriveID;
@@ -2047,7 +2134,7 @@ codeunit 95100 "Google Drive Manager"
             exit;
         end;
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
 
         Inf.Get;
@@ -2057,7 +2144,7 @@ codeunit 95100 "Google Drive Manager"
         Respuesta := RestApiToken(Url, AccessToken, RequestType::post, Json);
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de Google Drive.');
+            Error(NoServerResponseErr);
 
         Url := Inf."Url Api GoogleDrive" + get_metadata + GoogleDriveID + '?fields=webViewLink';
         Respuesta := RestApiToken(Url, AccessToken, RequestType::get, '');
@@ -2068,7 +2155,7 @@ codeunit 95100 "Google Drive Manager"
         // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            Error(FileAccessErrorErr, ErrorMessage);
         end;
 
         if StatusInfo.Get('webViewLink', JToken) then begin
@@ -2078,7 +2165,7 @@ codeunit 95100 "Google Drive Manager"
             Link := JToken.AsValue().AsText();
             Hyperlink(Link);
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            Error(GetFileLinkErrorErr);
         end;
     end;
 
@@ -2099,17 +2186,17 @@ codeunit 95100 "Google Drive Manager"
 
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
         Url := GoogleDriveBaseURL + '/drives/' + GoogleSharedDriveID + '?supportsAllDrives=true';
         Json := '{"name": "' + GoogleSharedDriveName + '"}';
         Respuesta := RestApiToken(Url, AccessToken, RequestType::patch, Json);
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de Google Drive.');
+            Error(NoServerResponseErr);
         StatusInfo.ReadFrom(Respuesta);
         if StatusInfo.Get('error', JToken) then begin
             if JToken.AsObject().Get('message', JToken) then begin
                 ErrorMessage := JToken.AsValue().AsText();
-                Message('Error al acceder al drive compartido: %1', ErrorMessage);
+                Message(SharedDriveAccessErrorMsg, ErrorMessage);
                 exit('');
             end;
         end;
@@ -2128,18 +2215,18 @@ codeunit 95100 "Google Drive Manager"
 
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Url := GoogleDriveBaseURL + '/drives/' + GoogleSharedDriveID;
         Respuesta := RestApiToken(Url, AccessToken, RequestType::get, '');
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de Google Drive.');
+            Error(NoServerResponseErr);
         StatusInfo.ReadFrom(Respuesta);
         StatusInfo.WriteTo(Json);
         if StatusInfo.Get('error', JToken) then begin
             if JToken.AsObject().Get('message', JToken) then begin
                 ErrorMessage := JToken.AsValue().AsText();
-                Message('Error al acceder al drive compartido: %1', ErrorMessage);
+                Message(SharedDriveAccessErrorMsg, ErrorMessage);
                 exit('');
             end;
         end;
@@ -2222,7 +2309,7 @@ codeunit 95100 "Google Drive Manager"
         a: Integer;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -2232,13 +2319,13 @@ codeunit 95100 "Google Drive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de Google Drive.');
+            Error(NoServerResponseErr);
 
         StatusInfo.ReadFrom(Respuesta);
 
         // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
-            Error('Error al obtener drives compartidos: %1', JToken.AsValue().AsText());
+            Error(GetSharedDrivesErrorErr, JToken.AsValue().AsText());
         end;
 
         // Procesar los resultados
@@ -2307,7 +2394,7 @@ codeunit 95100 "Google Drive Manager"
         FileMang: Codeunit "File Management";
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Files.DeleteAll();
         Ticket := Token();
@@ -2419,7 +2506,7 @@ codeunit 95100 "Google Drive Manager"
         Json: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -2439,7 +2526,7 @@ codeunit 95100 "Google Drive Manager"
         if StatusInfo.Get('id', JTokenLink) then begin
             Id := JTokenLink.AsValue().AsText();
         end else
-            Error('Error al subir archivo al drive compartido: %1', Respuesta);
+            Error(UploadSharedFileErrorErr, Respuesta);
 
         exit(Id);
     end;
@@ -2474,7 +2561,7 @@ codeunit 95100 "Google Drive Manager"
             if StatusInfo.Get('id', JToken) then
                 NewFolderId := JToken.AsValue().AsText()
             else
-                Error('Error al crear carpeta en drive compartido: %1 con esta url: %2 y este json: %3', Respuesta, Url, Json);
+                Error(CreateSharedFolderErrorErr, Respuesta, Url, Json);
         end;
         exit(NewFolderId);
     end;
@@ -2532,7 +2619,7 @@ codeunit 95100 "Google Drive Manager"
         NewParentId: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -2576,7 +2663,7 @@ codeunit 95100 "Google Drive Manager"
         Files.DeleteAll();
         CompanyInfo.GET();
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
         if Not RootFolder then
             if IdCarpeta = '' then
                 IdCarpeta := CompanyInfo."Root Folder ID";
@@ -2656,7 +2743,7 @@ codeunit 95100 "Google Drive Manager"
     begin
         Files.DeleteAll();
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -2715,7 +2802,7 @@ codeunit 95100 "Google Drive Manager"
         JsonArray: JsonArray;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         Url := GoogleDriveBaseURL + '/files?supportsAllDrives=true';
@@ -2738,7 +2825,7 @@ codeunit 95100 "Google Drive Manager"
             if StatusInfo.Get('id', JToken) then
                 NewFolderId := JToken.AsValue().AsText()
             else
-                Error('Error al crear carpeta en drive compartido: %1 con esta url: %2 y este json: %3', Respuesta, Url, Json);
+                Error(CreateSharedFolderErrorErr, Respuesta, Url, Json);
         end;
         exit(NewFolderId);
     end;
@@ -2770,7 +2857,7 @@ codeunit 95100 "Google Drive Manager"
         Convert: Codeunit "Base64 Convert";
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         TempBlob.CreateInStream(InStr);
@@ -2811,7 +2898,7 @@ codeunit 95100 "Google Drive Manager"
                 end;
             end else begin
                 ResponseMessage.Content().ReadAs(ResponseText);
-                Message('Error uploading file: %1', ResponseText);
+                Message(FileUploadErrorMsg, ResponseText);
             end;
         end;
 
@@ -2827,11 +2914,11 @@ codeunit 95100 "Google Drive Manager"
 
     begin
         if not HideDialog then
-            if not Confirm('¿Está seguro de que desea eliminar la carpeta?', true) then
+            if not Confirm(DeleteFolderMsg, true) then
                 exit('');
 
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -2864,7 +2951,7 @@ codeunit 95100 "Google Drive Manager"
         JTok: JsonToken;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -2887,7 +2974,7 @@ codeunit 95100 "Google Drive Manager"
             if StatusInfo.Get('error', JTok) then begin
                 Error(JTok.AsValue().AsText());
             end;
-            Error('Error al mover la carpeta');
+            Error(MoveFolderErrorErr);
         end;
 
         exit(Id);
@@ -2910,7 +2997,7 @@ codeunit 95100 "Google Drive Manager"
     begin
         Inf.Get();
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -2934,7 +3021,7 @@ codeunit 95100 "Google Drive Manager"
             if StatusInfo.Get('error', JTok) then begin
                 Error(JTok.AsValue().AsText());
             end;
-            Error('Error al mover el archivo');
+            Error(MoveFileErrorErr);
         end;
 
         exit(Id);
@@ -2958,7 +3045,7 @@ codeunit 95100 "Google Drive Manager"
         ParentsArray: JsonArray;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -2983,7 +3070,7 @@ codeunit 95100 "Google Drive Manager"
             if StatusInfo.Get('error', JTok) then begin
                 Error(JTok.AsValue().AsText());
             end;
-            Error('Error al copiar el archivo');
+            Error(CopyFileErrorErr);
         end;
 
         exit(Id);
@@ -3012,7 +3099,7 @@ codeunit 95100 "Google Drive Manager"
     begin
         Inf.Get();
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Files.DeleteAll();
         Ticket := Token();
@@ -3122,7 +3209,7 @@ codeunit 95100 "Google Drive Manager"
         Convert: Codeunit "Base64 Convert";
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         Url := GoogleDriveBaseURL + '/files/' + FileId + '?alt=media&supportsAllDrives=true';
@@ -3160,7 +3247,7 @@ codeunit 95100 "Google Drive Manager"
         ErrorMessage: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         Url := GoogleDriveBaseURL + '/files/' + GoogleDriveID + '?fields=webViewLink&supportsAllDrives=true';
@@ -3168,14 +3255,14 @@ codeunit 95100 "Google Drive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de Google Drive.');
+            Error(NoServerResponseErr);
 
         StatusInfo.ReadFrom(Respuesta);
 
         if StatusInfo.Get('error', JToken) then begin
             if JToken.AsObject().Get('message', JToken) then begin
                 ErrorMessage := JToken.AsValue().AsText();
-                Message('Error al acceder al archivo: %1', ErrorMessage);
+                Message(SharedDriveAccessErrorMsg, ErrorMessage);
                 exit;
             end;
 
@@ -3185,7 +3272,7 @@ codeunit 95100 "Google Drive Manager"
             WebUrl := JToken.AsValue().AsText();
             Hyperlink(WebUrl);
         end else begin
-            Error('No se pudo obtener el enlace del archivo.');
+            Error(GetFileLinkErrorErr);
         end;
     end;
 
@@ -3201,7 +3288,7 @@ codeunit 95100 "Google Drive Manager"
         ErrorMessage: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         // Para drives compartidos, necesitamos especificar el drive en la URL
@@ -3210,7 +3297,7 @@ codeunit 95100 "Google Drive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de Google Drive.');
+            Error(NoServerResponseErr);
 
         StatusInfo.ReadFrom(Respuesta);
 
@@ -3219,7 +3306,7 @@ codeunit 95100 "Google Drive Manager"
             if JToken.AsObject().Get('message', JToken) then begin
                 if JToken.AsObject().Get('message', JToken) then begin
                     ErrorMessage := JToken.AsValue().AsText();
-                    Message('Error al acceder al archivo: %1', ErrorMessage);
+                    Message(SharedDriveAccessErrorMsg, ErrorMessage);
                     exit('');
                 end;
                 exit('');
@@ -3230,7 +3317,7 @@ codeunit 95100 "Google Drive Manager"
             WebUrl := JToken.AsValue().AsText();
             exit(WebUrl);
         end else begin
-            Error('No se pudo obtener el enlace del archivo.');
+            Error(GetFileLinkErrorErr);
         end;
     end;
 
@@ -3242,7 +3329,7 @@ codeunit 95100 "Google Drive Manager"
         ResponseMessage: HttpResponseMessage;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         Url := GoogleDriveBaseURL + '/files/' + GoogleDriveID + '?supportsAllDrives=true';
@@ -3269,7 +3356,7 @@ codeunit 95100 "Google Drive Manager"
     begin
         Inf.Get();
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
         Url := Inf."Url Api GoogleDrive" + get_metadata + GoogleDriveID + '/permissions';
@@ -3278,30 +3365,30 @@ codeunit 95100 "Google Drive Manager"
         Respuesta := RestApiToken(Url, AccessToken, RequestType::post, Json);
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de Google Drive.');
+            Error(NoServerResponseErr);
         Url := GoogleDriveBaseURL + '/files/' + GoogleDriveID + '?fields=webViewLink&supportsAllDrives=true';
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de Google Drive.');
+            Error(NoServerResponseErr);
 
         StatusInfo.ReadFrom(Respuesta);
 
         if StatusInfo.Get('error', JToken) then begin
             if JToken.AsObject().Get('message', JToken) then begin
                 ErrorMessage := JToken.AsValue().AsText();
-                Message('Error al acceder al archivo: %1', ErrorMessage);
+                Message(FileAccessErrorMsg, ErrorMessage);
                 exit;
             end;
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            Error(FileAccessErrorErr, ErrorMessage);
         end;
 
         if StatusInfo.Get('webViewLink', JToken) then begin
             WebUrl := JToken.AsValue().AsText();
             Hyperlink(WebUrl);
         end else begin
-            Error('No se pudo obtener el enlace del archivo.');
+            Error(GetFileLinkErrorErr);
         end;
     end;
 
@@ -3317,7 +3404,7 @@ codeunit 95100 "Google Drive Manager"
         Query: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
 
         Ticket := Token();
 
@@ -3356,7 +3443,7 @@ codeunit 95100 "Google Drive Manager"
         Json: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+            Error(NotAuthenticatedErr);
         CompanyInfo.Get();
         Ticket := Token();
         if CompanyInfo."Google Shared Drive ID" <> '' then
@@ -3369,7 +3456,7 @@ codeunit 95100 "Google Drive Manager"
         if StatusInfo.Get('error', JToken) then begin
             if JToken.AsObject().Get('message', JToken) then begin
                 ErrorMessage := JToken.AsValue().AsText();
-                Message('Error al acceder al archivo: %1', ErrorMessage);
+                Message(SharedDriveAccessErrorMsg, ErrorMessage);
                 exit('');
             end;
 

@@ -30,6 +30,7 @@ codeunit 95103 "DropBox Manager"
         UploadErrorMsg: Label 'Error uploading file to Strapi: %1';
         // Confirmation Labels
         DeleteFolderConfirmMsg: Label 'Are you sure you want to delete the folder?';
+        DropBoxCode: Label 'DropBox Code';
 
     procedure Initialize()
     begin
@@ -53,7 +54,7 @@ codeunit 95103 "DropBox Manager"
     begin
         CompanyInfo.Get();
         Hyperlink('https://www.dropbox.com/oauth2/authorize?client_id=' + CompanyInfo."DropBox App Key" + '&response_type=code&token_access_type=offline');
-        Ventana.SetTexto('Código DropBox');
+        Ventana.SetTexto(DropBoxCode);
         Ventana.RunModal();
         Ventana.GetTexto(CodeDropBox);
         ObtenerToken(CodeDropBox);

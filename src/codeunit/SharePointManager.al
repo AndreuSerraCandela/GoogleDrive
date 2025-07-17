@@ -22,7 +22,11 @@ codeunit 95106 "SharePoint Manager"
         FolderNotFoundMsg: Label 'Folder not found: %1';
         CreateFolderErrorMsg: Label 'Error creating folder';
         // Confirmation Labels
+        TokenRequestFailedErr: Label 'The request to the token endpoint failed.';
+        TokenEndpointErrorErr: Label 'The token endpoint returned an error. Status: %1, Body: %2';
         DeleteFolderConfirmMsg: Label 'Are you sure you want to delete the folder?';
+        CopyFileErrorErr: Label 'Error copying file: %1. Complete response: %2';
+        FileCopiedButNotDeletedMsg: Label 'File was copied but could not delete original. Copied file ID: %1';
 
     procedure Initialize()
     begin
@@ -104,12 +108,12 @@ codeunit 95106 "SharePoint Manager"
         HttpRequest.Content := HttpContent;
 
         if not HttpClient.Send(HttpRequest, HttpResponse) then
-            Error('The request to the token endpoint failed.');
+            Error(TokenRequestFailedErr);
 
         HttpResponse.Content().ReadAs(JsonText);
 
         if not HttpResponse.IsSuccessStatusCode() then
-            Error('The token endpoint returned an error. Status: %1, Body: %2', HttpResponse.HttpStatusCode(), JsonText);
+            Error(TokenEndpointErrorErr, HttpResponse.HttpStatusCode(), JsonText);
 
         StatusInfo.ReadFrom(JsonText);
 
@@ -180,12 +184,12 @@ codeunit 95106 "SharePoint Manager"
         HttpRequest.Content := HttpContent;
 
         if not HttpClient.Send(HttpRequest, HttpResponse) then
-            Error('The request to the token endpoint failed.');
+            Error(TokenRequestFailedErr);
 
         HttpResponse.Content().ReadAs(JsonText);
 
         if not HttpResponse.IsSuccessStatusCode() then
-            Error('The token endpoint returned an error. Status: %1, Body: %2', HttpResponse.HttpStatusCode(), JsonText);
+            Error(TokenEndpointErrorErr, HttpResponse.HttpStatusCode(), JsonText);
 
         StatusInfo.ReadFrom(JsonText);
 
@@ -674,7 +678,7 @@ codeunit 95106 "SharePoint Manager"
             StatusInfo.ReadFrom(Respuesta);
             if StatusInfo.Get('error', JTokenLink) then begin
                 ErrorMessage := JTokenLink.AsValue().AsText();
-                Error('Error al copiar el archivo: %1. Respuesta completa: %2', ErrorMessage, Respuesta);
+                Error(CopyFileErrorErr, ErrorMessage, Respuesta);
             end;
 
             if StatusInfo.Get('id', JTokenLink) then begin
@@ -713,7 +717,7 @@ codeunit 95106 "SharePoint Manager"
         // Si la copia fue exitosa, eliminar el archivo original
         if (Mover) and (CopiedFileId <> '') then begin
             if not DeleteFile(SharePointID) then begin
-                Error('El archivo se copió pero no se pudo eliminar el original. ID del archivo copiado: %1', Filename);
+                Error(FileCopiedButNotDeletedMsg, Filename);
             end;
         end;
         if CopiedFileId = '' then Error(CreateFolderErrorMsg);

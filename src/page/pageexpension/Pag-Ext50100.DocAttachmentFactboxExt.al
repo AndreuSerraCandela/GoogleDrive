@@ -684,9 +684,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     TempBlob: Codeunit "Temp Blob";
                     GoogleDriveManager: Codeunit "Google Drive Manager";
                     FileId: Text;
-                    ConfirmMsg: Label '¿Está seguro de que desea mover los documentos seleccionados al Drive? Los documentos se eliminarán del almacenamiento local.';
-                    SuccessMsg: Label 'Documentos movidos correctamente al Drive.';
-                    ErrorMsg: Label 'Error al mover los documentos: %1';
+                    ConfirmMsg: Label 'Are you sure you want to move the selected documents to Drive? The documents will be removed from local storage.';
+                    SuccessMsg: Label 'Documents moved successfully to Drive.';
+                    ErrorMsg: Label 'Error moving documents: %1';
                     FullFileName: Text;
                     DocumentStream: OutStream;
                     GoogleDriveFolderMapping: Record "Google Drive Folder Mapping";
@@ -974,7 +974,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 // For now, we'll use a placeholder solution
 
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Message(NoDestinationSelectedLbl)
                                 else
                                     GoogleDrive.Movefile(Rec."Google Drive ID", Destino, '');
 
@@ -988,7 +988,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Message(NoDestinationSelectedLbl)
                                 else
                                     NewId := OneDriveManager.Movefile(Rec."OneDrive ID", Destino, '', true, Rec."File Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
@@ -1005,7 +1005,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Message(NoDestinationSelectedLbl)
                                 else
                                     NewId := DropBoxManager.MoveFile(Rec."DropBox ID", Destino, Rec."File Name" + '.' + Rec."File Extension", true);
                                 if NewId <> '' then begin
@@ -1021,7 +1021,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Message(NoDestinationSelectedLbl)
                                 else
                                     NewId := StrapiManager.MoveFile(Rec."Strapi ID", Destino, Rec."File Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
@@ -1037,7 +1037,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Message(NoDestinationSelectedLbl)
                                 else
                                     NewId := SharePointManager.MoveFile(Rec."SharePoint ID", Destino, true, Rec."File Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
@@ -1099,7 +1099,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Message(NoDestinationSelectedLbl)
                                 else
                                     GoogleDrive.Copyfile(Rec."Google Drive ID", Destino);
                             end;
@@ -1111,7 +1111,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Message(NoDestinationSelectedLbl)
                                 else
                                     NewId := OneDriveManager.Movefile(Rec."OneDrive ID", Destino, '', false, Rec."File Name" + '.' + Rec."File Extension");
 
@@ -1124,7 +1124,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Message(NoDestinationSelectedLbl)
                                 else
                                     NewId := DropBoxManager.MoveFile(Rec."DropBox ID", Destino, Rec."File Name" + '.' + Rec."File Extension", false);
                                 if NewId <> '' then begin
@@ -1140,7 +1140,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Message(NoDestinationSelectedLbl)
                                 else
                                     NewId := StrapiManager.MoveFile(Rec."Strapi ID", Destino, Rec."File Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
@@ -1156,7 +1156,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Message(NoDestinationSelectedLbl)
                                 else
                                     NewId := SharePointManager.MoveFile(Rec."SharePoint ID", Destino, true, Rec."File Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
@@ -1255,7 +1255,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                         SharePointManager.CreateSharePointFolder(FolderName, Id, false);
                                     end;
                             end;
-                            Message('Carpeta "%1" creada correctamente.', FolderName);
+                            Message(FolderCreatedSuccessfullyLbl, FolderName);
                         end;
                     end;
                 end;
@@ -1275,7 +1275,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     DropBoxManager: Codeunit "DropBox Manager";
                     SharePointManager: Codeunit "SharePoint Manager";
                     StrapiManager: Codeunit "Strapi Manager";
-                    ConfirmMsg: Label '¿Está seguro de que desea eliminar el archivo "%1"?';
+                    ConfirmMsg: Label 'Are you sure you want to delete the file "%1"?';
                 begin
                     if not Confirm(ConfirmMsg, false, Rec."File Name") then
                         exit;
@@ -1283,10 +1283,10 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     case Rec."Storage Provider" of
                         Rec."Storage Provider"::"Google Drive":
                             If not GoogleDriveManager.DeleteFile(Rec.GetDocumentID()) then
-                                Message('Error al eliminar el archivo.');
+                                Message(ErrorDeletingFileLbl);
                         Rec."Storage Provider"::OneDrive:
                             If not OneDriveManager.DeleteFile(Rec.GetDocumentID()) then
-                                Message('Error al eliminar el archivo.');
+                                Message(ErrorDeletingFileLbl);
                         Rec."Storage Provider"::DropBox:
                             DropBoxManager.DeleteFile(Rec.GetDocumentID());
                         Rec."Storage Provider"::Strapi:
@@ -1297,7 +1297,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
                     // Eliminar el registro local
                     Rec.Delete();
-                    Message('Archivo eliminado correctamente.');
+                    Message(FileDeletedSuccessfullyLbl);
                 end;
             }
 
@@ -1392,6 +1392,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         IsSharePoint: Boolean;
         IsDrive: Boolean;
         IsDriveExt: Boolean;
+
+        // Labels for messages
+        MoveToDriveConfirmMsg: Label 'Are you sure you want to move the selected documents to Drive? The documents will be removed from local storage.';
+        DocumentsMovedSuccessMsg: Label 'Documents moved successfully to Drive.';
+        ErrorMovingDocumentsMsg: Label 'Error moving documents: %1';
+        DeleteFileConfirmMsg: Label 'Are you sure you want to delete the file "%1"?';
     // Add triggers
     trigger OnOpenPage()
     var
@@ -2037,4 +2043,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         IsControlAddInReady: Boolean;
         l: Integer;
         a: Integer;
+        // Labels for messages
+        NoDestinationSelectedLbl: Label 'No destination selected';
+        FolderCreatedSuccessfullyLbl: Label 'Folder "%1" created successfully.';
+        ErrorDeletingFileLbl: Label 'Error deleting file.';
+        FileDeletedSuccessfullyLbl: Label 'File deleted successfully.';
 }

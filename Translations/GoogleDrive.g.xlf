@@ -8,6 +8,16 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1902168033" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Are you sure you want to rename folder?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType RenameFolderMsg</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3460270774" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Default mappings created successfully.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SetupDefaultMappingsMsg</note>
+        </trans-unit>
         <trans-unit id="Table 1163388225 - Field 1090351696 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Active</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -113,6 +123,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit DropBox Manager - NamedType DeleteFolderConfirmMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 4285443769 - NamedType 2057920291" size-unit="char" translate="yes" xml:space="preserve">
+          <source>DropBox Code</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit DropBox Manager - NamedType DropBoxCode</note>
+        </trans-unit>
         <trans-unit id="Codeunit 4285443769 - NamedType 2174225733" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error opening file in browser: %1</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -213,25 +228,130 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType AccessRevokedMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2865341882" size-unit="char" translate="yes" xml:space="preserve">
+          <source>✅ All credentials are present and have appropriate length</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType AllCredentialsValidMsg</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 3522907960" size-unit="char" translate="yes" xml:space="preserve">
           <source>Authentication completed successfully.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType AuthenticationCompletedMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1750788999" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Authentication error: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType AuthenticationErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2174834993" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Auth URI: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType AuthUriMsg</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 262874476" size-unit="char" translate="yes" xml:space="preserve">
           <source>Browser has been opened for authorization. If it doesn't open automatically, copy this URL:\%1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType BrowserOpenedMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 4052508136" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Client ID is empty</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientIdEmptyErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3953412576" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ❌ EMPTY</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientIdEmptyStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2869387891" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Client ID: %1 characters</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientIdLengthMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 459746967" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ✅ LENGTH OK</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientIdOkStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1244607689" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ⚠️ TOO LONG</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientIdTooLongStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2209807041" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Client ID seems too short (should be ~72 characters)</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientIdTooShortErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2043746985" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ⚠️ TOO SHORT</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientIdTooShortStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 164318649" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Client Secret is empty</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientSecretEmptyErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3652078577" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ❌ EMPTY</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientSecretEmptyStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 787018254" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Client Secret: %1 characters</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientSecretLengthMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3390914146" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ✅ LENGTH OK</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientSecretOkStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3560800808" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ⚠️ TOO LONG</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientSecretTooLongStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1837209656" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Client Secret seems too short (should be ~24 characters)</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientSecretTooShortErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2603649712" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ⚠️ TOO SHORT</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ClientSecretTooShortStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 4135563637" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Google Drive configuration is incomplete. Please configure Client ID and Client Secret in company information.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ConfigurationIncompleteErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 1622895393" size-unit="char" translate="yes" xml:space="preserve">
           <source>❌ Connection error: Could not connect to Google server.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ConnectionErrorMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2012072874" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error copying file</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType CopyFileErrorErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 748651172" size-unit="char" translate="yes" xml:space="preserve">
           <source>Please copy the following URL to your browser to authorize Google Drive access:\%1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType CopyUrlToBrowserMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2614467345" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error creating folder</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType CreateFolderErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 21791626" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error creating folder in shared drive: %1 with this URL: %2 and this JSON: %3</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType CreateSharedFolderErrorErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 3495774175" size-unit="char" translate="yes" xml:space="preserve">
           <source>files</source>
@@ -243,6 +363,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType CredentialsErrorMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3472466796" size-unit="char" translate="yes" xml:space="preserve">
+          <source>📋 CREDENTIALS:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType CredentialsSectionMsg</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 944792227" size-unit="char" translate="yes" xml:space="preserve">
           <source>files/</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -253,15 +378,45 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType DeleteFolderConfirmMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1091420530" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Are you sure you want to delete forder?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType DeleteFolderMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1541016018" size-unit="char" translate="yes" xml:space="preserve">
+          <source>🔍 OAUTH CONFIGURATION DIAGNOSTIC</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType DiagnosticTitleMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 888858801" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error accessing file: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType FileAccessErrorErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 1344636373" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error accessing file: %1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType FileAccessErrorMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 523503389" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Could not get file link. Verify that the file ID is correct and you have permission to access it.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType FileLinkErrorErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 1022768992" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error uploading file: %1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType FileUploadErrorMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 488998183" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Could not get file link.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType GetFileLinkErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2420157743" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error getting shared drives: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType GetSharedDrivesErrorErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 782405760" size-unit="char" translate="yes" xml:space="preserve">
           <source>files/</source>
@@ -298,6 +453,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType InvalidCredentialsErrorMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 779677159" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Invalid security state. Please restart the authentication process.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType InvalidSecurityStateErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 539753160" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error: Could not parse JSON response: %1</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -307,6 +467,16 @@
           <source>files</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType list_folder</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2646310046" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error moving file</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType MoveFileErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3266331046" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error moving folder</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType MoveFolderErrorErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 831302124" size-unit="char" translate="yes" xml:space="preserve">
           <source>files/</source>
@@ -318,40 +488,240 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType NoAccessTokenMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 888619065" size-unit="char" translate="yes" xml:space="preserve">
+          <source>No expiration date ❌</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType NoExpirationDateMsg</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 4062163994" size-unit="char" translate="yes" xml:space="preserve">
           <source>No refresh token available. Please complete the OAuth authentication process first.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType NoRefreshTokenMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1680919470" size-unit="char" translate="yes" xml:space="preserve">
+          <source>No response received from Google Drive server.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType NoServerResponseErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3106542267" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error authenticating with Google Drive. Please check your credentials.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType NotAuthenticatedErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 1198507331" size-unit="char" translate="yes" xml:space="preserve">
           <source>oauth2/v4/token</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType oauth2_token</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3158183642" size-unit="char" translate="yes" xml:space="preserve">
+          <source>⚠️ IMPORTANT: You must configure YOUR credentials, not playground ones</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundImportantNoteMsg</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 3906493109" size-unit="char" translate="yes" xml:space="preserve">
           <source>CONFIGURE OAUTH PLAYGROUND WITH YOUR CREDENTIALS:\⚠️ IMPORTANT: You must configure YOUR credentials, not playground ones\1. Open this URL: %1\2. 🔧 CONFIGURE CREDENTIALS (CRITICAL STEP):\   - In the UPPER RIGHT corner, click the ⚙️ icon (Settings)\   - ✅ Check the "Use your own OAuth credentials" box\   - OAuth Client ID: %2\   - OAuth Client Secret: %3\   - Click "Close" to save\3. 📋 SELECT APIS:\   - In the left panel, search for "Drive API v3"\   - Expand the section and select:\     ✅ https://www.googleapis.com/auth/drive\     ✅ https://www.googleapis.com/auth/drive.file\4. 🔐 AUTHORIZE:\   - Click "Authorize APIs"\   - Sign in with your Google account\   - Authorize access\5. 🎫 GET TOKENS:\   - Click "Exchange authorization code for tokens"\   - Copy the "access_token" and "refresh_token"\6. 📝 CONFIGURE IN BUSINESS CENTRAL:\   - Paste the tokens in the corresponding fields\   - Use "Test Token Validity" to verify</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundInstructionsMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1218063317" size-unit="char" translate="yes" xml:space="preserve">
+          <source>CONFIGURE OAUTH PLAYGROUND WITH YOUR CREDENTIALS:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundInstructionsTitleMsg</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 2394278367" size-unit="char" translate="yes" xml:space="preserve">
           <source>Google OAuth Playground has been opened.\⚠️ REMEMBER: You must configure YOUR credentials in Settings (⚙️)\Complete instructions: %1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundOpenedMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2388723277" size-unit="char" translate="yes" xml:space="preserve">
+          <source>1. Open this URL: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep1Msg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3035418027" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - In the UPPER RIGHT corner, click the ⚙️ icon (Settings)</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep2aMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1480747070" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - ✅ Check the "Use your own OAuth credentials" box</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep2bMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3874795917" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - OAuth Client ID: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep2cMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1666249816" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - OAuth Client Secret: %2</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep2dMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2623578087" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - Click "Close" to save</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep2eMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 4272272932" size-unit="char" translate="yes" xml:space="preserve">
+          <source>2. 🔧 CONFIGURE CREDENTIALS (CRITICAL STEP):</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep2TitleMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 775073812" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - In the left panel, search for "Drive API v3"</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep3aMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1855723557" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - Expand the section and select:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep3bMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2356782326" size-unit="char" translate="yes" xml:space="preserve">
+          <source>     ✅ https://www.googleapis.com/auth/drive</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep3cMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 604505727" size-unit="char" translate="yes" xml:space="preserve">
+          <source>     ✅ https://www.googleapis.com/auth/drive.file</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep3dMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 4202810043" size-unit="char" translate="yes" xml:space="preserve">
+          <source>3. 📋 SELECT APIS:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep3TitleMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2931116953" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - Click "Authorize APIs"</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep4aMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3297882536" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - Sign in with your Google account</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep4bMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 654633463" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - Authorize access</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep4cMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1014021458" size-unit="char" translate="yes" xml:space="preserve">
+          <source>4. 🔐 AUTHORIZE:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep4TitleMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 670772738" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - Click "Exchange authorization code for tokens"</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep5aMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3672859023" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - Copy the "access_token" and "refresh_token"</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep5bMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3345814377" size-unit="char" translate="yes" xml:space="preserve">
+          <source>5. 🎫 GET TOKENS:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep5TitleMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1387381767" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - Paste the tokens in the corresponding fields</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep6aMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 575041434" size-unit="char" translate="yes" xml:space="preserve">
+          <source>   - Use "Test Token Validity" to verify</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep6bMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3066316544" size-unit="char" translate="yes" xml:space="preserve">
+          <source>6. 📝 CONFIGURE IN BUSINESS CENTRAL:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType PlaygroundStep6TitleMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3481679578" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Refresh Token is empty</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType RefreshTokenEmptyErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1104323314" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ❌ EMPTY</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType RefreshTokenEmptyStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1060326037" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Refresh Token: %1 characters</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType RefreshTokenLengthMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1445447961" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ✅ LENGTH OK</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType RefreshTokenOkStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2508789927" size-unit="char" translate="yes" xml:space="preserve">
+          <source> ⚠️ TOO SHORT</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType RefreshTokenTooShortStatusMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3931227290" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Could not connect to Google authentication server.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType ServerConnectionErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2901452736" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error accessing shared drive: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType SharedDriveAccessErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1228771012" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error accessing shared drive: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType SharedDriveAccessErrorMsg</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 3712563720" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error accessing shared drive: %1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType SharedDriveErrorMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1239077899" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shared drive ID is not configured. Please configure the shared drive ID in the company.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType SharedDriveNotConfiguredErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 1196198469" size-unit="char" translate="yes" xml:space="preserve">
           <source>permissions</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType sharefolder</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2175948975" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Expired since: %1 ❌</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType TokenExpiredMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3693459255" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Could not get token</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType TokenNotFoundErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 516263750" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Tokens configured manually successfully.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType TokensConfiguredManuallyMsg</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 4282847223" size-unit="char" translate="yes" xml:space="preserve">
           <source>Tokens configured manually successfully.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType TokensConfiguredMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 1433074641" size-unit="char" translate="yes" xml:space="preserve">
+          <source>⏰ TOKEN STATUS:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType TokenStatusSectionMsg</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 1349321265" size-unit="char" translate="yes" xml:space="preserve">
           <source>✅ Token updated successfully. New token expires: %1</source>
@@ -373,10 +743,45 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType TokenUpdateFailedMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2155848280" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token URI: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType TokenUriMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 74756384" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Valid until: %1 ✅</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType TokenValidMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3713120417" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Unknown error</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType UnknowErrorMsg</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 701918397" size-unit="char" translate="yes" xml:space="preserve">
           <source>upload/drive/v3/files?uploadType=multipart</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType Upload</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2196585940" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error uploading file</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType UploadFileErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 2057219997" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error uploading file to shared drive: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType UploadSharedDriveErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3384076123" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error uploading file to shared drive: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType UploadSharedFileErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 3512135780" size-unit="char" translate="yes" xml:space="preserve">
+          <source>📡 URLs:</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType UrlsSectionMsg</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - Method 2340270549 - NamedType 920287221" size-unit="char" translate="yes" xml:space="preserve">
           <source>'</source>
@@ -408,10 +813,20 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType auth_endpoint</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 2012072874" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error copying file: %1. Complete response: %2</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType CopyFileErrorErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 1286512446" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error copying file: %1. Complete response: %2</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType CopyFileErrorMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1242972679" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Could not copy file</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType CopyFileFailedErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 545257947" size-unit="char" translate="yes" xml:space="preserve">
           <source>Could not copy file</source>
@@ -422,6 +837,11 @@
           <source>/me/drive/items/%1/copy</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType copy_endpoint</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 2614467345" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Failed to create folder in OneDrive: %1 with this URL: %2 and this JSON: %3</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType CreateFolderErrorErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 3070244917" size-unit="char" translate="yes" xml:space="preserve">
           <source>Failed to create folder in OneDrive: %1 with this URL: %2 and this JSON: %3</source>
@@ -443,6 +863,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType DeleteFolderConfirmMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1091420530" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Are you sure you want to delete folder?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType DeleteFolderMsg</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 4016469383" size-unit="char" translate="yes" xml:space="preserve">
           <source>/me/drive/items/%1</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -458,10 +883,25 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType drive_endpoint</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 888858801" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error accessing file: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType FileAccessErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 2119728480" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File was copied but could not delete original. Copied file ID: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType FileCopiedButNotDeletedErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 1147800676" size-unit="char" translate="yes" xml:space="preserve">
           <source>File was copied but could not delete original. Copied file ID: %1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType FileCopiedButNotDeletedMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 523503389" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Could not get file link. Verify that the file ID is correct and you have permission to access it.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType FileLinkErrorErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 3272573609" size-unit="char" translate="yes" xml:space="preserve">
           <source>Could not get file link. Check that the file ID is correct and you have permission to access it.</source>
@@ -477,6 +917,11 @@
           <source>Folder not found: %1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType FolderNotFoundMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1656320076" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Could not get file path</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType GetFilePathErrorErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 4092907192" size-unit="char" translate="yes" xml:space="preserve">
           <source>Could not get file path</source>
@@ -497,6 +942,11 @@
           <source>Could not get site drive ID. Verify that the site ID is correct.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType GetSiteDriveIdErrorMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 3650720228" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error getting site: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType GetSiteErrorErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 1913763488" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error getting site: %1</source>
@@ -527,6 +977,21 @@
           <source>No response received from OneDrive server.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType NoResponseMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1680919470" size-unit="char" translate="yes" xml:space="preserve">
+          <source>No response received from OneDrive server.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType NoServerResponseErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 3106542267" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Could not authenticate with OneDrive. Please verify your credentials.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType NotAuthenticatedErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 2744667805" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Save</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType SaveAsDialogTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 2910491449" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error searching sites: %1</source>
@@ -573,6 +1038,16 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType site_endpoint</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1488830023" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The token endpoint returned an error. Status: %1, Body: %2</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType TokenEndpointErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1383990408" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The request to the token endpoint failed.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType TokenRequestFailedErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 1569499153" size-unit="char" translate="yes" xml:space="preserve">
           <source>https://login.microsoftonline.com/%1/oauth2/v2.0/token</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -603,6 +1078,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit SharePoint Manager - NamedType auth_endpoint</note>
         </trans-unit>
+        <trans-unit id="Codeunit 1316040542 - NamedType 2012072874" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error copying file: %1. Complete response: %2</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit SharePoint Manager - NamedType CopyFileErrorErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 1316040542 - NamedType 3070244917" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error creating folder</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -632,6 +1112,11 @@
           <source>Error accessing file: %1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit SharePoint Manager - NamedType FileAccessErrorMsg</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1316040542 - NamedType 1147800676" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File was copied but could not delete original. Copied file ID: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit SharePoint Manager - NamedType FileCopiedButNotDeletedMsg</note>
         </trans-unit>
         <trans-unit id="Codeunit 1316040542 - NamedType 3272573609" size-unit="char" translate="yes" xml:space="preserve">
           <source>Could not get file link. Check that the file ID is correct and you have permission.</source>
@@ -667,6 +1152,16 @@
           <source>/sites/%1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit SharePoint Manager - NamedType site_endpoint</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1316040542 - NamedType 1488830023" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The token endpoint returned an error. Status: %1, Body: %2</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit SharePoint Manager - NamedType TokenEndpointErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 1316040542 - NamedType 1383990408" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The request to the token endpoint failed.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit SharePoint Manager - NamedType TokenRequestFailedErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 1316040542 - NamedType 1569499153" size-unit="char" translate="yes" xml:space="preserve">
           <source>https://login.microsoftonline.com/%1/oauth2/v2.0/token</source>
@@ -777,6 +1272,86 @@
           <source>Storage Configuration</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 817930516" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Choose storage type</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType ChooseStorageTypeCaptionLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 351526200" size-unit="char" translate="yes" xml:space="preserve">
+          <source>❌ Incomplete configuration. Please ensure all fields are filled.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType ConfigurationIncompleteLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 3013457392" size-unit="char" translate="yes" xml:space="preserve">
+          <source>✅ Configuration valid.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType ConfigurationValidLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 3748950559" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Default values configured successfully.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType DefaultValuesConfiguredLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 336829252" size-unit="char" translate="yes" xml:space="preserve">
+          <source>❌ Connection error. Check configuration.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType DropBoxConnectionErrorLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 1856503709" size-unit="char" translate="yes" xml:space="preserve">
+          <source>✅ DropBox connection successful.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType DropBoxConnectionSuccessLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 3241594979" size-unit="char" translate="yes" xml:space="preserve">
+          <source>❌ Connection error. Check configuration.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType GoogleDriveConnectionErrorLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 1460576926" size-unit="char" translate="yes" xml:space="preserve">
+          <source>✅ Google Drive connection successful.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType GoogleDriveConnectionSuccessLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 2380359848" size-unit="char" translate="yes" xml:space="preserve">
+          <source>❌ No token configured.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType NoTokenConfiguredLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 1720891904" size-unit="char" translate="yes" xml:space="preserve">
+          <source>❌ Connection error. Check configuration.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType OneDriveConnectionErrorLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 3857374425" size-unit="char" translate="yes" xml:space="preserve">
+          <source>✅ OneDrive connection successful.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType OneDriveConnectionSuccessLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 3292684920" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Are you sure you want to revoke Google Drive access?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType RevokeAccessConfirmLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 1756046547" size-unit="char" translate="yes" xml:space="preserve">
+          <source>❌ Connection error. Check configuration.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType StrapiConnectionErrorLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 2177212078" size-unit="char" translate="yes" xml:space="preserve">
+          <source>✅ Strapi connection successful.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType StrapiConnectionSuccessLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 72359616" size-unit="char" translate="yes" xml:space="preserve">
+          <source>❌ Token expired since: %1. Use "Refresh Token" to renew it.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType TokenExpiredSinceLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 3563892711" size-unit="char" translate="yes" xml:space="preserve">
+          <source>✅ Token valid until: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType TokenValidUntilLbl</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 3493556640 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>DropBox Configuration</source>
@@ -1623,6 +2198,21 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 1387985265 - NamedType 1518692370" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Folder "%1" created successfully.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - NamedType FolderCreatedSuccessfullyMsg</note>
+        </trans-unit>
+        <trans-unit id="Page 1387985265 - NamedType 2597770267" size-unit="char" translate="yes" xml:space="preserve">
+          <source>No destination selected.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - NamedType NoDestinationSelectedErr</note>
+        </trans-unit>
+        <trans-unit id="Page 1387985265 - NamedType 684082520" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Cannot go up to previous level, you are at the root level for this record.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - NamedType NoRootLevelErr</note>
+        </trans-unit>
         <trans-unit id="Page 1387985265 - Control 3414364457 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Extension</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1698,6 +2288,46 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension CustomerExt - Control Visor - Property Caption</note>
         </trans-unit>
+        <trans-unit id="PageExtension 705205957 - NamedType 2734773568" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
+          <source>Are you sure you want to delete the file "%1"?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType DeleteFileConfirmMsg</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 705205957 - NamedType 2047794589" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
+          <source>Documents moved successfully to Drive.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType DocumentsMovedSuccessMsg</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 705205957 - NamedType 56147532" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
+          <source>Error deleting file.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType ErrorDeletingFileLbl</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 705205957 - NamedType 3871679643" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
+          <source>Error moving documents: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType ErrorMovingDocumentsMsg</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 705205957 - NamedType 3790416548" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
+          <source>File deleted successfully.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType FileDeletedSuccessfullyLbl</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 705205957 - NamedType 212811175" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
+          <source>Folder "%1" created successfully.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType FolderCreatedSuccessfullyLbl</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 705205957 - NamedType 2683350415" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
+          <source>Are you sure you want to move the selected documents to Drive? The documents will be removed from local storage.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType MoveToDriveConfirmMsg</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 705205957 - NamedType 1477235810" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
+          <source>No destination selected</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType NoDestinationSelectedLbl</note>
+        </trans-unit>
         <trans-unit id="PageExtension 705205957 - Action 1584223161 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2441753948">
           <source>Moves selected documents to Drive and removes them from local storage.</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1709,17 +2339,17 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - Action MoveToGoogleDrive - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 705205957 - Action 1584223161 - Method 1377591017 - NamedType 2294662597" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
-          <source>¿Está seguro de que desea mover los documentos seleccionados al Drive? Los documentos se eliminarán del almacenamiento local.</source>
+          <source>Are you sure you want to move the selected documents to Drive? The documents will be removed from local storage.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - Action MoveToGoogleDrive - Method OnAction - NamedType ConfirmMsg</note>
         </trans-unit>
         <trans-unit id="PageExtension 705205957 - Action 1584223161 - Method 1377591017 - NamedType 1556380518" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
-          <source>Documentos movidos correctamente al Drive.</source>
+          <source>Documents moved successfully to Drive.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - Action MoveToGoogleDrive - Method OnAction - NamedType SuccessMsg</note>
         </trans-unit>
         <trans-unit id="PageExtension 705205957 - Action 1584223161 - Method 1377591017 - NamedType 331638123" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
-          <source>Error al mover los documentos: %1</source>
+          <source>Error moving documents: %1</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - Action MoveToGoogleDrive - Method OnAction - NamedType ErrorMsg</note>
         </trans-unit>
@@ -1759,7 +2389,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - Action DeleteFile - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 705205957 - Action 4193334241 - Method 1377591017 - NamedType 2294662597" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
-          <source>¿Está seguro de que desea eliminar el archivo "%1"?</source>
+          <source>Are you sure you want to delete the file "%1"?</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - Action DeleteFile - Method OnAction - NamedType ConfirmMsg</note>
         </trans-unit>
@@ -2052,6 +2682,16 @@
           <source>PDF Viewer</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension VendorExt - Control Visor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3595798924 - NamedType 1168643228" size-unit="char" translate="yes" xml:space="preserve" al-object-target="TableExtension 3595798924">
+          <source>Are you sure you want to delete root folder?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Company Info Ext - NamedType DeleteRootFolderMsg</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3595798924 - NamedType 3235761483" size-unit="char" translate="yes" xml:space="preserve" al-object-target="TableExtension 3595798924">
+          <source>Are you sure you want to rename root folder?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Company Info Ext - NamedType RenameRootFolderMsg</note>
         </trans-unit>
         <trans-unit id="TableExtension 3595798924 - Field 935246507 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3469146285">
           <source>DropBox Code</source>

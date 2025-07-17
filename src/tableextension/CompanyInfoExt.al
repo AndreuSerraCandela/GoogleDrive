@@ -68,7 +68,7 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
                 GoogleMapping: Record "Google Drive Folder Mapping";
             begin
                 If Rec."Root Folder" = '' Then begin
-                    If Confirm('¿Desea eliminar el ID de la carpeta raíz?', false) then
+                    If Confirm(DeleteRootFolderMsg, false) then
                         "Root Folder ID" := ''
                     else
                         "Root Folder" := xRec."Root Folder";
@@ -77,7 +77,7 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
 
                 If (xRec."Root Folder" <> "Root Folder") and
                 ("Root Folder ID" <> '') and (xRec."Root Folder" <> '') then begin
-                    If Confirm('¿Desea renombrar la carpeta raíz?', false) Then
+                    If Confirm(RenameRootFolderMsg, false) Then
                         GoogleMapping.RenameFolder("Root Folder ID", "Root Folder");
                 end;
                 if "Root Folder" <> '' then
@@ -340,5 +340,9 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
         "DropBox Access Token".CreateInStream(InStream, TEXTENCODING::UTF8);
         exit(TypeHelper.TryReadAsTextWithSepAndFieldErrMsg(InStream, TypeHelper.LFSeparator(), FieldName("DropBox Access Token")));
     end;
+
+    var
+        DeleteRootFolderMsg: Label 'Are you sure you want to delete root folder?';
+        RenameRootFolderMsg: Label 'Are you sure you want to rename root folder?';
 
 }
