@@ -5,6 +5,7 @@ codeunit 95103 "DropBox Manager"
         get_metadata: Label '2/files/get_metadata';
         create_folder: Label '2/files/create_folder_v2';
         move_folder: Label '2/files/move_v2';
+        move_file: Label '2/files/move_v2';
         sharefolder: Label '2/sharing/share_folder';
         list_folfer_members: Label '/2/sharing/list_folder_members';
         list_folder: Label '2/files/list_folder';
@@ -964,6 +965,34 @@ codeunit 95103 "DropBox Manager"
         Body.WriteTo(Json);
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
         exit(Respuesta);
+    end;
+
+    internal procedure MoveFile(DropBoxID: Text[250]; destino: Text; Name: Text; Mover: Boolean): Text
+    var
+        Ticket: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Body: JsonObject;
+        Json: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JTokenLink: JsonToken;
+        Id: Text;
+    begin
+        Ticket := Token();
+        Url := CompanyInfo."Url Api DropBox" + move_file;
+        Clear(Body);
+        Body.Add('from_path', DropBoxID);
+        Body.Add('to_path', destino);
+        if Mover then
+            Body.Add('autorename', true);
+        Body.WriteTo(Json);
+        Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
+        if StatusInfo.Get('link', JTokenLink) then begin
+            Id := JTokenLink.AsValue().AsText();
+            exit(Id);
+        end;
+        exit(DropBoxID);
     end;
 
     procedure GetFolderMapping(TableID: Integer; Var Id: Text): Record "Google Drive Folder Mapping"

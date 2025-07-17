@@ -37,6 +37,14 @@ table 95100 "Google Drive Folder Mapping"
             Caption = 'Default Folder Name';
             DataClassification = CustomerContent;
             ToolTip = 'Especifica el nombre de la carpeta del Drive (solo para referencia).';
+            trigger OnValidate()
+            begin
+                If (xRec."Default Folder Name" <> "Default Folder Name") and
+                ("Default Folder ID" <> '') and (xRec."Default Folder Name" <> '') then begin
+                    If Confirm('¿Desea renombrar la carpeta?', false) Then
+                        RenameFolder("Default Folder ID", "Default Folder Name");
+                end;
+            end;
         }
 
         field(5; "Auto Create Subfolders"; Boolean)
@@ -342,4 +350,6 @@ table 95100 "Google Drive Folder Mapping"
                 exit(SharePointManager.RenameFolder(RootFolderID, RootFolder));
         end;
     end;
+
+
 }

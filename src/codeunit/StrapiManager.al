@@ -673,6 +673,19 @@ codeunit 95104 "Strapi Manager"
         exit(Respuesta);
     end;
 
+    internal procedure MoveFile(GoogleDriveID: Text[250]; destino: Text; Name: Text[250]): Text
+    var
+        RequestType: Option Get,patch,put,post,delete;
+        Url: Text;
+        Respuesta: Text;
+        StatusInfo: JsonObject;
+        JToken: JsonToken;
+    begin
+        Url := CompanyInfo."Strapi Base URL" + '/api/' + CompanyInfo."Strapi Collection Name" + '/' + GoogleDriveID;
+        Respuesta := RestApiToken(Url, CompanyInfo."Strapi API Token", RequestType::patch, Name);
+        exit(Respuesta);
+    end;
+
     procedure GetFolderMapping(TableID: Integer; Var Id: Text): Record "Google Drive Folder Mapping"
     var
         FolderMapping: Record "Google Drive Folder Mapping";

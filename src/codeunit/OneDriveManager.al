@@ -1616,6 +1616,9 @@ codeunit 95102 "OneDrive Manager"
 
         Ticket := Token();
         CompanyInfo.Get();
+        if (CompanyInfo."OneDrive Site ID" = '') and (CompanyInfo."OneDrive Site URL" <> '') then
+            Error('No se ha configurado el ID del sitio de OneDrive. Por favor, configure el ID del sitio en la empresa.');
+
         If CompanyInfo."OneDrive Site ID" <> '' then begin
             exit(RecuperaIdFolderSite(IdCarpeta, Carpeta, Files, Crear, RootFolder, CompanyInfo."OneDrive Site ID"));
         end;

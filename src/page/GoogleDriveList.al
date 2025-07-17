@@ -24,6 +24,7 @@ page 95105 "Google Drive List"
                         OneDriveManager: Codeunit "OneDrive Manager";
                         DropBoxManager: Codeunit "DropBox Manager";
                         StrapiManager: Codeunit "Strapi Manager";
+                        SharePointManager: Codeunit "SharePoint Manager";
                         a: Integer;
                         Inf: Record "Company Information";
                     begin
@@ -64,6 +65,8 @@ page 95105 "Google Drive List"
                                         DropBoxManager.OpenFileInBrowser(Rec."Google Drive ID");
                                     Inf."Data Storage Provider"::Strapi:
                                         StrapiManager.OpenFileInBrowser(Rec."Google Drive ID");
+                                    Inf."Data Storage Provider"::SharePoint:
+                                        SharePointManager.OpenFileInBrowser(Rec."Google Drive ID", false);
                                 end;
                                 Recargar(root, CarpetaAnterior[Indice], Indice);
                             end;
@@ -117,6 +120,7 @@ page 95105 "Google Drive List"
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                     CompanyInfo: Record "Company Information";
                 begin
                     Nombre := Rec.Name;
@@ -139,6 +143,11 @@ page 95105 "Google Drive List"
                     end;
                     if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Strapi then begin
                         Base64Data := StrapiManager.DownloadFileB64('', Rec."Google Drive ID", Rec.Name, true);
+                    end;
+                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::SharePoint then begin
+                        If Not SharePointManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true, Base64Data) then
+                            exit;
+
                     end;
                     Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
@@ -259,6 +268,13 @@ page 95105 "Google Drive List"
                                     else
                                         Strapi.CreateFolder(Carpeta, root, false);
                                 end;
+                            Inf."Data Storage Provider"::SharePoint:
+                                begin
+                                    If CarpetaAnterior[Indice] = '' then
+                                        SharePoint.CreateSharePointFolder(Carpeta, CarpetaPrincipal, false)
+                                    else
+                                        SharePoint.CreateSharePointFolder(Carpeta, root, false);
+                                end;
                         end;
                         Message('Carpeta "%1" creada correctamente.', Carpeta);
                     end;
@@ -299,6 +315,7 @@ page 95105 "Google Drive List"
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::"Subir Archivo";
@@ -325,6 +342,10 @@ page 95105 "Google Drive List"
                             begin
                                 Id := StrapiManager.UploadFileB64(Path, NVInStream, FileName + FileExtension);
                             end;
+                        CompanyInfo."Data Storage Provider"::SharePoint:
+                            begin
+                                Id := SharePointManager.UploadFileB64(Path, NVInStream, FileName, FileExtension);
+                            end;
                     end;
                     Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
@@ -348,6 +369,7 @@ page 95105 "Google Drive List"
         Stilo: Text;
         wdestino: Text;
         wNombre: Text;
+        SharePoint: Codeunit "SharePoint Manager";
         Archivo: Boolean;
 
     procedure SetRecords(FolderId: Text; var Files: Record "Name/Value Buffer" temporary; Moviendo: Boolean)
@@ -383,6 +405,7 @@ page 95105 "Google Drive List"
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
     begin
         Inf.Get();
         if FolderId = '' then FolderId := CarpetaPrincipal;
@@ -395,6 +418,8 @@ page 95105 "Google Drive List"
                 DropBoxManager.ListFolder(FolderId, Files, true);
             Inf."Data Storage Provider"::Strapi:
                 StrapiManager.ListFolder(FolderId, Files, true);
+            Inf."Data Storage Provider"::SharePoint:
+                SharePointManager.ListFolder(FolderId, Files, true);
         end;
         Rec.DeleteAll();
         Inf.Get();
@@ -440,6 +465,7 @@ page 95105 "Google Drive List"
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
     begin
         Inf.Get();
         case Inf."Data Storage Provider" of
@@ -451,6 +477,8 @@ page 95105 "Google Drive List"
                 DropBoxManager.DeleteFile(Id);
             Inf."Data Storage Provider"::Strapi:
                 StrapiManager.DeleteFile(Id);
+            Inf."Data Storage Provider"::SharePoint:
+                SharePointManager.DeleteFile(Id);
         end;
     end;
 
@@ -461,6 +489,7 @@ page 95105 "Google Drive List"
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
     begin
         Inf.Get();
         case Inf."Data Storage Provider" of
@@ -472,6 +501,8 @@ page 95105 "Google Drive List"
                 DropBoxManager.DeleteFolder(Id, HideDialog);
             Inf."Data Storage Provider"::Strapi:
                 StrapiManager.DeleteFolder(Id, HideDialog);
+            Inf."Data Storage Provider"::SharePoint:
+                SharePointManager.DeleteFolder(Id, HideDialog);
         end;
     end;
 }

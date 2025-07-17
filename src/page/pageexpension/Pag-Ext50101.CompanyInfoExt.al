@@ -95,6 +95,12 @@ page 95112 "Drive Configuration"
                     {
                         ApplicationArea = All;
                         ToolTip = 'Especifica el nombre de la carpeta compartida de Google Drive.';
+                        Editable = false;
+                    }
+                    field("Google Shared Drive ID"; Rec."Google Shared Drive ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el ID de la carpeta compartida de Google Drive.';
                     }
 
                 }
@@ -176,6 +182,11 @@ page 95112 "Drive Configuration"
                     {
                         ApplicationArea = All;
                         ToolTip = 'Especifica la URL del sitio de OneDrive.';
+                    }
+                    field("OneDrive Site ID"; Rec."OneDrive Site ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Especifica el ID del sitio de OneDrive.';
                     }
                     field("Code Ondrive"; Rec."Code Ondrive")
                     {
@@ -1040,9 +1051,29 @@ pageextension 95101 CompanyInfoExt extends "Company Information"
                 Caption = 'Configuración de Almacenamiento';
                 trigger OnAction()
                 var
-
+                    TiopoConfiguracion: Label 'Local,Google Drive, OneDrive, DropBox, Strapi, SharePoint';
+                    OpcionElegida: Integer;
 
                 begin
+                    if Rec."Data Storage Provider" = Rec."Data Storage Provider"::Local Then begin
+                        OpcionElegida := StrMenu(TiopoConfiguracion, 1, 'Elija el tipo de almacenamiento');
+                        case OpcionElegida of
+                            1:
+                                Rec."Data Storage Provider" := Rec."Data Storage Provider"::Local;
+                            2:
+                                Rec."Data Storage Provider" := Rec."Data Storage Provider"::"Google Drive";
+                            3:
+                                Rec."Data Storage Provider" := Rec."Data Storage Provider"::OneDrive;
+                            4:
+                                Rec."Data Storage Provider" := Rec."Data Storage Provider"::DropBox;
+                            5:
+                                Rec."Data Storage Provider" := Rec."Data Storage Provider"::Strapi;
+                            6:
+                                Rec."Data Storage Provider" := Rec."Data Storage Provider"::SharePoint;
+                        end;
+                        Rec.Modify();
+                        Commit();
+                    end;
                     Page.Run(Page::"Drive Configuration", Rec);
                 end;
             }

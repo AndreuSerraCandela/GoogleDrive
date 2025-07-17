@@ -184,6 +184,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         OneDriveManager: Codeunit "OneDrive Manager";
                         DropBoxManager: Codeunit "DropBox Manager";
                         StrapiManager: Codeunit "Strapi Manager";
+                        SharePointManager: Codeunit "SharePoint Manager";
                         DriveType: Text;
                     begin
                         a += 1;
@@ -272,7 +273,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         end;
                         if Rec."Store in SharePoint" then begin
                             URL := Rec."SharePoint ID";
+                            UrlProvider := Url;//SharePointManager.GetUrl(URL);
                             StorageProvider := StorageProvider::SharePoint;
+                            DriveType := 'sharepoint';
                         end;
                         UrlProvider := Url;
                         if URL <> '' then
@@ -569,6 +572,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                     RecRef: RecordRef;
                     IdTable: Integer;
                     IdTableFilter: Text;
@@ -611,6 +615,11 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 // Para Strapi, listar todos los archivos
                                 StrapiManager.ListFolder('', Files, false);
                             end;
+                        CompanyInfo."Data Storage Provider"::SharePoint:
+                            begin
+                                // Para SharePoint, listar todos los archivos
+                                SharePointManager.ListFolder('', Files, false);
+                            end;
                     end;
 
                     CurrPage.Update();
@@ -646,6 +655,11 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                         begin
                                             Rec."Store in Strapi" := true;
                                             Rec."Strapi ID" := Files."Google Drive ID"; // Reutilizamos el campo
+                                        end;
+                                    CompanyInfo."Data Storage Provider"::SharePoint:
+                                        begin
+                                            Rec."Store in SharePoint" := true;
+                                            Rec."SharePoint ID" := Files."Google Drive ID"; // Reutilizamos el campo
                                         end;
                                 end;
 
@@ -685,6 +699,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                     Path: Text;
                     FolderMapping: Record "Google Drive Folder Mapping";
                     Folder: Text;
@@ -812,6 +827,30 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Message(ErrorMsg, DocumentAttachment."File Name")
                                             end;
                                         end;
+                                    CompanyInfo."Data Storage Provider"::SharePoint:
+                                        begin
+                                            if not DocumentAttachment."Store in SharePoint" then begin
+                                                Path := CompanyInfo."Root Folder" + '/';
+                                                DocumentAttachment."Store in OneDrive" := true;
+                                                FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                                                if FolderMapping.FindFirst() Then begin
+                                                    Folder := FolderMapping."Default Folder Id";
+                                                    Path += FolderMapping."Default Folder Name" + '/';
+                                                end;
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                                                IF SubFolder <> '' then begin
+                                                    Folder := SharePointManager.CreateFolderStructure(Folder, SubFolder);
+                                                    Path += SubFolder + '/'
+                                                end;
+                                                Clear(DocumentStream);
+                                                TempBlob.CreateOutStream(DocumentStream);
+                                                DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
+                                                TempBlob.CreateInStream(InStream);
+                                                FileId := SharePointManager.UploadFileB64(Path, InStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                                                if FileId = '' then
+                                                    Message(ErrorMsg, DocumentAttachment."File Name")
+                                            end;
+                                        end;
                                 end;
                             end;
                         until DocumentAttachment.Next() = 0;
@@ -838,6 +877,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                     GoogleDrive: Codeunit "Google Drive Manager";
                     OneDrive: Codeunit "OneDrive Manager";
                     DropBox: Codeunit "DropBox Manager";
@@ -854,6 +894,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                             DropBox.EditFile(Rec."DropBox ID");
                         CompanyInfo."Data Storage Provider"::Strapi:
                             Strapi.EditFile(Rec."Strapi ID");
+                        CompanyInfo."Data Storage Provider"::SharePoint:
+                            SharePointManager.EditFile(Rec."SharePoint ID");
                     end;
                 end;
             }
@@ -872,6 +914,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                 begin
                     case Rec."Storage Provider" of
                         Rec."Storage Provider"::"Google Drive":
@@ -885,6 +928,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 exit;
                         Rec."Storage Provider"::Strapi:
                             Base64Txt := StrapiManager.DownloadFileB64('', Base64Txt, Rec."File Name", true);
+                        Rec."Storage Provider"::SharePoint:
+                            SharePointManager.DownloadFileB64(Rec."SharePoint ID", Rec."File Name", true, Base64Txt);
                     end;
                 end;
             }
@@ -902,7 +947,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                     GoogleDriveList: Page "Google Drive List";
+
                     destino: Text;
                     TempFiles: Record "Name/Value Buffer" temporary;
                     GoogleDrive: Codeunit "Google Drive Manager";
@@ -951,11 +998,53 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                             end;
                         Inf."Data Storage Provider"::DropBox:
                             // DropBoxManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
-                            Message('Función de mover archivo no implementada aún.');
+                            begin
+                                DropBoxManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                Commit;
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    NewId := DropBoxManager.MoveFile(Rec."DropBox ID", Destino, Rec."File Name" + '.' + Rec."File Extension", true);
+                                if NewId <> '' then begin
+                                    Rec."DropBox ID" := NewId;
+                                    Rec.Modify();
+                                end;
+                            end;
                         Inf."Data Storage Provider"::Strapi:
-                            // StrapiManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
-                            Message('Función de mover archivo no implementada aún.');
-
+                            begin
+                                StrapiManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                Commit;
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    NewId := StrapiManager.MoveFile(Rec."Strapi ID", Destino, Rec."File Name" + '.' + Rec."File Extension");
+                                if NewId <> '' then begin
+                                    Rec."Strapi ID" := NewId;
+                                    Rec.Modify();
+                                end;
+                            end;
+                        Inf."Data Storage Provider"::SharePoint:
+                            begin
+                                SharePointManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                Commit;
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    NewId := SharePointManager.MoveFile(Rec."SharePoint ID", Destino, true, Rec."File Name" + '.' + Rec."File Extension");
+                                if NewId <> '' then begin
+                                    Rec."SharePoint ID" := NewId;
+                                    Rec.Modify();
+                                end;
+                            end;
                     end;
                     if NombreCarpetaDestino <> '' then begin
                         Case Rec."Table ID" of
@@ -986,6 +1075,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                     GoogleDriveList: Page "Google Drive List";
                     destino: Text;
                     TempFiles: Record "Name/Value Buffer" temporary;
@@ -1027,11 +1117,53 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
                             end;
                         Rec."Storage Provider"::DropBox:
-                            // DropBoxManager.CopyFile(Rec.GetDocumentID(), destino);
-                            Message('Función de copiar archivo no implementada aún.');
+                            begin
+                                DropBoxManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                Commit;
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    NewId := DropBoxManager.MoveFile(Rec."DropBox ID", Destino, Rec."File Name" + '.' + Rec."File Extension", false);
+                                if NewId <> '' then begin
+                                    Rec."DropBox ID" := NewId;
+                                    Rec.Modify();
+                                end;
+                            end;
                         Rec."Storage Provider"::Strapi:
-                            // StrapiManager.CopyFile(Rec.GetDocumentID(), destino);
-                            Message('Función de copiar archivo no implementada aún.');
+                            begin
+                                StrapiManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                Commit;
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    NewId := StrapiManager.MoveFile(Rec."Strapi ID", Destino, Rec."File Name" + '.' + Rec."File Extension");
+                                if NewId <> '' then begin
+                                    Rec."Strapi ID" := NewId;
+                                    Rec.Modify();
+                                end;
+                            end;
+                        Rec."Storage Provider"::SharePoint:
+                            begin
+                                SharePointManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                Commit;
+                                GoogleDriveList.RunModal();
+                                GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
+                                if destino = '' then
+                                    Message('no ha elegido destino')
+                                else
+                                    NewId := SharePointManager.MoveFile(Rec."SharePoint ID", Destino, true, Rec."File Name" + '.' + Rec."File Extension");
+                                if NewId <> '' then begin
+                                    Rec."SharePoint ID" := NewId;
+                                    Rec.Modify();
+                                end;
+                            end;
                     end;
                     if NombreCarpetaDestino <> '' then begin
                         Case Rec."Table ID" of
@@ -1067,6 +1199,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                     DialogPage: Page "Dialogo Google Drive";
                     FolderName: Text;
                     Id: Text;
@@ -1113,6 +1246,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                             Id := StrapiManager.CreateFolderStructure(Id, SubFolder);
                                         StrapiManager.CreateFolder(FolderName, Id, false);
                                     end;
+                                Inf."Data Storage Provider"::SharePoint:
+                                    begin
+                                        SharePointManager.GetFolderMapping(Rec."Table ID", Id);
+                                        SubFolder := SharePointManager.CreateFolderStructure(Id, Rec."No.");
+                                        if SubFolder <> '' then
+                                            Id := SharePointManager.CreateFolderStructure(Id, SubFolder);
+                                        SharePointManager.CreateSharePointFolder(FolderName, Id, false);
+                                    end;
                             end;
                             Message('Carpeta "%1" creada correctamente.', FolderName);
                         end;
@@ -1132,6 +1273,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     GoogleDriveManager: Codeunit "Google Drive Manager";
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
+                    SharePointManager: Codeunit "SharePoint Manager";
                     StrapiManager: Codeunit "Strapi Manager";
                     ConfirmMsg: Label '¿Está seguro de que desea eliminar el archivo "%1"?';
                 begin
@@ -1149,6 +1291,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                             DropBoxManager.DeleteFile(Rec.GetDocumentID());
                         Rec."Storage Provider"::Strapi:
                             StrapiManager.DeleteFile(Rec.GetDocumentID());
+                        Rec."Storage Provider"::SharePoint:
+                            SharePointManager.DeleteFile(Rec.GetDocumentID());
                     end;
 
                     // Eliminar el registro local
@@ -1254,6 +1398,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
         CompanyInfo: Record "Company Information";
     begin
         CompanyInfo.GET();
@@ -1272,6 +1417,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             DropBoxManager.Initialize();
         if IsStrapi Then
             StrapiManager.Initialize();
+        if IsSharePoint Then
+            SharePointManager.Initialize();
 
         a := 1;
         if IsDrive then
@@ -1410,6 +1557,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
         DriveType: Text;
     begin
         if not IsDrive then exit;

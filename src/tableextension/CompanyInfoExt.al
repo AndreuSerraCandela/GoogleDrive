@@ -67,12 +67,16 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             var
                 GoogleMapping: Record "Google Drive Folder Mapping";
             begin
-                If Rec."Root Folder" = '' Then
+                If Rec."Root Folder" = '' Then begin
                     If Confirm('¿Desea eliminar el ID de la carpeta raíz?', false) then
-                        "Root Folder ID" := '';
-                exit;
+                        "Root Folder ID" := ''
+                    else
+                        "Root Folder" := xRec."Root Folder";
+                    exit;
+                end;
+
                 If (xRec."Root Folder" <> "Root Folder") and
-                ("Root Folder ID" <> '') and (xRec."Root Folder ID" <> '') then begin
+                ("Root Folder ID" <> '') and (xRec."Root Folder" <> '') then begin
                     If Confirm('¿Desea renombrar la carpeta raíz?', false) Then
                         GoogleMapping.RenameFolder("Root Folder ID", "Root Folder");
                 end;
@@ -272,11 +276,27 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
         {
             Caption = 'Google Shared Drive ID';
             DataClassification = CustomerContent;
+            trigger OnValidate()
+            var
+                GoogleManager: Codeunit "Google Drive Manager";
+            begin
+                If (Rec."Google Shared Drive ID" <> '') and (xRec."Google Shared Drive ID" <> Rec."Google Shared Drive ID")
+                then
+                    "Google Shared Drive Name" := GoogleManager.RecuperarDriveName(Rec."Google Shared Drive ID");
+            end;
         }
         field(95153; "Google Shared Drive Name"; Text[250])
         {
             Caption = 'Google Shared Drive Name';
             DataClassification = CustomerContent;
+            trigger OnValidate()
+            var
+                GoogleManager: Codeunit "Google Drive Manager";
+            begin
+                If (Rec."Google Shared Drive Name" <> '') and (xRec."Google Shared Drive Name" <> Rec."Google Shared Drive Name")
+                and (xRec."Google Shared Drive Name" <> '') and (Rec."Google Shared Drive ID" <> '') then
+                    "Google Shared Drive ID" := GoogleManager.RenameDriveName("Google Shared Drive Name", Rec."Google Shared Drive ID");
+            end;
         }
 
     }

@@ -618,7 +618,7 @@ codeunit 95106 "SharePoint Manager"
             exit(false);
     end;
 
-    procedure Movefile(SharePointID: Text[250]; Destino: Text; arg: Text; Mover: Boolean; Filename: Text): Text
+    procedure Movefile(SharePointID: Text[250]; Destino: Text; Mover: Boolean; Filename: Text): Text
     var
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;
@@ -652,8 +652,8 @@ codeunit 95106 "SharePoint Manager"
         Clear(JDestino);
         JDestino.Add('id', Destino);
         Body.Add('parentReference', JDestino);
-        if arg <> '' then
-            Body.Add('name', arg);
+        if Filename <> '' then
+            Body.Add('name', Filename);
         Body.WriteTo(Json);
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);

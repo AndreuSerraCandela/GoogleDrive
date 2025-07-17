@@ -853,6 +853,8 @@ codeunit 95100 "Google Drive Manager"
     begin
         CompanyInfo.GET();
         SharedDriveId := CompanyInfo."Google Shared Drive ID";
+        if (SharedDriveId = '') and (CompanyInfo."Google Shared Drive Name" <> '') then
+            Error('No se ha configurado el ID de la carpeta compartida. Por favor, configure el ID de la carpeta compartida en la empresa.');
         if SharedDriveId <> '' then
             exit(RecuperaIdFolderSharedDrive(SharedDriveId, IdCarpeta, Carpeta, Files, Crear, RootFolder));
         Files.DeleteAll();
@@ -2083,6 +2085,73 @@ codeunit 95100 "Google Drive Manager"
         end;
     end;
 
+    internal procedure RenameDriveName(GoogleSharedDriveName: Text[250]; GoogleSharedDriveID: Text[250]): Text[250]
+    var
+        Client: HttpClient;
+        RequestContent: HttpContent;
+        ResponseMessage: HttpResponseMessage;
+        ResponseText: Text;
+        JResponse: JsonObject;
+        JToken: JsonToken;
+        Url: Text;
+        Json: Text;
+        Respuesta: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        StatusInfo: JsonObject;
+        ErrorMessage: Text;
+
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+        Url := GoogleDriveBaseURL + '/drives/' + GoogleSharedDriveID + '?supportsAllDrives=true';
+        Json := '{"name": "' + GoogleSharedDriveName + '"}';
+        Respuesta := RestApiToken(Url, AccessToken, RequestType::patch, Json);
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de Google Drive.');
+        StatusInfo.ReadFrom(Respuesta);
+        if StatusInfo.Get('error', JToken) then begin
+            if JToken.AsObject().Get('message', JToken) then begin
+                ErrorMessage := JToken.AsValue().AsText();
+                Message('Error al acceder al drive compartido: %1', ErrorMessage);
+                exit('');
+            end;
+        end;
+        exit(GoogleSharedDriveID);
+    end;
+
+    internal procedure RecuperarDriveName(GoogleSharedDriveID: Text[250]): Text[250]
+    var
+        Url: Text;
+        Respuesta: Text;
+        RequestType: Option Get,patch,put,post,delete;
+        StatusInfo: JsonObject;
+        Json: Text;
+        JToken: JsonToken;
+        ErrorMessage: Text;
+
+    begin
+        if not Authenticate() then
+            Error('No se pudo autenticar con Google Drive. Por favor, verifique sus credenciales.');
+
+        Url := GoogleDriveBaseURL + '/drives/' + GoogleSharedDriveID;
+        Respuesta := RestApiToken(Url, AccessToken, RequestType::get, '');
+        if Respuesta = '' then
+            Error('No se recibió respuesta del servidor de Google Drive.');
+        StatusInfo.ReadFrom(Respuesta);
+        StatusInfo.WriteTo(Json);
+        if StatusInfo.Get('error', JToken) then begin
+            if JToken.AsObject().Get('message', JToken) then begin
+                ErrorMessage := JToken.AsValue().AsText();
+                Message('Error al acceder al drive compartido: %1', ErrorMessage);
+                exit('');
+            end;
+        end;
+        if StatusInfo.Get('name', JToken) then
+            exit(JToken.AsValue().AsText());
+        exit('');
+
+    end;
+
     procedure RestApi(url: Text; RequestType: Option Get,patch,put,post,delete; payload: Text): Text
     var
         Ok: Boolean;
@@ -3107,8 +3176,12 @@ codeunit 95100 "Google Drive Manager"
         StatusInfo.ReadFrom(Respuesta);
 
         if StatusInfo.Get('error', JToken) then begin
-            ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            if JToken.AsObject().Get('message', JToken) then begin
+                ErrorMessage := JToken.AsValue().AsText();
+                Message('Error al acceder al archivo: %1', ErrorMessage);
+                exit;
+            end;
+
         end;
 
         if StatusInfo.Get('webViewLink', JToken) then begin
@@ -3145,8 +3218,15 @@ codeunit 95100 "Google Drive Manager"
         StatusInfo.ReadFrom(Respuesta);
 
         if StatusInfo.Get('error', JToken) then begin
-            ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            //{"code":404,"message":"File not found: 1U-EJcwyNFWeYJuKYaucnETL6AtxM5ZX3.","errors":[{"message":"File not found: 1U-EJcwyNFWeYJuKYaucnETL6AtxM5ZX3.","domain":"global","reason":"notFound","location":"fileId","locationType":"parameter"}]}
+            if JToken.AsObject().Get('message', JToken) then begin
+                if JToken.AsObject().Get('message', JToken) then begin
+                    ErrorMessage := JToken.AsValue().AsText();
+                    Message('Error al acceder al archivo: %1', ErrorMessage);
+                    exit('');
+                end;
+                exit('');
+            end;
         end;
 
         if StatusInfo.Get('webViewLink', JToken) then begin
@@ -3212,7 +3292,11 @@ codeunit 95100 "Google Drive Manager"
         StatusInfo.ReadFrom(Respuesta);
 
         if StatusInfo.Get('error', JToken) then begin
-            ErrorMessage := JToken.AsValue().AsText();
+            if JToken.AsObject().Get('message', JToken) then begin
+                ErrorMessage := JToken.AsValue().AsText();
+                Message('Error al acceder al archivo: %1', ErrorMessage);
+                exit;
+            end;
             Error('Error al acceder al archivo: %1', ErrorMessage);
         end;
 
@@ -3286,8 +3370,12 @@ codeunit 95100 "Google Drive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::patch, Json);
         StatusInfo.ReadFrom(Respuesta);
         if StatusInfo.Get('error', JToken) then begin
-            ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            if JToken.AsObject().Get('message', JToken) then begin
+                ErrorMessage := JToken.AsValue().AsText();
+                Message('Error al acceder al archivo: %1', ErrorMessage);
+                exit('');
+            end;
+
         end;
         exit('');
     end;

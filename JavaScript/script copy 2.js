@@ -3,8 +3,9 @@ var pdfDoc = null,
     pageNum = 1,
     pageRendering = false,
     pageNumPending = null,
-    IsFirstLoad = true;
-    selectedFiles = [];
+    IsFirstLoad = true,
+    selectedFiles = [],
+    currentRotation = 0;
 
 function InitializeControl(controlId) {
     var controlAddIn = document.getElementById(controlId);
@@ -19,6 +20,7 @@ function InitializeControl(controlId) {
                     '<button id="Imprimir" class="button-style"><i class="fas fa-print"></i></i></button>' +
                     '<button id="Anterior" class="button-style"><i class="fas fa-fast-backward"></i></i></button>' +
                     '<button id="Siguiente" class="button-style"><i class="fas fa-fast-forward"></i></i></button>' +
+                    '<button id="rotate" class="button-style"><i class="fas fa-redo"></i></button>' +
                     '<span id="page-count-container">' +
                         '<span id="page_num"></span>' +
                         '<span id="page_count"></span>' +
@@ -234,6 +236,9 @@ function InitializeControl(controlId) {
         '</style>';
     // Configurar los event listeners para la carga
     setupUploadEventListeners();
+    
+    // Configurar event listeners para botones de navegación
+    setupNavigationEventListeners();
 }
 function toggleUploadSection() {
     const uploadSection = document.getElementById('upload-section');
@@ -248,6 +253,31 @@ function toggleUploadSection() {
         uploadContent.style.display = 'none';
         uploadSection.style.minHeight = '40px';
         toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> Mostrar';
+    }
+}
+
+function setupNavigationEventListeners() {
+    // Configurar botones de navegación
+    const anteriorBtn = document.getElementById('Anterior');
+    const siguienteBtn = document.getElementById('Siguiente');
+    const downloadBtn = document.getElementById('Download');
+    
+    if (anteriorBtn) {
+        anteriorBtn.addEventListener('click', function() {
+            Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('onAnterior');
+        });
+    }
+    
+    if (siguienteBtn) {
+        siguienteBtn.addEventListener('click', function() {
+            Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('onSiguiente');
+        });
+    }
+    
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+            Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('onDownload');
+        });
     }
 }
 
@@ -444,12 +474,16 @@ function LoadPDF(PDFDocument, IsFactbox) {
     iframe = window.frameElement,
     factboxarea = window.frameElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement,
     scale = 1.3;
+    
+    document.getElementById('page-count-container').style.display = 'block';
     document.getElementById('Imprimir').style.display = 'block';
+    document.getElementById('rotate').style.display = 'block';
     clearViewerState();
 
     pageRendering = false;
     pageNum = 1;
     pageNumPending = null;
+    currentRotation = 0;
 
     pdfDocPrint = PDFDocument;
     PDFDocument = atob(PDFDocument);
@@ -467,23 +501,41 @@ function LoadPDF(PDFDocument, IsFactbox) {
         document.querySelector("#Imprimir").style.display = 'none';
         document.querySelector("#Anterior").style.display = 'none';
         document.querySelector("#Siguiente").style.display = 'none';
+        document.querySelector("#rotate").style.display = 'none';
     }
 
     requestAnimationFrame(() => {
         function renderPage(num) {
             pageRendering = true;
             pdfDoc.getPage(num).then(function (page) {
-                var viewport = page.getViewport({ scale: scale });
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                pdfcontents.height = viewport.height;
-                pdfcontents.width = viewport.width;
+                // Crear viewport con rotación actual
+                if (currentRotation === 0) {
+                    var viewport = page.getViewport({ scale: scale });
+                } else {
+                    var viewport = page.getViewport({ scale: scale, rotation: currentRotation });
+                }
+                
+                // Ajustar canvas según la rotación
+                if (currentRotation === 90 || currentRotation === 270) {
+                    canvas.height = viewport.width;
+                    canvas.width = viewport.height;
+                    pdfcontents.height = viewport.width;
+                    pdfcontents.width = viewport.height;
+                } else {
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    pdfcontents.height = viewport.height;
+                    pdfcontents.width = viewport.width;
+                }
+                
                 iframe.style.height = "1020px";
                 iframe.parentElement.style.height = "1020px";
                 iframe.style.maxHeight = "1020px";
                 iframe.parentElement.style.maxHeight = "1020px";
                 iframe.style.overflowY = "scroll";
                 
+                // Limpiar el canvas antes de renderizar
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 var renderContext = {
                     canvasContext: ctx,
@@ -554,23 +606,17 @@ function LoadPDF(PDFDocument, IsFactbox) {
         if (IsFirstLoad) {
             document.getElementById('pdf-view').addEventListener('click', onView);
         }
-        function onSiguiente() {
-            Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('onSiguiente');
+        // Los event listeners para Anterior y Siguiente ya están configurados en setupNavigationEventListeners()
+        // Los event listeners para Download ya están configurados en setupNavigationEventListeners()
+        
+        function onRotate() {
+            // Rotar 90 grados en sentido horario
+            currentRotation = (currentRotation + 90) % 360;
+            // Re-renderizar la página actual
+            queueRenderPage(pageNum);
         }
         if (IsFirstLoad) {
-            document.getElementById('Siguiente').addEventListener('click', onSiguiente);
-        }
-        function onAnterior() {
-            Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('onAnterior');
-        }
-        if (IsFirstLoad) {
-            document.getElementById('Anterior').addEventListener('click', onAnterior);
-        }
-        function onDownload() {
-            Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('onDownload');
-        }
-        if (IsFirstLoad) {
-            document.getElementById('Download').addEventListener('click', onDownload);
+            document.getElementById('rotate').addEventListener('click', onRotate);
         }
 
         IsFirstLoad = false;
@@ -582,114 +628,6 @@ function LoadPDF(PDFDocument, IsFactbox) {
         });
     });
 }
-// Funciones para el modal
-// function openModal() {
-//     return;
-     
-//      // Crear un blob del PDF para abrir en nueva pestaña
-//      const binary = atob(pdfDocPrint.replace(/\s/g, ''));
-//      const len = binary.length;
-//      const buffer = new ArrayBuffer(len);
-//      const view = new Uint8Array(buffer);
-//      for (let i = 0; i < len; i++) {
-//          view[i] = binary.charCodeAt(i);
-//      }
-//      const blob = new Blob([view], {type: "application/pdf"});
-//      const url = URL.createObjectURL(blob);
-     
-//      // Abrir en nueva pestaña
-//      window.open(url, '_blank');
-// }
- 
-//  function openModalImage() {
-//      // Para imágenes, crear una nueva pestaña con la imagen en tamaño completo
-//      return;
-//      const canvas = document.getElementById('the-canvas');
-//      const imageData = canvas.toDataURL('image/png');
-     
-//      // Crear una nueva ventana con la imagen
-//      const newWindow = window.open('', '_blank');
-//      newWindow.document.write(`
-//          <!DOCTYPE html>
-//          <html>
-//          <head>
-//              <title>Vista del Documento</title>
-//              <style>
-//                  body {
-//                      margin: 0;
-//                      padding: 20px;
-//                      background: #f5f5f5;
-//                      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-//                  }
-//                  .container {
-//                      max-width: 95%;
-//                      margin: 0 auto;
-//                      background: white;
-//                      border-radius: 8px;
-//                      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-//                      overflow: hidden;
-//                  }
-//                  .header {
-//                      background: #007bff;
-//                      color: white;
-//                      padding: 15px 20px;
-//                      display: flex;
-//                      justify-content: space-between;
-//                      align-items: center;
-//                  }
-//                  .header h1 {
-//                      margin: 0;
-//                      font-size: 18px;
-//                  }
-//                  .close-btn {
-//                      background: #dc3545;
-//                      color: white;
-//                      border: none;
-//                      border-radius: 50%;
-//                      width: 30px;
-//                      height: 30px;
-//                      cursor: pointer;
-//                      font-size: 16px;
-//                      display: flex;
-//                      align-items: center;
-//                      justify-content: center;
-//                  }
-//                  .close-btn:hover {
-//                      background: #c82333;
-//                  }
-//                  .content {
-//                      padding: 20px;
-//                      text-align: center;
-//                  }
-//                  img {
-//                      max-width: 100%;
-//                      height: auto;
-//                      border-radius: 4px;
-//                      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-//                  }
-//              </style>
-//          </head>
-//          <body>
-//              <div class="container">
-//                  <div class="header">
-//                      <h1>Vista del Documento</h1>
-//                      <button class="close-btn" onclick="window.close()">&times;</button>
-//                  </div>
-//                  <div class="content">
-//                      <img src="${imageData}" alt="Documento" />
-//                  </div>
-//              </div>
-//          </body>
-//          </html>
-//      `);
-//      newWindow.document.close();
-// }
- 
-//  function closeModal() {
-//      return;
-//      modalOverlay.style.display = 'none';
-//      document.body.style.overflow = ''; // Restaurar scroll del body
-// }
 // Función para limpiar el estado del visor
 function clearViewerState() {
     const canvas = document.getElementById('the-canvas');
@@ -728,6 +666,11 @@ function LoadOtros(base64Data, IsFactbox, fileType, driveType, driveId) {
     const ctx = canvas.getContext('2d');
     const iframeContainer = document.getElementById('iframe-container');
     const iframe = window.frameElement;
+    //limpiar Pagina y numpages
+    //page-count-container no visible
+    document.getElementById('page-count-container').style.display = 'none';
+    document.getElementById('Imprimir').style.display = 'none';
+    document.getElementById('rotate').style.display = 'none';
     
     // Limpiar estado anterior
     clearViewerState();
@@ -750,17 +693,32 @@ function LoadOtros(base64Data, IsFactbox, fileType, driveType, driveId) {
     if (iframeUrl) {
         const externalIframe = document.createElement('iframe');
         externalIframe.src = iframeUrl;
+        console.log(iframeUrl);
         externalIframe.width = '100%';
         externalIframe.style.width = '100%';
-        externalIframe.style.boxSizing = 'border-box';
-        externalIframe.style.height = '1020px';
-        externalIframe.style.maxHeight = '1020px';
-
-        // La altura la controla el CSS (1020px)
+        externalIframe.style.height = '100%';
+        externalIframe.style.position = 'static';
+        externalIframe.style.display = 'block';
+        externalIframe.style.backgroundColor = '#fff';
         externalIframe.style.border = 'none';
+        externalIframe.style.borderRadius = '10px';
+        if (driveType === 'ondrive') {
+            externalIframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-forms');
+            externalIframe.allowFullscreen = true;
+            externalIframe.style.width = '100%';
+            externalIframe.style.minWidth = '100%';
+            externalIframe.style.maxWidth = '100%';
+            externalIframe.style.overflow = 'auto';
+            externalIframe.style.transform = 'scale(1.1)';
+            externalIframe.style.transformOrigin = 'top left';
+        }
+        externalIframe.style.boxSizing = 'border-box';
         iframeContainer.appendChild(externalIframe);
 
+       
+
         if (iframe) {
+            iframe.style.width = '100%';
             iframe.style.height = '1020px';
             iframe.style.maxHeight = '1020px';
             if (iframe.parentElement) {
@@ -950,5 +908,4 @@ function getFileExtension(mimeType) {
     };
     return extensions[mimeType] || 'bin';
 }
-
 
