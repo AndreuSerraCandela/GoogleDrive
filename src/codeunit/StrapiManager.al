@@ -2,6 +2,17 @@ codeunit 95104 "Strapi Manager"
 {
     var
         CompanyInfo: Record "Company Information";
+        // Message Labels
+        ConfigIncompleteMsg: Label 'Incomplete configuration. Please make sure all fields are filled.';
+        ConnectionSuccessMsg: Label '✅ Successful connection to Strapi API.\Response: %1';
+        ConnectionErrorMsg: Label '❌ Error connecting to Strapi API.';
+        FileNotFoundMsg: Label 'File not found: %1';
+        FileUrlErrorMsg: Label 'Could not get file URL.';
+        OpenFileErrorMsg: Label 'Error opening file in browser: %1';
+        FolderNotFoundMsg: Label 'Folder not found: %1';
+        UploadErrorMsg: Label 'Error uploading file to Strapi: %1';
+        // Confirmation Labels
+        DeleteFolderConfirmMsg: Label 'Are you sure you want to delete the folder?';
 
     procedure Initialize()
     begin
@@ -57,16 +68,16 @@ codeunit 95104 "Strapi Manager"
         StatusInfo: JsonObject;
     begin
         if not ValidateConfiguration() then
-            Error('Configuración incompleta. Verifique que todos los campos estén llenos.');
+            Error(ConfigIncompleteMsg);
 
         Url := CompanyInfo."Strapi Base URL" + '/api/users/me';
         Respuesta := RestApiToken(Url, CompanyInfo."Strapi API Token", RequestType::get, '');
 
         if Respuesta <> '' then begin
             StatusInfo.ReadFrom(Respuesta);
-            Message('✅ Conexión exitosa con Strapi API.\Respuesta: %1', Respuesta);
+            Message(ConnectionSuccessMsg, Respuesta);
         end else begin
-            Message('❌ Error en la conexión con Strapi API.');
+            Message(ConnectionErrorMsg);
         end;
     end;
 
@@ -155,7 +166,7 @@ codeunit 95104 "Strapi Manager"
         end;
 
         if Id = '' then
-            Error('Error al subir archivo a Strapi: %1', Respuesta);
+            Error(UploadErrorMsg, Respuesta);
 
         exit(Id);
     end;
@@ -174,13 +185,13 @@ codeunit 95104 "Strapi Manager"
         Id := GetFileId(Filename);
 
         if Id = '' then
-            Error('Archivo no encontrado: %1', Filename);
+            Error(FileNotFoundMsg, Filename);
 
         // Obtener la URL del archivo
         Url := GetUrl(Id);
 
         if Url = '' then
-            Error('No se pudo obtener la URL del archivo');
+            Error(FileUrlErrorMsg);
 
         TempBlob.CreateInStream(Int);
         RestApiGetContentStream(Url, RequestType::Get, Int);
@@ -234,14 +245,14 @@ codeunit 95104 "Strapi Manager"
         Id: Text;
     begin
         if not HideDialog then
-            if not Confirm('¿Está seguro de que desea eliminar la carpeta?', true) then
+            if not Confirm(DeleteFolderConfirmMsg, true) then
                 exit('');
 
         // Obtener el ID del archivo/carpeta
         Id := GetFileId(Carpeta);
 
         if Id = '' then
-            Error('Carpeta no encontrada: %1', Carpeta);
+            Error(FolderNotFoundMsg, Carpeta);
 
         Url := CompanyInfo."Strapi Base URL" + '/api/' + CompanyInfo."Strapi Collection Name" + '/' + Id;
 
@@ -506,6 +517,32 @@ codeunit 95104 "Strapi Manager"
         ResponseMessage.Content().ReadAs(payload);
     end;
 
+    procedure GetTargetFolderForDocument(TableID: Integer; DocumentNo: Text; DocumentDate: Date; Origen: Enum "Data Storage Provider"): Text
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        TargetFolderId: Text;
+        SubfolderPath: Text;
+    begin
+        // Get the configured folder for this table
+        TargetFolderId := FolderMapping.GetDefaultFolderForTable(TableID);
+
+        if TargetFolderId = '' then begin
+            // No specific configuration, use root or default folder
+            exit(''); // Empty means root folder
+        end;
+        if DocumentNo = '' then
+            exit(TargetFolderId);
+        // Check if we need to create subfolders
+        SubfolderPath := FolderMapping.CreateSubfolderPath(TableID, DocumentNo, DocumentDate, Origen);
+
+        if SubfolderPath <> TargetFolderId then begin
+            // Need to create subfolder structure
+            TargetFolderId := CreateFolderStructure(TargetFolderId, SubfolderPath);
+        end;
+
+        exit(TargetFolderId);
+    end;
+
     procedure ListFolder(FolderId: Text; var Files: Record "Name/Value Buffer" temporary; SoloSubfolder: Boolean)
     var
         RequestType: Option Get,patch,put,post,delete;
@@ -644,7 +681,7 @@ codeunit 95104 "Strapi Manager"
             Hyperlink(ResponseText);
         end
         else
-            Error('Error al abrir el archivo en el navegador: %1', ResponseText);
+            Error(OpenFileErrorMsg, ResponseText);
     end;
 
     internal procedure CreateSubfolderStructure(Id: Text; SubFolder: Text): Text

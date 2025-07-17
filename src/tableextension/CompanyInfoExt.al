@@ -5,7 +5,7 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
         //añadir campo boolean llamado "Funcionalidad extendida"
         field(95135; "Funcionalidad extendida"; Boolean)
         {
-            Caption = 'Funcionalidad extendida';
+            Caption = 'Extended Functionality';
             DataClassification = CustomerContent;
         }
         field(95100; "Expiracion Token GoogleDrive"; DateTime)

@@ -1,6 +1,6 @@
 page 95112 "Drive Configuration"
 {
-    Caption = 'Configuración de Almacenamiento';
+    Caption = 'Storage Configuration';
     PageType = Card;
     ApplicationArea = All;
     UsageCategory = Administration;
@@ -13,14 +13,14 @@ page 95112 "Drive Configuration"
         {
             group(General)
             {
-                group("Proveedor de Almacenamiento")
+                group("Storage Provider")
                 {
-                    Caption = 'Proveedor de Almacenamiento';
+                    Caption = 'Storage Provider';
 
                     field("Data Storage Provider"; Rec."Data Storage Provider")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Selecciona el proveedor de almacenamiento de datos a utilizar.';
+                        ToolTip = 'Select the data storage provider to use.';
                         trigger OnValidate()
                         begin
                             IsGoogleDrive := Rec."Data Storage Provider" = Rec."Data Storage Provider"::"Google Drive";
@@ -35,85 +35,85 @@ page 95112 "Drive Configuration"
                     field("Funcionalidad extendida"; Rec."Funcionalidad extendida")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica si la funcionalidad extendida está habilitada.';
+                        ToolTip = 'Specifies if extended functionality is enabled.';
                     }
                 }
 
                 group("Google Drive Configuration")
                 {
-                    Caption = 'Configuración Google Drive';
+                    Caption = 'Google Drive Configuration';
                     Visible = IsGoogleDrive;
 
                     field("Google Client ID"; Rec."Google Client ID")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el Client ID de la aplicación Google OAuth.';
+                        ToolTip = 'Specifies the Client ID of the Google OAuth application.';
                     }
 
                     field("Google Client Secret"; Rec."Google Client Secret")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el Client Secret de la aplicación Google OAuth.';
+                        ToolTip = 'Specifies the Client Secret of the Google OAuth application.';
                         ExtendedDatatype = Masked;
                     }
 
                     field("Google Project ID"; Rec."Google Project ID")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el Project ID de Google Cloud Console.';
+                        ToolTip = 'Specifies the Project ID from Google Cloud Console.';
                     }
 
                     field("Google Auth URI"; Rec."Google Auth URI")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la URI de autorización de Google OAuth.';
+                        ToolTip = 'Specifies the authorization URI of Google OAuth.';
                     }
 
                     field("Google Token URI"; Rec."Google Token URI")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la URI del token de Google OAuth.';
+                        ToolTip = 'Specifies the token URI of Google OAuth.';
                     }
 
                     field("Google Auth Provider Cert URL"; Rec."Google Auth Provider Cert URL")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la URL del certificado del proveedor de autenticación de Google.';
+                        ToolTip = 'Specifies the URL of the Google authentication provider certificate.';
                     }
 
                     field("Url Api GoogleDrive"; Rec."Url Api GoogleDrive")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la URL base de la API de Google Drive.';
+                        ToolTip = 'Specifies the base URL of the Google Drive API.';
                     }
                     field("Google Drive Root Folder"; Rec."Root Folder")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la carpeta raíz de Google Drive.';
+                        ToolTip = 'Specifies the root folder of Google Drive.';
                     }
                     field("Google Shared Drive Name"; Rec."Google Shared Drive Name")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el nombre de la carpeta compartida de Google Drive.';
+                        ToolTip = 'Specifies the name of the shared Google Drive folder.';
                         Editable = false;
                     }
                     field("Google Shared Drive ID"; Rec."Google Shared Drive ID")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el ID de la carpeta compartida de Google Drive.';
+                        ToolTip = 'Specifies the ID of the shared Google Drive folder.';
                     }
 
                 }
 
                 group("Google Drive Tokens")
                 {
-                    Caption = 'Tokens Google Drive';
+                    Caption = 'Google Drive Tokens';
                     Visible = IsGoogleDrive;
 
                     field("Token GoogleDrive"; Rec."Token GoogleDrive")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Token de acceso actual de Google Drive.';
+                        ToolTip = 'Current access token for Google Drive.';
                         ExtendedDatatype = Masked;
                         Editable = TokenFieldsEditable;
 
@@ -127,7 +127,7 @@ page 95112 "Drive Configuration"
                     field("Refresh Token GoogleDrive"; Rec."Refresh Token GoogleDrive")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Token de actualización de Google Drive.';
+                        ToolTip = 'Refresh token for Google Drive.';
                         ExtendedDatatype = Masked;
                         Editable = TokenFieldsEditable;
                     }
@@ -139,54 +139,54 @@ page 95112 "Drive Configuration"
                     field("Fecha Expiracion Token GoogleDrive"; Rec."Expiracion Token GoogleDrive")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Fecha y hora de expiración del token de acceso.';
+                        ToolTip = 'Date and time when the access token expires.';
                         Editable = false;
                     }
                 }
 
                 group("OneDrive Configuration")
                 {
-                    Caption = 'Configuración OneDrive';
+                    Caption = 'OneDrive Configuration';
                     Visible = IsOneDrive;
 
                     field("OneDrive Client ID"; Rec."OneDrive Client ID")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el Client ID de la aplicación OneDrive OAuth.';
+                        ToolTip = 'Specifies the Client ID of the OneDrive OAuth application.';
                     }
 
                     field("OneDrive Client Secret"; Rec."OneDrive Client Secret")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el Client Secret de la aplicación OneDrive OAuth.';
+                        ToolTip = 'Specifies the Client Secret of the OneDrive OAuth application.';
                         ExtendedDatatype = Masked;
                     }
 
                     field("OneDrive Tenant ID"; Rec."OneDrive Tenant ID")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el Tenant ID de Microsoft Azure.';
+                        ToolTip = 'Specifies the Tenant ID from Microsoft Azure.';
                     }
                     field("Url Api OneDrive"; Rec."Url Api OneDrive")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la URL base de la API de OneDrive.';
+                        ToolTip = 'Specifies the base URL of the OneDrive API.';
                     }
 
                     field("OneDrive Root Folder"; Rec."Root Folder")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la carpeta raíz de OneDrive.';
+                        ToolTip = 'Specifies the root folder of OneDrive.';
                     }
                     field("OneDrive Site Url"; Rec."OneDrive Site Url")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la URL del sitio de OneDrive.';
+                        ToolTip = 'Specifies the URL of the OneDrive site.';
                     }
                     field("OneDrive Site ID"; Rec."OneDrive Site ID")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el ID del sitio de OneDrive.';
+                        ToolTip = 'Specifies the ID of the OneDrive site.';
                     }
                     field("Code Ondrive"; Rec."Code Ondrive")
                     {
@@ -196,7 +196,7 @@ page 95112 "Drive Configuration"
 
                 group("OneDrive Tokens")
                 {
-                    Caption = 'Tokens OneDrive';
+                    Caption = 'OneDrive Tokens';
                     Visible = IsOneDrive;
 
                     field("OneDrive Access Token"; Rec."OneDrive Access Token")
@@ -223,7 +223,7 @@ page 95112 "Drive Configuration"
 
                 group("DropBox Configuration")
                 {
-                    Caption = 'Configuración DropBox';
+                    Caption = 'DropBox Configuration';
                     Visible = IsDropBox;
 
                     field("DropBox App Key"; Rec."DropBox App Key")
@@ -258,7 +258,7 @@ page 95112 "Drive Configuration"
 
                 group("DropBox Tokens")
                 {
-                    Caption = 'Tokens DropBox';
+                    Caption = 'DropBox Tokens';
                     Visible = IsDropBox;
 
                     field("DropBox Access Token"; TokenDropBox)
@@ -291,7 +291,7 @@ page 95112 "Drive Configuration"
 
                 group("Strapi Configuration")
                 {
-                    Caption = 'Configuración Strapi';
+                    Caption = 'Strapi Configuration';
                     Visible = IsStrapi;
 
                     field("Strapi Base URL"; Rec."Strapi Base URL")
@@ -328,7 +328,7 @@ page 95112 "Drive Configuration"
                 }
                 group("SharePoint Configuration")
                 {
-                    Caption = 'Configuración SharePoint';
+                    Caption = 'SharePoint Configuration';
                     Visible = IsSharePoint;
 
                     field("SharePoint Client ID"; Rec."SharePoint Client ID")
@@ -361,7 +361,7 @@ page 95112 "Drive Configuration"
                 }
                 group("SharePoint Tokens")
                 {
-                    Caption = 'Tokens SharePoint';
+                    Caption = 'SharePoint Tokens';
                     Visible = IsSharePoint;
                     field("SharePoint Access Token"; Rec."SharePoint Access Token")
                     {
@@ -399,8 +399,8 @@ page 95112 "Drive Configuration"
                 action("Configure Default Settings")
                 {
                     ApplicationArea = All;
-                    Caption = 'Configurar Valores por Defecto';
-                    ToolTip = 'Configura los valores por defecto para la conexión con Google Drive.';
+                    Caption = 'Configure Default Settings';
+                    ToolTip = 'Configures default values for the connection with Google Drive.';
                     Image = Setup;
 
                     trigger OnAction()
@@ -412,8 +412,8 @@ page 95112 "Drive Configuration"
                 action("Start OAuth Flow")
                 {
                     ApplicationArea = All;
-                    Caption = 'Iniciar Autenticación OAuth';
-                    ToolTip = 'Inicia el proceso de autenticación OAuth con Google Drive.';
+                    Caption = 'Start OAuth Flow';
+                    ToolTip = 'Starts the OAuth authentication process with Google Drive.';
                     Image = Web;
 
                     trigger OnAction()
@@ -428,8 +428,8 @@ page 95112 "Drive Configuration"
                 action("Start OAuth Playground")
                 {
                     ApplicationArea = All;
-                    Caption = 'Usar OAuth Playground (Recomendado)';
-                    ToolTip = 'Abre Google OAuth Playground para obtener tokens de forma manual.';
+                    Caption = 'Use OAuth Playground (Recommended)';
+                    ToolTip = 'Opens Google OAuth Playground to obtain tokens manually.';
                     Image = Web;
                     //Promoted = true;
                     //PromotedCategory = Process;
@@ -443,11 +443,11 @@ page 95112 "Drive Configuration"
                     end;
                 }
 
-                action("Obtener Token")
+                action("Get Token")
                 {
                     ApplicationArea = All;
-                    Caption = 'Obtener Token';
-                    ToolTip = 'Completa el proceso de autenticación OAuth con el código de autorización.';
+                    Caption = 'Get Token';
+                    ToolTip = 'Completes the OAuth authentication process with the authorization code.';
                     Image = Approve;
 
                     trigger OnAction()
@@ -462,8 +462,8 @@ page 95112 "Drive Configuration"
                 action("Test Connection")
                 {
                     ApplicationArea = All;
-                    Caption = 'Probar Conexión';
-                    ToolTip = 'Prueba la conexión con Google Drive usando la configuración actual.';
+                    Caption = 'Test Connection';
+                    ToolTip = 'Tests the connection with Google Drive using the current configuration.';
                     Image = TestReport;
 
                     trigger OnAction()
@@ -472,17 +472,17 @@ page 95112 "Drive Configuration"
                     begin
                         GoogleDriveManager.Initialize();
                         if GoogleDriveManager.Authenticate() then
-                            Message('✅ Conexión exitosa con Google Drive.')
+                            Message('✅ Google Drive connection successful.')
                         else
-                            Message('❌ Error en la conexión. Verifique la configuración.');
+                            Message('❌ Connection error. Check configuration.');
                     end;
                 }
 
                 action("Refresh Token")
                 {
                     ApplicationArea = All;
-                    Caption = 'Actualizar Token';
-                    ToolTip = 'Actualiza el token de acceso usando el refresh token.';
+                    Caption = 'Refresh Token';
+                    ToolTip = 'Refreshes the access token using the refresh token.';
                     Image = Refresh;
 
                     trigger OnAction()
@@ -497,8 +497,8 @@ page 95112 "Drive Configuration"
                 action("Test Token Validity")
                 {
                     ApplicationArea = All;
-                    Caption = 'Probar Validez del Token';
-                    ToolTip = 'Verifica si el token actual es válido y no ha expirado.';
+                    Caption = 'Test Token Validity';
+                    ToolTip = 'Verifies if the current token is valid and not expired.';
                     Image = TestReport;
 
                     trigger OnAction()
@@ -510,15 +510,15 @@ page 95112 "Drive Configuration"
                 action("Revoke Access")
                 {
                     ApplicationArea = All;
-                    Caption = 'Revocar Acceso';
-                    ToolTip = 'Revoca el acceso a Google Drive y limpia los tokens almacenados.';
+                    Caption = 'Revoke Access';
+                    ToolTip = 'Revokes access to Google Drive and clears stored tokens.';
                     Image = Delete;
 
                     trigger OnAction()
                     var
                         GoogleDriveManager: Codeunit "Google Drive Manager";
                     begin
-                        if Confirm('¿Está seguro de que desea revocar el acceso a Google Drive?', false) then begin
+                        if Confirm('Are you sure you want to revoke Google Drive access?', false) then begin
                             GoogleDriveManager.Initialize();
                             GoogleDriveManager.RevokeAccess();
                         end;
@@ -528,8 +528,8 @@ page 95112 "Drive Configuration"
                 action("Validate Configuration")
                 {
                     ApplicationArea = All;
-                    Caption = 'Validar Configuración';
-                    ToolTip = 'Valida que todos los campos de configuración estén completos.';
+                    Caption = 'Validate Configuration';
+                    ToolTip = 'Validates that all configuration fields are complete.';
                     Image = ValidateEmailLoggingSetup;
 
                     trigger OnAction()
@@ -538,17 +538,17 @@ page 95112 "Drive Configuration"
                     begin
                         GoogleDriveManager.Initialize();
                         if GoogleDriveManager.ValidateConfiguration() then
-                            Message('✅ Configuración válida.')
+                            Message('✅ Configuration valid.')
                         else
-                            Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
+                            Message('❌ Incomplete configuration. Please ensure all fields are filled.');
                     end;
                 }
 
                 action("Enable Manual Token Entry")
                 {
                     ApplicationArea = All;
-                    Caption = 'Habilitar Entrada Manual de Tokens';
-                    ToolTip = 'Permite editar manualmente los campos de tokens.';
+                    Caption = 'Enable Manual Token Entry';
+                    ToolTip = 'Allows manual editing of token fields.';
                     Image = Edit;
 
                     trigger OnAction()
@@ -563,8 +563,8 @@ page 95112 "Drive Configuration"
                 action("Diagnose OAuth Configuration")
                 {
                     ApplicationArea = All;
-                    Caption = 'Diagnosticar Configuración OAuth';
-                    ToolTip = 'Ejecuta un diagnóstico completo de la configuración OAuth para identificar problemas.';
+                    Caption = 'Diagnose OAuth Configuration';
+                    ToolTip = 'Performs a complete diagnosis of the OAuth configuration to identify issues.';
                     Image = Troubleshoot;
                     //Promoted = true;
                     //PromotedCategory = Process;
@@ -583,7 +583,7 @@ page 95112 "Drive Configuration"
                 {
                     ApplicationArea = All;
                     Caption = 'Id Drive';
-                    ToolTip = 'Obtiene el id del sitio de Google Drive.';
+                    ToolTip = 'Gets the ID of the Google Drive site.';
                     Image = Web;
 
                     trigger OnAction()
@@ -621,8 +621,8 @@ page 95112 "Drive Configuration"
                 action("OneDrive Test Connection")
                 {
                     ApplicationArea = All;
-                    Caption = 'Probar Conexión';
-                    ToolTip = 'Prueba la conexión con OneDrive usando la configuración actual.';
+                    Caption = 'Test Connection';
+                    ToolTip = 'Tests the connection with OneDrive using the current configuration.';
                     Image = TestReport;
 
                     trigger OnAction()
@@ -631,17 +631,17 @@ page 95112 "Drive Configuration"
                     begin
                         OneDriveManager.Initialize();
                         if OneDriveManager.Authenticate() then
-                            Message('✅ Conexión exitosa con OneDrive.')
+                            Message('✅ OneDrive connection successful.')
                         else
-                            Message('❌ Error en la conexión. Verifique la configuración.');
+                            Message('❌ Connection error. Check configuration.');
                     end;
                 }
 
                 action("OneDrive Start OAuth")
                 {
                     ApplicationArea = All;
-                    Caption = 'Iniciar OAuth';
-                    ToolTip = 'Inicia el proceso de autenticación OAuth con OneDrive.';
+                    Caption = 'Start OAuth';
+                    ToolTip = 'Starts the OAuth authentication process with OneDrive.';
                     Image = Web;
 
                     trigger OnAction()
@@ -656,8 +656,8 @@ page 95112 "Drive Configuration"
                 action("Actualizar OneDrive Token")
                 {
                     ApplicationArea = All;
-                    Caption = 'Actualizar Token';
-                    ToolTip = 'Actualiza el token de acceso usando el refresh token.';
+                    Caption = 'Update Token';
+                    ToolTip = 'Update the access token using the refresh token.';
                     Image = Refresh;
 
                     trigger OnAction()
@@ -677,8 +677,8 @@ page 95112 "Drive Configuration"
                 action("OneDrive Validate Configuration")
                 {
                     ApplicationArea = All;
-                    Caption = 'Validar Configuración';
-                    ToolTip = 'Valida que todos los campos de configuración estén completos.';
+                    Caption = 'Validate Configuration';
+                    ToolTip = 'Validates that all configuration fields are complete.';
                     Image = ValidateEmailLoggingSetup;
 
                     trigger OnAction()
@@ -687,9 +687,9 @@ page 95112 "Drive Configuration"
                     begin
                         OneDriveManager.Initialize();
                         if OneDriveManager.ValidateConfiguration() then
-                            Message('✅ Configuración válida.')
+                            Message('✅ Configuration valid.')
                         else
-                            Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
+                            Message('❌ Incomplete configuration. Please ensure all fields are filled.');
                     end;
                 }
 
@@ -697,7 +697,7 @@ page 95112 "Drive Configuration"
                 {
                     ApplicationArea = All;
                     Caption = 'Id Site';
-                    ToolTip = 'Obtiene el id del sitio de OneDrive.';
+                    ToolTip = 'Gets the ID of the OneDrive site.';
                     Image = Web;
 
                     trigger OnAction()
@@ -719,8 +719,8 @@ page 95112 "Drive Configuration"
                 action("DropBox Test Connection")
                 {
                     ApplicationArea = All;
-                    Caption = 'Probar Conexión';
-                    ToolTip = 'Prueba la conexión con DropBox usando la configuración actual.';
+                    Caption = 'Test Connection';
+                    ToolTip = 'Tests the connection with DropBox using the current configuration.';
                     Image = TestReport;
 
                     trigger OnAction()
@@ -729,17 +729,17 @@ page 95112 "Drive Configuration"
                     begin
                         DropBoxManager.Initialize();
                         if DropBoxManager.Authenticate() then
-                            Message('✅ Conexión exitosa con DropBox.')
+                            Message('✅ DropBox connection successful.')
                         else
-                            Message('❌ Error en la conexión. Verifique la configuración.');
+                            Message('❌ Connection error. Check configuration.');
                     end;
                 }
 
                 action("DropBox Start OAuth")
                 {
                     ApplicationArea = All;
-                    Caption = 'Iniciar OAuth';
-                    ToolTip = 'Inicia el proceso de autenticación OAuth con DropBox.';
+                    Caption = 'Start OAuth';
+                    ToolTip = 'Starts the OAuth authentication process with DropBox.';
                     Image = Web;
 
                     trigger OnAction()
@@ -755,8 +755,8 @@ page 95112 "Drive Configuration"
                 action("Actualizar DropBox Token")
                 {
                     ApplicationArea = All;
-                    Caption = 'Actualizar Token';
-                    ToolTip = 'Actualiza el token de acceso usando el refresh token.';
+                    Caption = 'Update Token';
+                    ToolTip = 'Update the access token using the refresh token.';
                     Image = Refresh;
 
                     trigger OnAction()
@@ -771,8 +771,8 @@ page 95112 "Drive Configuration"
                 action("DropBox Validate Configuration")
                 {
                     ApplicationArea = All;
-                    Caption = 'Validar Configuración';
-                    ToolTip = 'Valida que todos los campos de configuración estén completos.';
+                    Caption = 'Validate Configuration';
+                    ToolTip = 'Validates that all configuration fields are complete.';
                     Image = ValidateEmailLoggingSetup;
 
                     trigger OnAction()
@@ -781,9 +781,9 @@ page 95112 "Drive Configuration"
                     begin
                         DropBoxManager.Initialize();
                         if DropBoxManager.ValidateConfiguration() then
-                            Message('✅ Configuración válida.')
+                            Message('✅ Configuration valid.')
                         else
-                            Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
+                            Message('❌ Incomplete configuration. Please ensure all fields are filled.');
                     end;
                 }
 
@@ -797,8 +797,8 @@ page 95112 "Drive Configuration"
                 action("Strapi Test Connection")
                 {
                     ApplicationArea = All;
-                    Caption = 'Probar Conexión';
-                    ToolTip = 'Prueba la conexión con Strapi usando la configuración actual.';
+                    Caption = 'Test Connection';
+                    ToolTip = 'Tests the connection with Strapi using the current configuration.';
                     Image = TestReport;
 
                     trigger OnAction()
@@ -807,17 +807,17 @@ page 95112 "Drive Configuration"
                     begin
                         StrapiManager.Initialize();
                         if StrapiManager.Authenticate() then
-                            Message('✅ Conexión exitosa con Strapi.')
+                            Message('✅ Strapi connection successful.')
                         else
-                            Message('❌ Error en la conexión. Verifique la configuración.');
+                            Message('❌ Connection error. Check configuration.');
                     end;
                 }
 
                 action("Strapi Validate Configuration")
                 {
                     ApplicationArea = All;
-                    Caption = 'Validar Configuración';
-                    ToolTip = 'Valida que todos los campos de configuración estén completos.';
+                    Caption = 'Validate Configuration';
+                    ToolTip = 'Validates that all configuration fields are complete.';
                     Image = ValidateEmailLoggingSetup;
 
                     trigger OnAction()
@@ -826,17 +826,17 @@ page 95112 "Drive Configuration"
                     begin
                         StrapiManager.Initialize();
                         if StrapiManager.ValidateConfiguration() then
-                            Message('✅ Configuración válida.')
+                            Message('✅ Configuration valid.')
                         else
-                            Message('❌ Configuración incompleta. Verifique que todos los campos estén llenos.');
+                            Message('❌ Incomplete configuration. Please ensure all fields are filled.');
                     end;
                 }
 
                 action("Strapi Test API")
                 {
                     ApplicationArea = All;
-                    Caption = 'Probar API';
-                    ToolTip = 'Prueba la API de Strapi con la configuración actual.';
+                    Caption = 'Test API';
+                    ToolTip = 'Tests the Strapi API with the current configuration.';
                     Image = TestReport;
 
                     trigger OnAction()
@@ -856,36 +856,36 @@ page 95112 "Drive Configuration"
                 action("SharePoint Test Connection")
                 {
                     ApplicationArea = All;
-                    Caption = 'Probar Conexión';
-                    ToolTip = 'Prueba la conexión con SharePoint usando la configuración actual.';
+                    Caption = 'Test Connection';
+                    ToolTip = 'Tests the connection with SharePoint using the current configuration.';
                     Image = TestReport;
                 }
                 action("SharePoint Start OAuth")
                 {
                     ApplicationArea = All;
-                    Caption = 'Iniciar OAuth';
-                    ToolTip = 'Inicia el proceso de autenticación OAuth con SharePoint.';
+                    Caption = 'Start OAuth';
+                    ToolTip = 'Starts the OAuth authentication process with SharePoint.';
                     Image = Web;
                 }
                 action("Actualizar SharePoint Token")
                 {
                     ApplicationArea = All;
-                    Caption = 'Actualizar Token';
-                    ToolTip = 'Actualiza el token de acceso usando el refresh token.';
+                    Caption = 'Update Token';
+                    ToolTip = 'Update the access token using the refresh token.';
                     Image = Refresh;
                 }
                 action("SharePoint Validate Configuration")
                 {
                     ApplicationArea = All;
-                    Caption = 'Validar Configuración';
-                    ToolTip = 'Valida que todos los campos de configuración estén completos.';
+                    Caption = 'Validate Configuration';
+                    ToolTip = 'Validates that all configuration fields are complete.';
                     Image = ValidateEmailLoggingSetup;
                 }
                 action("SharePoint Test API")
                 {
                     ApplicationArea = All;
-                    Caption = 'Probar API';
-                    ToolTip = 'Prueba la API de SharePoint con la configuración actual.';
+                    Caption = 'Test API';
+                    ToolTip = 'Tests the SharePoint API with the current configuration.';
                     Image = TestReport;
                 }
 
@@ -893,8 +893,8 @@ page 95112 "Drive Configuration"
             action("Folder Mapping Setup")
             {
                 ApplicationArea = All;
-                Caption = 'Configurar Mapeo de Carpetas';
-                ToolTip = 'Configura qué carpetas de Google Drive usar para cada tipo de documento.';
+                Caption = 'Configure Folder Mapping';
+                ToolTip = 'Configures which Google Drive folders to use for each document type.';
                 Image = Setup;
                 //Promoted = true;
                 //PromotedCategory = Process;
@@ -922,8 +922,8 @@ page 95112 "Drive Configuration"
             action("Show Manual")
             {
                 ApplicationArea = All;
-                Caption = 'Mostrar Manual';
-                ToolTip = 'Muestra el manual de usuario del Drive.';
+                Caption = 'Show Manual';
+                ToolTip = 'Shows the user manual for the Drive.';
                 Image = Help;
                 //Promoted = true;
                 //PromotedCategory = Process;
@@ -940,7 +940,7 @@ page 95112 "Drive Configuration"
         area(Promoted)
         {
             actionref(FolderMappingSetupAction; "Folder Mapping Setup") { }
-            actionref(TokenGoogleDriveAction; "Obtener Token") { }
+            actionref(TokenGoogleDriveAction; "Get Token") { }
             actionref(TokenOneDriveAction; "Actualizar OneDrive Token") { }
             actionref(TokenDropBoxAction; "Actualizar DropBox Token") { }
             actionref(CreaRootDriveAction; "Crea Root") { }
@@ -997,7 +997,7 @@ page 95112 "Drive Configuration"
             Rec."Url Api SharePoint" := 'https://graph.microsoft.com/v1.0/';
 
         Rec.Modify();
-        Message('Valores por defecto configurados exitosamente.');
+        Message('Default values configured successfully.');
     end;
 
     local procedure TestTokenValidity()
@@ -1006,7 +1006,7 @@ page 95112 "Drive Configuration"
         ExpirationText: Text;
     begin
         if Rec."Token GoogleDrive" = '' then begin
-            Message('❌ No hay token configurado.');
+            Message('❌ No token configured.');
             exit;
         end;
 
@@ -1014,11 +1014,11 @@ page 95112 "Drive Configuration"
 
         if IsValid then begin
             ExpirationText := Format(Rec."Expiracion Token GoogleDrive");
-            Message('✅ Token válido hasta: %1', ExpirationText);
+            Message('✅ Token valid until: %1', ExpirationText);
         end else begin
             ExpirationText := Format(Rec."Expiracion Token GoogleDrive");
-            Message('❌ Token expirado desde: %1\' +
-                   'Use "Actualizar Token" para renovarlo.', ExpirationText);
+            Message('❌ Token expired since: %1\' +
+                   'Use "Refresh Token" to renew it.', ExpirationText);
         end;
     end;
 
@@ -1048,7 +1048,7 @@ pageextension 95101 CompanyInfoExt extends "Company Information"
             action("Drive Configuration")
             {
                 ApplicationArea = All;
-                Caption = 'Configuración de Almacenamiento';
+                Caption = 'Storage Configuration';
                 trigger OnAction()
                 var
                     TiopoConfiguracion: Label 'Local,Google Drive, OneDrive, DropBox, Strapi, SharePoint';
@@ -1056,7 +1056,7 @@ pageextension 95101 CompanyInfoExt extends "Company Information"
 
                 begin
                     if Rec."Data Storage Provider" = Rec."Data Storage Provider"::Local Then begin
-                        OpcionElegida := StrMenu(TiopoConfiguracion, 1, 'Elija el tipo de almacenamiento');
+                        OpcionElegida := StrMenu(TiopoConfiguracion, 1, 'Choose storage type');
                         case OpcionElegida of
                             1:
                                 Rec."Data Storage Provider" := Rec."Data Storage Provider"::Local;

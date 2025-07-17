@@ -18,7 +18,47 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         Folder: Text;
         SubFolder: Text;
         Path: Text;
+        Fecha: Date;
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        PurchaseCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
     begin
+        Fecha := 0D;
+        case DocumentAttachment."Table ID" of
+            Database::"Sales Header":
+                begin
+                    If SalesHeader.Get(DocumentAttachment."Document Type", DocumentAttachment."No.") then
+                        Fecha := SalesHeader."Document Date";
+                end;
+            Database::"Sales Invoice Header":
+                begin
+                    If SalesInvoiceHeader.Get(DocumentAttachment."No.") then
+                        Fecha := SalesInvoiceHeader."Document Date";
+                end;
+            Database::"Sales Cr.Memo Header":
+                begin
+                    If SalesCrMemoHeader.Get(DocumentAttachment."No.") then
+                        Fecha := SalesCrMemoHeader."Document Date";
+                end;
+            Database::"Purchase Header":
+                begin
+                    If PurchaseHeader.Get(DocumentAttachment."Document Type", DocumentAttachment."No.") then
+                        Fecha := PurchaseHeader."Document Date";
+                end;
+            Database::"Purch. Inv. Header":
+                begin
+                    If PurchaseInvoiceHeader.Get(DocumentAttachment."No.") then
+                        Fecha := PurchaseInvoiceHeader."Document Date";
+                end;
+            Database::"Purch. Cr. Memo Hdr.":
+                begin
+                    If PurchaseCrMemoHeader.Get(DocumentAttachment."No.") then
+                        Fecha := PurchaseCrMemoHeader."Document Date";
+                end;
+        end;
         CompanyInfo.Get();
         if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Local then exit;
         case CompanyInfo."Data Storage Provider" of
@@ -27,7 +67,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                     DocumentAttachment."Store in Google Drive" := true;
                     FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
                     if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
                     DocumentAttachment."Google Drive ID" := GoogleDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
@@ -43,7 +83,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                         Path += FolderMapping."Default Folder Name" + '/';
                     end;
                     ;
-                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then begin
                         Folder := OneDriveManager.CreateFolderStructure(Folder, SubFolder);
                         Path += SubFolder + '/'
@@ -55,7 +95,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                     DocumentAttachment."Store in DropBox" := true;
                     FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
                     if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Folder := DropBoxManager.CreateFolderStructure(Folder, SubFolder);
                     DocumentAttachment."DropBox ID" := DropBoxManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name");
@@ -67,6 +107,50 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                 end;
         end;
 
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, 80, OnBeforeDeleteAfterPosting, '', false, false)]
+    local procedure OnBeforeDeleteAfterPosting(var SalesHeader: Record "Sales Header"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SkipDelete: Boolean; CommitIsSuppressed: Boolean; EverythingInvoiced: Boolean; var TempSalesLineGlobal: Record "Sales Line" temporary)
+    var
+        DocumentAttachment: Record "Document Attachment";
+        FolderMappingSH: Record "Google Drive Folder Mapping";
+        FolderMappingSalesInv: Record "Google Drive Folder Mapping";
+        FolderMappingSalesCrMemo: Record "Google Drive Folder Mapping";
+        RecRef: RecordRef;
+    begin
+        CompanyInfo.Get();
+        RecRef.GetTable(SalesHeader);
+        If not FolderMappingSH.Get(Database::"Sales Header") then
+            exit;
+        if not FolderMappingSalesInv.Get(Database::"Sales Invoice Header") then
+            exit;
+        if not FolderMappingSalesCrMemo.Get(Database::"Sales Cr.Memo Header") then
+            exit;
+
+        If (SalesInvoiceHeader."No." <> '') Or (SalesCrMemoHeader."No." <> '') then begin
+            DocumentAttachment.SetRange("Table ID", Database::"Sales Header");
+            DocumentAttachment.SetRange("No.", SalesHeader."No.");
+            DocumentAttachment.SetRange("Document Type", SalesHeader."Document Type");
+            DocumentAttachment.ModifyAll("Posted Document", true);
+        end;
+        if (SalesInvoiceHeader."No." <> '') then begin
+            DocumentAttachment.Reset();
+            DocumentAttachment.SetRange("Table ID", Database::"Sales Invoice Header");
+            DocumentAttachment.SetRange("No.", SalesInvoiceHeader."No.");
+            if DocumentAttachment.FindFirst() then
+                repeat
+                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Invoice Header", RecRef, SalesHeader."Document Date");
+                until DocumentAttachment.Next() = 0;
+        end;
+        if (SalesCrMemoHeader."No." <> '') then begin
+            DocumentAttachment.Reset();
+            DocumentAttachment.SetRange("Table ID", Database::"Sales Cr.Memo Header");
+            DocumentAttachment.SetRange("No.", SalesCrMemoHeader."No.");
+            if DocumentAttachment.FindFirst() then
+                repeat
+                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Cr.Memo Header", RecRef, SalesHeader."Document Date");
+                until DocumentAttachment.Next() = 0;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Document Attachment", OnAfterDeleteEvent, '', false, false)]
@@ -87,17 +171,20 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             CompanyInfo."Data Storage Provider"::Strapi:
                 DeDonde := 'Strapi';
         end;
-        If Confirm('¿Desea eliminar el archivo de %1?', false, DeDonde) then
-            case CompanyInfo."Data Storage Provider" of
-                CompanyInfo."Data Storage Provider"::"Google Drive":
-                    GoogleDriveManager.DeleteFile(Rec."Google Drive ID");
-                CompanyInfo."Data Storage Provider"::OneDrive:
-                    OneDriveManager.DeleteFile(Rec."OneDrive ID");
-                CompanyInfo."Data Storage Provider"::DropBox:
-                    DropBoxManager.DeleteFile(Rec."DropBox ID");
-                CompanyInfo."Data Storage Provider"::Strapi:
-                    StrapiManager.DeleteFile(Rec."Strapi ID");
-            end;
+        if Rec."Posted Document" then
+            exit;
+        //If Confirm('¿Desea eliminar el archivo de %1?', false, DeDonde) then
+        case CompanyInfo."Data Storage Provider" of
+            CompanyInfo."Data Storage Provider"::"Google Drive":
+                GoogleDriveManager.DeleteFile(Rec."Google Drive ID");
+            CompanyInfo."Data Storage Provider"::OneDrive:
+                OneDriveManager.DeleteFile(Rec."OneDrive ID");
+            CompanyInfo."Data Storage Provider"::DropBox:
+                DropBoxManager.DeleteFile(Rec."DropBox ID");
+            CompanyInfo."Data Storage Provider"::Strapi:
+                StrapiManager.DeleteFile(Rec."Strapi ID");
+        end;
+        //end;
     end;
 
     procedure UploadAttachment(var DocumentAttachment: Record "Document Attachment"; FileName: Text; FileExtension: Text): Boolean
@@ -201,7 +288,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         DocumentAttachment."File Type" := FileType;
     end;
 
-    internal procedure OnAfterGetRecord(var Maestro: Text; var Recargar: Boolean; RecRef: RecordRef; var Id: Text; No: Code[20]): Boolean
+    internal procedure OnAfterGetRecord(var Maestro: Text; var Recargar: Boolean; RecRef: RecordRef; var Id: Text; No: Code[20]; Fecha: Date): Boolean
     var
         FolderMapping: Record "Google Drive Folder Mapping";
         Folder: Text;
@@ -209,15 +296,15 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         Path: Text;
 
     begin
-         CompanyInfo.Get();
+        CompanyInfo.Get();
         if not CompanyInfo."Funcionalidad extendida" then
             exit;
         case CompanyInfo."Data Storage Provider" of
             CompanyInfo."Data Storage Provider"::"Google Drive":
                 begin
                     Maestro := No;
-                    GoogleDriveManager.GetFolderMapping(Database::"Bank Account", Id);
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", No, 0D, CompanyInfo."Data Storage Provider");
+                    GoogleDriveManager.GetFolderMapping(RecRef.Number, Id);
+                    SubFolder := FolderMapping.CreateSubfolderPath(RecRef.Number, No, 0D, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
                     if CompanyInfo."Funcionalidad extendida" then
@@ -228,13 +315,13 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                 begin
                     Maestro := No;
                     Path := CompanyInfo."Root Folder" + '/';
-                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    FolderMapping.SetRange("Table ID", RecRef.Number);
                     if FolderMapping.FindFirst() Then begin
                         Id := FolderMapping."Default Folder Id";
                         Path += FolderMapping."Default Folder Name" + '/';
                     end;
 
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::Customer, No, 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(RecRef.Number, No, Fecha, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then begin
                         Id := OneDriveManager.CreateFolderStructure(Id, SubFolder);
                         Path += SubFolder + '/'
@@ -245,9 +332,9 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             CompanyInfo."Data Storage Provider"::DropBox:
                 begin
                     Maestro := No;
-                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    FolderMapping.SetRange("Table ID", RecRef.Number);
                     if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", No, 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(RecRef.Number, No, Fecha, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Id := DropBoxManager.CreateFolderStructure(Id, SubFolder);
                     if CompanyInfo."Funcionalidad extendida" then
@@ -256,9 +343,9 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             CompanyInfo."Data Storage Provider"::Strapi:
                 begin
                     Maestro := No;
-                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    FolderMapping.SetRange("Table ID", RecRef.Number);
                     if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", No, 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(RecRef.Number, No, Fecha, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Id := StrapiManager.CreateFolderStructure(Id, SubFolder);
                     if CompanyInfo."Funcionalidad extendida" then
@@ -267,9 +354,9 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             CompanyInfo."Data Storage Provider"::SharePoint:
                 begin
                     Maestro := No;
-                    FolderMapping.SetRange("Table ID", Database::"Bank Account");
+                    FolderMapping.SetRange("Table ID", RecRef.Number);
                     if FolderMapping.FindFirst() Then Id := FolderMapping."Default Folder ID";
-                    SubFolder := FolderMapping.CreateSubfolderPath(Database::"Bank Account", No, 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(RecRef.Number, No, Fecha, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Id := SharePointManager.CreateFolderStructure(Id, SubFolder);
                     if CompanyInfo."Funcionalidad extendida" then

@@ -17,7 +17,7 @@ page 95100 "Google Drive Factbox"
                 field(Name; Rec.Name)
                 {
                     ApplicationArea = All;
-                    Caption = 'Nombre';
+                    Caption = 'Name';
                     DrillDown = true;
                     StyleExpr = Stilo;
                     trigger OnDrillDown()
@@ -37,7 +37,7 @@ page 95100 "Google Drive Factbox"
                             Indice := Indice - 1;
                             if Indice < 1 then begin
                                 Indice := 1;
-                                Message('No se puede subir al nivel anterior, esta en la raiz para esta ficha');
+                                Error(NoRootLevelErr);
                             end;
                             Rec.Value := 'Carpeta';
                             Rec."Google Drive ID" := root;
@@ -78,13 +78,13 @@ page 95100 "Google Drive Factbox"
                 field(Value; Rec.Value)
                 {
                     ApplicationArea = All;
-                    Caption = 'Tipo';
+                    Caption = 'Type';
                     Visible = false;
                 }
                 field("File Extension"; Rec."File Extension")
                 {
                     ApplicationArea = All;
-                    Caption = 'Extensión';
+                    Caption = 'Extension';
                     Visible = true;
                 }
             }
@@ -95,12 +95,14 @@ page 95100 "Google Drive Factbox"
     {
         area(Processing)
         {
-            action("Editar en Drive")
+            action(EditInDrive)
             {
                 ApplicationArea = All;
-                Caption = 'Editar en Drive';
+                Caption = 'Edit in Drive';
                 Image = Edit;
-                ToolTip = 'Edita el archivo en Drive.';
+                ToolTip = 'Opens the file in the cloud storage for editing.';
+
+
                 trigger OnAction()
                 var
                     GoogleDriveManager: Codeunit "Google Drive Manager";
@@ -177,7 +179,7 @@ page 95100 "Google Drive Factbox"
             }
             action("M&over")
             {
-                Caption = 'Mover';
+                Caption = 'Move';
                 ApplicationArea = All;
                 Visible = Not Mueve;
                 Scope = Repeater;
@@ -215,7 +217,7 @@ page 95100 "Google Drive Factbox"
                                 // For now, we'll use a placeholder solution
 
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Error(NoDestinationSelectedErr)
                                 else
                                     GoogleDrive.Movefile(Rec."Google Drive ID", Destino, '');
 
@@ -229,7 +231,7 @@ page 95100 "Google Drive Factbox"
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Error(NoDestinationSelectedErr)
                                 else
                                     NewId := OneDriveManager.Movefile(Rec."Google Drive ID", Destino, '', true, Rec."Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
@@ -246,7 +248,7 @@ page 95100 "Google Drive Factbox"
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Error(NoDestinationSelectedErr)
                                 else
                                     NewId := DropBoxManager.MoveFile(Rec."Google Drive ID", destino, Rec.Name + '.' + Rec."File Extension", true);
                                 if NewId <> '' then begin
@@ -263,7 +265,7 @@ page 95100 "Google Drive Factbox"
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    Error(NoDestinationSelectedErr)
                                 else
                                     NewId := StrapiManager.MoveFile(Rec."Google Drive ID", destino, Rec.Name + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
@@ -279,7 +281,7 @@ page 95100 "Google Drive Factbox"
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
-                                    Message('no ha elegido destino')
+                                    error(NoDestinationSelectedErr)
                                 else
                                     NewId := SharePointManager.MoveFile(Rec."Google Drive ID", destino, true, Rec.Name + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
@@ -322,7 +324,7 @@ page 95100 "Google Drive Factbox"
                     // Here we would need to implement a folder selection dialog using TempFiles
                     // For now, we'll use a placeholder solution
                     if destino = '' then
-                        Message('no ha elegido destino')
+                        Error(NoDestinationSelectedErr)
                     else begin
                         Inf.Get();
                         case Inf."Data Storage Provider" of
@@ -336,7 +338,7 @@ page 95100 "Google Drive Factbox"
                                     GoogleDriveList.RunModal();
                                     GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                     if destino = '' then
-                                        Message('no ha elegido destino')
+                                        Error(NoDestinationSelectedErr)
                                     else
                                         NewId := OneDriveManager.Movefile(Rec."Google Drive ID", Destino, '', true, Rec."Name" + '.' + Rec."File Extension");
                                     if NewId <> '' then begin
@@ -353,7 +355,7 @@ page 95100 "Google Drive Factbox"
                                     GoogleDriveList.RunModal();
                                     GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                     if destino = '' then
-                                        Message('no ha elegido destino')
+                                        Error(NoDestinationSelectedErr)
                                     else
                                         NewId := DropBoxManager.MoveFile(Rec."Google Drive ID", destino, Rec.Name + '.' + Rec."File Extension", false);
                                     if NewId <> '' then begin
@@ -370,7 +372,7 @@ page 95100 "Google Drive Factbox"
                                     GoogleDriveList.RunModal();
                                     GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                     if destino = '' then
-                                        Message('no ha elegido destino')
+                                        Error(NoDestinationSelectedErr)
                                     else
                                         NewId := StrapiManager.MoveFile(Rec."Google Drive ID", destino, Rec.Name + '.' + Rec."File Extension");
                                     if NewId <> '' then begin
@@ -386,7 +388,7 @@ page 95100 "Google Drive Factbox"
                                     GoogleDriveList.RunModal();
                                     GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                     if destino = '' then
-                                        Message('no ha elegido destino')
+                                        Error(NoDestinationSelectedErr)
                                     else
                                         NewId := SharePointManager.MoveFile(Rec."Google Drive ID", destino, true, Rec.Name + '.' + Rec."File Extension");
                                     if NewId <> '' then begin
@@ -400,13 +402,14 @@ page 95100 "Google Drive Factbox"
                     end;
                 end;
             }
-            action("Crear Carpeta")
+
+            action(CreateFolder)
             {
                 ApplicationArea = All;
+                Caption = 'Create Folder';
                 Image = ToggleBreakpoint;
                 Visible = not Mueve;
-                Caption = 'Crear Carpeta';
-                ToolTip = 'Crea una carpeta en Google Drive';
+                ToolTip = 'Creates a folder in cloud storage.';
                 trigger OnAction()
                 var
                     DorpBox: Codeunit "Google Drive Manager";
@@ -414,7 +417,7 @@ page 95100 "Google Drive Factbox"
                     Carpeta: Text;
                     Inf: Record "Company Information";
                 begin
-                    Ventana.SetTexto('Nombre Carpeta');
+                    Ventana.SetTexto('Folder Name');
                     Ventana.RunModal();
                     Ventana.GetTexto(Carpeta);
                     Nombre := Carpeta;
@@ -459,7 +462,7 @@ page 95100 "Google Drive Factbox"
                                         SharePoint.CreateSharePointFolder(Carpeta, root, false);
                                 end;
                         end;
-                        Message('Carpeta "%1" creada correctamente.', Carpeta);
+                        Message(FolderCreatedSuccessfullyMsg, Carpeta);
                     end;
 
                     Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
@@ -577,6 +580,9 @@ page 95100 "Google Drive Factbox"
         Stilo: Text;
         Archivo: Boolean;
         GRecRef: Recordref;
+        NoRootLevelErr: Label 'Cannot go up to previous level, you are at the root level for this record.';
+        NoDestinationSelectedErr: Label 'No destination selected.';
+        FolderCreatedSuccessfullyMsg: Label 'Folder "%1" created successfully.';
 
     procedure SetRecords(FolderId: Text; var Files: Record "Name/Value Buffer" temporary)
     begin

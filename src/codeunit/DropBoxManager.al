@@ -18,6 +18,19 @@ codeunit 95103 "DropBox Manager"
         create_shared_link: Label '2/sharing/create_shared_link_with_settings';
         Upload: Label '2/files/get_temporary_upload_link';
 
+        // Message Labels
+        AuthErrorMsg: Label '❌ Could not authenticate with DropBox. Please check your credentials.';
+        NoRefreshTokenMsg: Label 'No refresh token configured for DropBox.';
+        NoResponseMsg: Label 'No response received from DropBox server.';
+        FileAccessErrorMsg: Label 'Error accessing file: %1';
+        FileLinkErrorMsg: Label 'Could not get file link. Check that the file ID is correct and you have permission.';
+        EditFileErrorMsg: Label 'Error opening file in browser: %1';
+        FolderNotFoundMsg: Label 'Folder not found: %1';
+        CreateFolderErrorMsg: Label 'Error creating folder';
+        UploadErrorMsg: Label 'Error uploading file to Strapi: %1';
+        // Confirmation Labels
+        DeleteFolderConfirmMsg: Label 'Are you sure you want to delete the folder?';
+
     procedure Initialize()
     begin
         CompanyInfo.Get();
@@ -59,7 +72,7 @@ codeunit 95103 "DropBox Manager"
     begin
         CompanyInfo.Get();
         if CompanyInfo."DropBox Refresh Token" = '' then
-            Error('No hay refresh token configurado para DropBox.');
+            Error(NoRefreshTokenMsg);
 
         RefreshToken();
     end;
@@ -238,7 +251,7 @@ codeunit 95103 "DropBox Manager"
         if StatusInfo.Get('content-hash', JTokenLink) then begin
             Id := JTokenLink.AsValue().AsText();
         end else
-            Error(Respuesta);
+            Error(UploadErrorMsg, Respuesta);
 
         exit(Id);
     end;
@@ -325,7 +338,7 @@ codeunit 95103 "DropBox Manager"
             if StatusInfo.Get('error_summary', JTokO) then begin
                 Error(JTokO.AsValue().AsText());
             end;
-            Error('Error al crear la carpeta');
+            Error(CreateFolderErrorMsg);
         end;
 
         exit(Id);
@@ -346,7 +359,7 @@ codeunit 95103 "DropBox Manager"
         JsonEntry: JsonObject;
     begin
         if not HideDialog then
-            if not Confirm('¿Está seguro de que desea eliminar la carpeta?', true) then
+            if not Confirm(DeleteFolderConfirmMsg, true) then
                 exit('');
 
         Ticket := Token();
@@ -616,6 +629,32 @@ codeunit 95103 "DropBox Manager"
         HttpClient.DefaultRequestHeaders().Add('Authorization', AuthString);
     end;
 
+    procedure GetTargetFolderForDocument(TableID: Integer; DocumentNo: Text; DocumentDate: Date; Origen: Enum "Data Storage Provider"): Text
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        TargetFolderId: Text;
+        SubfolderPath: Text;
+    begin
+        // Get the configured folder for this table
+        TargetFolderId := FolderMapping.GetDefaultFolderForTable(TableID);
+
+        if TargetFolderId = '' then begin
+            // No specific configuration, use root or default folder
+            exit(''); // Empty means root folder
+        end;
+        if DocumentNo = '' then
+            exit(TargetFolderId);
+        // Check if we need to create subfolders
+        SubfolderPath := FolderMapping.CreateSubfolderPath(TableID, DocumentNo, DocumentDate, Origen);
+
+        if SubfolderPath <> TargetFolderId then begin
+            // Need to create subfolder structure
+            TargetFolderId := CreateFolderStructure(TargetFolderId, SubfolderPath);
+        end;
+
+        exit(TargetFolderId);
+    end;
+
     procedure ListFolder(FolderId: Text; var Files: Record "Name/Value Buffer" temporary; SoloSubfolder: Boolean)
     var
         Ticket: Text;
@@ -810,7 +849,7 @@ codeunit 95103 "DropBox Manager"
         ErrorMessage: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con DropBox. Por favor, verifique sus credenciales.');
+            Error(AuthErrorMsg);
 
         Ticket := Token();
         CompanyInfo.Get();
@@ -825,14 +864,14 @@ codeunit 95103 "DropBox Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de DropBox.');
+            Error(NoResponseMsg);
 
         StatusInfo.ReadFrom(Respuesta);
 
         // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            Error(FileAccessErrorMsg, ErrorMessage);
         end;
 
         // Obtener el enlace temporal
@@ -840,7 +879,7 @@ codeunit 95103 "DropBox Manager"
             Link := JToken.AsValue().AsText();
             Hyperlink(Link);
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            Error(FileLinkErrorMsg);
         end;
     end;
 
@@ -912,7 +951,7 @@ codeunit 95103 "DropBox Manager"
         ErrorMessage: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con DropBox. Por favor, verifique sus credenciales.');
+            Error(AuthErrorMsg);
 
         Ticket := Token();
         CompanyInfo.Get();
@@ -929,14 +968,14 @@ codeunit 95103 "DropBox Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de DropBox.');
+            Error(NoResponseMsg);
 
         StatusInfo.ReadFrom(Respuesta);
 
         // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            Error(FileAccessErrorMsg, ErrorMessage);
         end;
 
         // Obtener el enlace temporal
@@ -944,7 +983,7 @@ codeunit 95103 "DropBox Manager"
             Link := JToken.AsValue().AsText();
             Hyperlink(Link);
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            Error(FileLinkErrorMsg);
         end;
     end;
 
@@ -1160,7 +1199,7 @@ codeunit 95103 "DropBox Manager"
     begin
         Files.DeleteAll();
         if not Authenticate() then
-            Error('No se pudo autenticar con DropBox. Por favor, verifique sus credenciales.');
+            Error(AuthErrorMsg);
 
         Ticket := Token();
         CompanyInfo.Get();
@@ -1270,7 +1309,7 @@ codeunit 95103 "DropBox Manager"
                     if StrPos(JToken.AsValue().AsText(), 'path/conflict/folder') > 0 then begin
                         exit(GetFolderId(FolderPath));
                     end;
-                Error('Failed to create folder in DropBox: %1', Respuesta);
+                Error(CreateFolderErrorMsg, Respuesta);
             end;
         end;
         exit(NewFolderId);

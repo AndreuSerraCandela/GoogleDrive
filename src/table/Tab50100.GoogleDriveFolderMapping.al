@@ -29,14 +29,14 @@ table 95100 "Google Drive Folder Mapping"
         {
             Caption = 'Default Folder ID';
             DataClassification = CustomerContent;
-            ToolTip = 'Especifica el ID de la carpeta del Drive donde se almacenarán los archivos de esta tabla por defecto.';
+            ToolTip = 'Specifies the ID of the Drive folder where files for this table will be stored by default.';
         }
 
         field(4; "Default Folder Name"; Text[250])
         {
             Caption = 'Default Folder Name';
             DataClassification = CustomerContent;
-            ToolTip = 'Especifica el nombre de la carpeta del Drive (solo para referencia).';
+            ToolTip = 'Specifies the name of the Drive folder (for reference only).';
             trigger OnValidate()
             begin
                 If (xRec."Default Folder Name" <> "Default Folder Name") and
@@ -51,7 +51,7 @@ table 95100 "Google Drive Folder Mapping"
         {
             Caption = 'Auto Create Subfolders';
             DataClassification = CustomerContent;
-            ToolTip = 'Si está habilitado, creará automáticamente subcarpetas basadas en el número de documento.';
+            ToolTip = 'If enabled, it will automatically create subfolders based on the document number.';
             InitValue = false;
         }
 
@@ -59,7 +59,7 @@ table 95100 "Google Drive Folder Mapping"
         {
             Caption = 'Subfolder Pattern';
             DataClassification = CustomerContent;
-            ToolTip = 'Patrón para crear subcarpetas. Use {DOCNO} para número de documento, {NO} para el Código, {YEAR} para año, {MONTH} para mes.';
+            ToolTip = 'Pattern for creating subfolders. Use {DOCNO} for document number, {NO} for Code, {YEAR} for year, {MONTH} for month.';
         }
 
         field(7; "Active"; Boolean)
@@ -73,7 +73,7 @@ table 95100 "Google Drive Folder Mapping"
         {
             Caption = 'Description';
             DataClassification = CustomerContent;
-            ToolTip = 'Descripción opcional para esta configuración.';
+            ToolTip = 'Optional description for this configuration.';
         }
 
         field(9; "Created Date"; DateTime)
@@ -178,6 +178,11 @@ table 95100 "Google Drive Folder Mapping"
         if StrPos(SubfolderPath, '{MONTH}') > 0 then begin
             Month := Format(DocumentDate, 0, '<Month Text>');
             SubfolderPath := Month;
+        end;
+        if StrPos(SubfolderPath, '{YEAR}/{MONTH}') > 0 then begin
+            Year := Format(Date2DMY(DocumentDate, 3));
+            Month := Format(DocumentDate, 0, '<Month Text>');
+            SubfolderPath := Year + '-' + Month;
         end;
 
         exit(SubfolderPath);
@@ -348,6 +353,72 @@ table 95100 "Google Drive Folder Mapping"
                 exit(StrapiManager.RenameFolder(RootFolderID, RootFolder));
             CompaiInfo."Data Storage Provider"::SharePoint:
                 exit(SharePointManager.RenameFolder(RootFolderID, RootFolder));
+        end;
+    end;
+
+    internal procedure MoveFileH(DataStorageProvider: Enum "Data Storage Provider"; var DocumentAttachment: Record "Document Attachment"; Origen: Integer; TableId: Integer; Var RecRef: RecordRef; Fecha: Date)
+    var
+        GoogleDriveManager: Codeunit "Google Drive Manager";
+        OnDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+        SharePointManager: Codeunit "SharePoint Manager";
+        IdCarpetaOrigen: Text;
+        IdCarpetaDestino: Text;
+        PurchaseHeader: Record "Purchase Header";
+        SalesHeader: Record "Sales Header";
+        DocNo: Text;
+        DocDate: Date;
+
+    begin
+        Case Origen of
+            Database::"Purchase Header":
+                begin
+                    DocNo := RecRef.Field(PurchaseHeader.FieldNo("No.")).Value;
+                    DocDate := RecRef.Field(PurchaseHeader.FieldNo("Document Date")).Value;
+                end;
+            Database::"Sales Header":
+                begin
+                    DocNo := RecRef.Field(SalesHeader.FieldNo("No.")).Value;
+                    DocDate := RecRef.Field(SalesHeader.FieldNo("Document Date")).Value;
+                end;
+        end;
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
+                begin
+                    IdCarpetaOrigen := GoogleDriveManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
+                    IdCarpetaDestino := GoogleDriveManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
+                    DocumentAttachment."Google Drive ID" := GoogleDriveManager.MoveFile(DocumentAttachment."Google Drive ID", IdCarpetaDestino, IdCarpetaOrigen);
+                    DocumentAttachment.Modify();
+                end;
+            DataStorageProvider::OneDrive:
+                begin
+                    IdCarpetaOrigen := OnDriveManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
+                    IdCarpetaDestino := OnDriveManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
+                    DocumentAttachment."OneDrive ID" := OnDriveManager.MoveFile(DocumentAttachment."OneDrive ID", IdCarpetaDestino, IdCarpetaOrigen, true, DocumentAttachment."File Name");
+                    DocumentAttachment.Modify();
+                end;
+            DataStorageProvider::DropBox:
+                begin
+                    IdCarpetaOrigen := DropBoxManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
+                    IdCarpetaDestino := DropBoxManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
+                    DocumentAttachment."DropBox ID" := DropBoxManager.MoveFile(DocumentAttachment."DropBox ID", IdCarpetaDestino, DocumentAttachment."File Name", true);
+                    DocumentAttachment.Modify();
+                end;
+            DataStorageProvider::Strapi:
+                begin
+                    IdCarpetaOrigen := StrapiManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
+                    IdCarpetaDestino := StrapiManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
+                    DocumentAttachment."Strapi ID" := StrapiManager.MoveFile(DocumentAttachment."Strapi ID", IdCarpetaDestino, IdCarpetaOrigen);
+                    DocumentAttachment.Modify();
+                end;
+            DataStorageProvider::SharePoint:
+                begin
+                    IdCarpetaOrigen := SharePointManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
+                    IdCarpetaDestino := SharePointManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
+                    DocumentAttachment."SharePoint ID" := SharePointManager.MoveFile(DocumentAttachment."SharePoint ID", IdCarpetaDestino, true, DocumentAttachment."File Name");
+                    DocumentAttachment.Modify();
+                end;
         end;
     end;
 

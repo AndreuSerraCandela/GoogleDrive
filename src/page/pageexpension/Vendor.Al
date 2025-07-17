@@ -6,7 +6,6 @@ pageextension 95102 VendorExt extends "Vendor Card"
         {
             part(Visor; "PDF Viewer Part Google Drive")
             {
-                UpdatePropagation = Both;
                 //SubPageLink = "Entry No." = field("Incoming Document Entry No.");
                 Caption = 'PDF Viewer';
                 ApplicationArea = All;
@@ -15,14 +14,10 @@ pageextension 95102 VendorExt extends "Vendor Card"
             }
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
-                UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
-
-                //SubPageLink = "Vendor No." = field("No.");
             }
-
         }
     }
     trigger OnAfterGetRecord()
@@ -34,13 +29,19 @@ pageextension 95102 VendorExt extends "Vendor Card"
         if Maestro = Rec."No." then
             exit;
         RecRef.GetTable(Rec);
-        If Not CodeuniDocAtchManager.OnAfterGetRecord(Maestro, Recargar, RecRef, Id, Rec."No.") then
+        If Not CodeuniDocAtchManager.OnAfterGetRecord(Maestro, Recargar, RecRef, Id, Rec."No.", 0D) then
             exit;
         If Recargar Then
             CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
         CurrPage.Visor.Page.SetRecord(Rec.RecordId);
 
 
+    end;
+
+    trigger OnOpenPage()
+    begin
+        Maestro := '';
+        CheckExtendedFunctionality();
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -54,10 +55,14 @@ pageextension 95102 VendorExt extends "Vendor Card"
         CurrPage.GoogleDriveFiles.Page.Update(false);
     end;
 
-    trigger OnOpenPage()
+
+
+    local procedure CheckExtendedFunctionality()
+    var
+        CompanyInfo: Record "Company Information";
     begin
-        Maestro := '';
-        CheckExtendedFunctionality();
+        CompanyInfo.Get();
+        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
     end;
 
     var
@@ -71,15 +76,5 @@ pageextension 95102 VendorExt extends "Vendor Card"
         AutoCreateSubFolder: Boolean;
         SubFolder: Text;
         IsExtendedFunctionalityEnabled: Boolean;
-
-    local procedure CheckExtendedFunctionality()
-    var
-        CompanyInfo: Record "Company Information";
-    begin
-        CompanyInfo.Get();
-        // Verificar si se ha seleccionado algún proveedor de almacenamiento
-        // Si el campo no está vacío, significa que se ha configurado un proveedor
-        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
-    end;
 }
 

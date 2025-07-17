@@ -37,6 +37,29 @@ codeunit 95100 "Google Drive Manager"
         origenfinal: Text;
         tipofinal: Text;
         OrigenEstorage: Enum "Data Storage Provider";
+        // Message Labels
+        CopyUrlToBrowserMsg: Label 'Please copy the following URL to your browser to authorize Google Drive access:\%1';
+        BrowserOpenedMsg: Label 'Browser has been opened for authorization. If it doesn''t open automatically, copy this URL:\%1';
+        AuthenticationCompletedMsg: Label 'Authentication completed successfully.';
+        NoRefreshTokenMsg: Label 'No refresh token available. Please complete the OAuth authentication process first.';
+        CredentialsErrorMsg: Label '❌ Credential error: %1\Please verify configuration in Company Information.';
+        TokenUpdatedMsg: Label '✅ Token updated successfully. New token expires: %1';
+        NoAccessTokenMsg: Label 'Error: access_token not found in response: %1';
+        JsonParseErrorMsg: Label 'Error: Could not parse JSON response: %1';
+        InvalidCredentialsErrorMsg: Label '❌ INVALID CREDENTIALS ERROR\Error: %1\🔧 POSSIBLE SOLUTIONS:\1. VERIFY CREDENTIALS IN OAUTH PLAYGROUND:\   - Make sure you have checked "Use your own OAuth credentials"\   - Verify that Client ID and Secret are exactly the same\2. VERIFY CONFIGURATION IN GOOGLE CLOUD CONSOLE:\   - Client ID must be enabled\   - Project must be in "In production" or "Testing" status\3. REGENERATE TOKENS:\   - Use "OAuth Playground" to get new tokens\   - Make sure to use YOUR credentials, not playground ones\Current Client ID: %2';
+        TokenUpdateErrorMsg: Label '❌ Error updating token (Code: %1): %2\Complete response: %3';
+        TokenUpdateErrorSimpleMsg: Label '❌ Error updating token (Code: %1): %2';
+        ConnectionErrorMsg: Label '❌ Connection error: Could not connect to Google server.';
+        AccessRevokedMsg: Label 'Google Drive access revoked successfully.';
+        TokenUpdateFailedMsg: Label 'Could not update token automatically. Please configure a new token.';
+        PlaygroundInstructionsMsg: Label 'CONFIGURE OAUTH PLAYGROUND WITH YOUR CREDENTIALS:\⚠️ IMPORTANT: You must configure YOUR credentials, not playground ones\1. Open this URL: %1\2. 🔧 CONFIGURE CREDENTIALS (CRITICAL STEP):\   - In the UPPER RIGHT corner, click the ⚙️ icon (Settings)\   - ✅ Check the "Use your own OAuth credentials" box\   - OAuth Client ID: %2\   - OAuth Client Secret: %3\   - Click "Close" to save\3. 📋 SELECT APIS:\   - In the left panel, search for "Drive API v3"\   - Expand the section and select:\     ✅ https://www.googleapis.com/auth/drive\     ✅ https://www.googleapis.com/auth/drive.file\4. 🔐 AUTHORIZE:\   - Click "Authorize APIs"\   - Sign in with your Google account\   - Authorize access\5. 🎫 GET TOKENS:\   - Click "Exchange authorization code for tokens"\   - Copy the "access_token" and "refresh_token"\6. 📝 CONFIGURE IN BUSINESS CENTRAL:\   - Paste the tokens in the corresponding fields\   - Use "Test Token Validity" to verify';
+        PlaygroundOpenedMsg: Label 'Google OAuth Playground has been opened.\⚠️ REMEMBER: You must configure YOUR credentials in Settings (⚙️)\Complete instructions: %1';
+        TokensConfiguredMsg: Label 'Tokens configured manually successfully.';
+        FileUploadErrorMsg: Label 'Error uploading file: %1';
+        SharedDriveErrorMsg: Label 'Error accessing shared drive: %1';
+        FileAccessErrorMsg: Label 'Error accessing file: %1';
+        // Confirmation Labels
+        DeleteFolderConfirmMsg: Label 'Are you sure you want to delete the folder?';
 
     procedure Initialize()
     var
@@ -125,9 +148,9 @@ codeunit 95100 "Google Drive Manager"
 
         // Try to open browser automatically, fallback to showing URL
         if not TryOpenBrowser(AuthUrl) then begin
-            Message('Por favor, copie la siguiente URL en su navegador para autorizar el acceso a Google Drive:\%1', AuthUrl);
+            Message(CopyUrlToBrowserMsg, AuthUrl);
         end else begin
-            Message('Se ha abierto el navegador para la autorización. Si no se abre automáticamente, copie esta URL:\%1', AuthUrl);
+            Message(BrowserOpenedMsg, AuthUrl);
         end;
 
         exit(false); // User needs to complete OAuth flow manually
@@ -280,7 +303,7 @@ codeunit 95100 "Google Drive Manager"
                         CompanyInfo.Modify();
 
                         AccessToken := CompanyInfo."Token GoogleDrive";
-                        Message('Autenticación completada exitosamente.');
+                        Message(AuthenticationCompletedMsg);
                         exit(true);
                     end;
                 end;
@@ -315,15 +338,13 @@ codeunit 95100 "Google Drive Manager"
         CompanyInfo.GET();
 
         if CompanyInfo."Refresh Token GoogleDrive" = '' then begin
-            Message('No hay refresh token disponible. Por favor, complete el proceso de autenticación OAuth primero.');
+            Message(NoRefreshTokenMsg);
             exit(false);
         end;
 
         // Validate credentials before attempting refresh
         if not ValidateCredentialsForRefresh(DiagnosticInfo) then begin
-            Message('❌ Error en las credenciales:\%1\' +
-                   '\' +
-                   'Por favor, verifique la configuración en Company Information.', DiagnosticInfo);
+            Message(CredentialsErrorMsg, DiagnosticInfo);
             exit(false);
         end;
 
@@ -363,14 +384,14 @@ codeunit 95100 "Google Drive Manager"
                         end;
 
                         CompanyInfo.Modify();
-                        Message('✅ Token actualizado exitosamente. Nuevo token expira: %1', CompanyInfo."Expiracion Token GoogleDrive");
+                        Message(TokenUpdatedMsg, CompanyInfo."Expiracion Token GoogleDrive");
                         exit(true);
                     end else begin
-                        Message('Error: No se encontró access_token en la respuesta: %1', ResponseText);
+                        Message(NoAccessTokenMsg, ResponseText);
                         exit(false);
                     end;
                 end else begin
-                    Message('Error: No se pudo parsear la respuesta JSON: %1', ResponseText);
+                    Message(JsonParseErrorMsg, ResponseText);
                     exit(false);
                 end;
             end else begin
@@ -385,37 +406,17 @@ codeunit 95100 "Google Drive Manager"
 
                     // Provide specific guidance based on error type
                     if StrPos(ErrorDescription, 'invalid_client') > 0 then begin
-                        Message('❌ ERROR DE CREDENCIALES INVÁLIDAS\' +
-                               '\' +
-                               'Error: %1\' +
-                               '\' +
-                               '🔧 SOLUCIONES POSIBLES:\' +
-                               '\' +
-                               '1. VERIFICAR CREDENCIALES EN OAUTH PLAYGROUND:\' +
-                               '   - Asegúrese de haber marcado "Use your own OAuth credentials"\' +
-                               '   - Verifique que Client ID y Secret sean exactamente los mismos\' +
-                               '\' +
-                               '2. VERIFICAR CONFIGURACIÓN EN GOOGLE CLOUD CONSOLE:\' +
-                               '   - El Client ID debe estar habilitado\' +
-                               '   - El proyecto debe estar en estado "En producción" o "Testing"\' +
-                               '\' +
-                               '3. REGENERAR TOKENS:\' +
-                               '   - Use "OAuth Playground" para obtener nuevos tokens\' +
-                               '   - Asegúrese de usar SUS credenciales, no las del playground\' +
-                               '\' +
-                               'Client ID actual: %2', ErrorDescription, CompanyInfo."Google Client ID");
+                        Message(InvalidCredentialsErrorMsg, ErrorDescription, CompanyInfo."Google Client ID");
                     end else begin
-                        Message('❌ Error al actualizar token (Código: %1): %2\' +
-                               '\' +
-                               'Respuesta completa: %3', ResponseMessage.HttpStatusCode(), ErrorDescription, ResponseText);
+                        Message(TokenUpdateErrorMsg, ResponseMessage.HttpStatusCode(), ErrorDescription, ResponseText);
                     end;
                 end else begin
-                    Message('❌ Error al actualizar token (Código: %1): %2', ResponseMessage.HttpStatusCode(), ResponseText);
+                    Message(TokenUpdateErrorSimpleMsg, ResponseMessage.HttpStatusCode(), ResponseText);
                 end;
                 exit(false);
             end;
         end else begin
-            Message('❌ Error de conexión: No se pudo conectar con el servidor de Google.');
+            Message(ConnectionErrorMsg);
             exit(false);
         end;
 
@@ -555,7 +556,7 @@ codeunit 95100 "Google Drive Manager"
             CompanyInfo."Expiracion Token GoogleDrive" := 0DT;
             CompanyInfo.Modify();
 
-            Message('Acceso a Google Drive revocado exitosamente.');
+            Message(AccessRevokedMsg);
             exit(true);
         end;
 
@@ -815,7 +816,7 @@ codeunit 95100 "Google Drive Manager"
         CompanyInfo.GET();
         if CompanyInfo."Expiracion Token GoogleDrive" < CurrentDateTime then begin
             if not RefreshAccessToken() then begin
-                Message('No se pudo actualizar el token automáticamente. Por favor, configure un nuevo token.');
+                Message(TokenUpdateFailedMsg);
                 exit('');
             end;
         end;
@@ -1639,11 +1640,7 @@ codeunit 95100 "Google Drive Manager"
         if not TryOpenBrowser(PlaygroundUrl) then begin
             Message(InstructionText);
         end else begin
-            Message('Se ha abierto Google OAuth Playground.\' +
-                   '\' +
-                   '⚠️ RECUERDE: Debe configurar SUS credenciales en Settings (⚙️)\' +
-                   '\' +
-                   'Instrucciones completas:\' + InstructionText);
+            Message(PlaygroundOpenedMsg, InstructionText);
         end;
 
         exit(false);

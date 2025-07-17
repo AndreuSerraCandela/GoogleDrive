@@ -17,6 +17,33 @@ codeunit 95102 "OneDrive Manager"
         sites_endpoint: Label '/sites';
         site_endpoint: Label '/sites/%1';
         shared_sites_endpoint: Label '/sites?search=%1';
+        // Message Labels
+        SharingDisabledMsg: Label 'Sharing is disabled on this site. Using direct file URL.';
+        SharingDisabledOpenMsg: Label 'Sharing is disabled on this site. Opening direct file URL.';
+        SharingDisabledErrorMsg: Label 'Sharing is disabled on this site and could not get direct URL. Contact administrator to enable sharing.';
+        ShErrorMessage: Label 'Error accessing file: %1';
+        FileLinkErrorMsg: Label 'Could not get file link. Check that the file ID is correct and you have permission to access it.';
+        NoRefreshTokenMsg: Label 'No refresh token configured for OneDrive.';
+        AuthenticationErrorMsg: Label 'Could not authenticate with OneDrive. Please verify your credentials.';
+        FolderNotFoundMsg: Label 'Folder not found: %1';
+        NoResponseMsg: Label 'No response received from OneDrive server.';
+        CopyFileErrorMsg: Label 'Error copying file: %1. Complete response: %2';
+        FileCopiedButNotDeletedMsg: Label 'File was copied but could not delete original. Copied file ID: %1';
+        CopyFileFailedMsg: Label 'Could not copy file';
+        GetFilePathErrorMsg: Label 'Could not get file path';
+        SiteIdNotConfiguredMsg: Label 'OneDrive site ID is not configured. Please configure the site ID in the company.';
+        CreateFolderErrorMsg: Label 'Failed to create folder in OneDrive: %1 with this URL: %2 and this JSON: %3';
+        GetSiteErrorMsg: Label 'Error getting site: %1';
+        GetSiteIdErrorMsg: Label 'Could not get site ID. Verify that the site URL is correct.';
+        GetSiteByHostnameErrorMsg: Label 'Could not get site ID. Verify that the hostname and path are correct.';
+        SearchSitesErrorMsg: Label 'Error searching sites: %1';
+        GetSiteDriveErrorMsg: Label 'Error getting site drive: %1';
+        GetSiteDriveIdErrorMsg: Label 'Could not get site drive ID. Verify that the site ID is correct.';
+        UploadToSharedSiteErrorMsg: Label 'Error uploading file to shared site: %1';
+        UploadToSharedSiteFolderErrorMsg: Label 'Error uploading file to shared site folder: %1';
+        CreateFolderInSharedSiteErrorMsg: Label 'Error creating folder in shared site: %1 with this URL: %2 and this JSON: %3';
+        // Confirmation Labels
+        DeleteFolderConfirmMsg: Label 'Are you sure you want to delete the folder?';
 
     procedure Initialize()
     begin
@@ -64,7 +91,7 @@ codeunit 95102 "OneDrive Manager"
             ObtenerToken(CompanyInfo."Code Ondrive");
 
         if not CompanyInfo."OneDrive Refresh Token".HasValue then
-            Error('No hay refresh token configurado para OneDrive.');
+            Error(NoRefreshTokenMsg);
 
         RefreshToken();
     end;
@@ -416,7 +443,7 @@ codeunit 95102 "OneDrive Manager"
         Id := GetFileId(Carpeta);
 
         if Id = '' then
-            Error('Carpeta no encontrada: %1', Carpeta);
+            Error(FolderNotFoundMsg, Carpeta);
 
         Url := graph_endpoint + delete_endpoint;
         Url := StrSubstNo(Url, Id);
@@ -949,7 +976,7 @@ codeunit 95102 "OneDrive Manager"
         exit(FolderMapping);
     end;
 
-    internal procedure Movefile(OneDriveID: Text[250]; Destino: Text; arg: Text; Mover: Boolean; Filename: Text): Text
+    internal procedure Movefile(OneDriveID: Text[250]; Destino: Text; Nombre: Text; Mover: Boolean; Filename: Text): Text
     var
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;
@@ -974,7 +1001,7 @@ codeunit 95102 "OneDrive Manager"
         Inf.Get();
         SiteId := Inf."OneDrive Site ID";
         if SiteId <> '' then
-            exit(MovefileSite(OneDriveID, Destino, arg, Mover, Filename, SiteId));
+            exit(MovefileSite(OneDriveID, Destino, Nombre, Mover, Filename, SiteId));
         if not Authenticate() then
             Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
 
@@ -987,8 +1014,8 @@ codeunit 95102 "OneDrive Manager"
         Clear(JDestino);
         JDestino.Add('id', Destino);
         Body.Add('parentReference', JDestino);
-        if arg <> '' then
-            Body.Add('name', arg);
+        if Nombre <> '' then
+            Body.Add('name', Nombre);
         Body.WriteTo(Json);
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
@@ -1175,6 +1202,32 @@ codeunit 95102 "OneDrive Manager"
 
         // Folder doesn't exist, create it
         exit(CreateOneDriveFolder(ParentFolderId, FolderName, false));
+    end;
+
+    procedure GetTargetFolderForDocument(TableID: Integer; DocumentNo: Text; DocumentDate: Date; Origen: Enum "Data Storage Provider"): Text
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        TargetFolderId: Text;
+        SubfolderPath: Text;
+    begin
+        // Get the configured folder for this table
+        TargetFolderId := FolderMapping.GetDefaultFolderForTable(TableID);
+
+        if TargetFolderId = '' then begin
+            // No specific configuration, use root or default folder
+            exit(''); // Empty means root folder
+        end;
+        if DocumentNo = '' then
+            exit(TargetFolderId);
+        // Check if we need to create subfolders
+        SubfolderPath := FolderMapping.CreateSubfolderPath(TableID, DocumentNo, DocumentDate, Origen);
+
+        if SubfolderPath <> TargetFolderId then begin
+            // Need to create subfolder structure
+            TargetFolderId := CreateFolderStructure(TargetFolderId, SubfolderPath);
+        end;
+
+        exit(TargetFolderId);
     end;
 
     procedure ListFolder(FolderId: Text; var Files: Record "Name/Value Buffer" temporary; SoloSubfolder: Boolean)
@@ -1612,12 +1665,12 @@ codeunit 95102 "OneDrive Manager"
     begin
         Files.DeleteAll();
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Ticket := Token();
         CompanyInfo.Get();
         if (CompanyInfo."OneDrive Site ID" = '') and (CompanyInfo."OneDrive Site URL" <> '') then
-            Error('No se ha configurado el ID del sitio de OneDrive. Por favor, configure el ID del sitio en la empresa.');
+            Error(SiteIdNotConfiguredMsg);
 
         If CompanyInfo."OneDrive Site ID" <> '' then begin
             exit(RecuperaIdFolderSite(IdCarpeta, Carpeta, Files, Crear, RootFolder, CompanyInfo."OneDrive Site ID"));
@@ -1729,7 +1782,7 @@ codeunit 95102 "OneDrive Manager"
         ErrorMessage: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Ticket := Token();
 
@@ -1739,7 +1792,7 @@ codeunit 95102 "OneDrive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de OneDrive.');
+            Error(NoResponseMsg);
 
         StatusInfo.ReadFrom(Respuesta);
 
@@ -1754,7 +1807,7 @@ codeunit 95102 "OneDrive Manager"
             SiteId := JToken.AsValue().AsText();
             exit(SiteId);
         end else begin
-            Error('No se pudo obtener el ID del sitio. Verifique que la URL del sitio sea correcta.');
+            Error(GetSiteIdErrorMsg);
         end;
     end;
 
@@ -1771,7 +1824,7 @@ codeunit 95102 "OneDrive Manager"
         FullSiteUrl: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Ticket := Token();
 
@@ -1787,14 +1840,14 @@ codeunit 95102 "OneDrive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de OneDrive.');
+            Error(NoResponseMsg);
 
         StatusInfo.ReadFrom(Respuesta);
 
         // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al obtener el sitio: %1', ErrorMessage);
+            Error(GetSiteErrorMsg, ErrorMessage);
         end;
 
         // Obtener el ID del sitio
@@ -1802,7 +1855,7 @@ codeunit 95102 "OneDrive Manager"
             SiteId := JToken.AsValue().AsText();
             exit(SiteId);
         end else begin
-            Error('No se pudo obtener el ID del sitio. Verifique que el hostname y path sean correctos.');
+            Error(GetSiteByHostnameErrorMsg);
         end;
     end;
 
@@ -1823,7 +1876,7 @@ codeunit 95102 "OneDrive Manager"
         a: Integer;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Ticket := Token();
 
@@ -1833,13 +1886,13 @@ codeunit 95102 "OneDrive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de OneDrive.');
+            Error(NoResponseMsg);
 
         StatusInfo.ReadFrom(Respuesta);
 
         // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
-            Error('Error al buscar sitios: %1', JToken.AsValue().AsText());
+            Error(SearchSitesErrorMsg, JToken.AsValue().AsText());
         end;
 
         // Procesar los resultados
@@ -1883,7 +1936,7 @@ codeunit 95102 "OneDrive Manager"
         ErrorMessage: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Ticket := Token();
 
@@ -1893,14 +1946,14 @@ codeunit 95102 "OneDrive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de OneDrive.');
+            Error(NoResponseMsg);
 
         StatusInfo.ReadFrom(Respuesta);
 
         // Verificar si hay error en la respuesta
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al obtener el drive del sitio: %1', ErrorMessage);
+            Error(GetSiteDriveErrorMsg, ErrorMessage);
         end;
 
         // Obtener el ID del drive
@@ -1908,7 +1961,7 @@ codeunit 95102 "OneDrive Manager"
             DriveId := JToken.AsValue().AsText();
             exit(DriveId);
         end else begin
-            Error('No se pudo obtener el ID del drive del sitio. Verifique que el ID del sitio sea correcto.');
+            Error(GetSiteDriveIdErrorMsg);
         end;
     end;
 
@@ -1930,7 +1983,7 @@ codeunit 95102 "OneDrive Manager"
         FilesTemp: Record "Name/Value Buffer" temporary;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Files.DeleteAll();
         Ticket := Token();
@@ -2053,7 +2106,7 @@ codeunit 95102 "OneDrive Manager"
         if StatusInfo.Get('id', JTokenLink) then begin
             Id := JTokenLink.AsValue().AsText();
         end else
-            Error('Error al subir archivo al sitio compartido: %1', Respuesta);
+            Error(UploadToSharedSiteErrorMsg, Respuesta);
 
         exit(Id);
     end;
@@ -2100,7 +2153,7 @@ codeunit 95102 "OneDrive Manager"
         if StatusInfo.Get('id', JTokenLink) then begin
             Id := JTokenLink.AsValue().AsText();
         end else
-            Error('Error al subir archivo a la carpeta del sitio compartido: %1', Respuesta);
+            Error(UploadToSharedSiteFolderErrorMsg, Respuesta);
 
         exit(Id);
     end;
@@ -2141,7 +2194,7 @@ codeunit 95102 "OneDrive Manager"
             if StatusInfo.Get('id', JToken) then
                 NewFolderId := JToken.AsValue().AsText()
             else
-                Error('Error al crear carpeta en sitio compartido: %1 con esta url: %2 y este json: %3', Respuesta, Url, Json);
+                Error(CreateFolderInSharedSiteErrorMsg, Respuesta, Url, Json);
         end;
         exit(NewFolderId);
     end;
@@ -2253,7 +2306,7 @@ codeunit 95102 "OneDrive Manager"
         Bs64: Codeunit "Base64 Convert";
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Ticket := Token();
         Url := StrSubstNo(graph_endpoint + '/sites/%1/drive/items/%2?select=id,name,webUrl,@microsoft.graph.downloadUrl', SiteId, OneDriveID);
@@ -2308,7 +2361,7 @@ codeunit 95102 "OneDrive Manager"
         Id := GetFileIdSite(Carpeta, SiteId);
 
         if Id = '' then
-            Error('Carpeta no encontrada: %1', Carpeta);
+            Error(FolderNotFoundMsg, Carpeta);
 
         Url := graph_endpoint + '/sites/' + SiteId + '/drive/items/' + Id;
 
@@ -2363,7 +2416,7 @@ codeunit 95102 "OneDrive Manager"
         Base64Convert: Codeunit "Base64 Convert";
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Ticket := Token();
         // Obtener metadatos del archivo incluyendo el enlace web
@@ -2403,7 +2456,7 @@ codeunit 95102 "OneDrive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de OneDrive.');
+            Error(NoResponseMsg);
 
         StatusInfo.ReadFrom(Respuesta);
 
@@ -2425,13 +2478,13 @@ codeunit 95102 "OneDrive Manager"
                 // Intentar obtener la URL web directa del archivo
                 WebUrl := GetSharedSiteFileUrl(SiteId, OneDriveID);
                 if WebUrl <> '' then begin
-                    Message('Compartir está deshabilitado en este sitio. Usando URL directa del archivo.');
+                    Message(SharingDisabledMsg);
                     exit(WebUrl);
                 end else begin
-                    Error('Compartir está deshabilitado en este sitio y no se pudo obtener la URL directa. Contacte al administrador para habilitar el compartir.');
+                    Error(SharingDisabledErrorMsg);
                 end;
             end else begin
-                Error('Error al acceder al archivo: %1', ErrorMessage);
+                Error(ShErrorMessage, ErrorMessage);
             end;
         end;
 
@@ -2443,7 +2496,7 @@ codeunit 95102 "OneDrive Manager"
                 exit(WebUrl);
             end;
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            Error(FileLinkErrorMsg);
         end;
     end;
 
@@ -2464,7 +2517,7 @@ codeunit 95102 "OneDrive Manager"
         ErrorJson: JsonObject;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Ticket := Token();
         // Obtener metadatos del archivo incluyendo el enlace web
@@ -2475,7 +2528,7 @@ codeunit 95102 "OneDrive Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de OneDrive.');
+            Error(NoResponseMsg);
 
         StatusInfo.ReadFrom(Respuesta);
 
@@ -2495,14 +2548,14 @@ codeunit 95102 "OneDrive Manager"
                 // Intentar obtener la URL web directa del archivo
                 WebUrl := GetSharedSiteFileUrl(SiteId, OneDriveID);
                 if WebUrl <> '' then begin
-                    Message('Compartir está deshabilitado en este sitio. Abriendo URL directa del archivo.');
+                    Message(SharingDisabledOpenMsg);
                     Hyperlink(WebUrl);
                     exit;
                 end else begin
-                    Error('Compartir está deshabilitado en este sitio y no se pudo obtener la URL directa. Contacte al administrador para habilitar el compartir.');
+                    Error(SharingDisabledErrorMsg);
                 end;
             end else begin
-                Error('Error al acceder al archivo: %1', ErrorMessage);
+                Error(ShErrorMessage, ErrorMessage);
             end;
         end;
 
@@ -2514,7 +2567,7 @@ codeunit 95102 "OneDrive Manager"
                 Hyperlink(WebUrl);
             end;
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            Error(FileLinkErrorMsg);
         end;
     end;
 
@@ -2539,7 +2592,7 @@ codeunit 95102 "OneDrive Manager"
         ItemName: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Ticket := Token();
 
@@ -2560,7 +2613,7 @@ codeunit 95102 "OneDrive Manager"
             StatusInfo.ReadFrom(Respuesta);
             if StatusInfo.Get('error', JTokenLink) then begin
                 ErrorMessage := JTokenLink.AsValue().AsText();
-                Error('Error al copiar el archivo: %1. Respuesta completa: %2', ErrorMessage, Respuesta);
+                Error(CopyFileErrorMsg, ErrorMessage, Respuesta);
             end;
 
             // Obtener el ID del archivo copiado
@@ -2600,10 +2653,10 @@ codeunit 95102 "OneDrive Manager"
         // Si la copia fue exitosa, eliminar el archivo original
         if (Mover) and (CopiedFileId <> '') then begin
             if not DeleteFileSite(OneDriveID, SiteId) then begin
-                Error('El archivo se copió pero no se pudo eliminar el original. ID del archivo copiado: %1', Filename);
+                Error(FileCopiedButNotDeletedMsg, Filename);
             end;
         end;
-        if CopiedFileId = '' then Error('No se pudo copiar el archivo');
+        if CopiedFileId = '' then Error(CopyFileFailedMsg);
         exit(CopiedFileId);
     end;
 
@@ -2623,7 +2676,7 @@ codeunit 95102 "OneDrive Manager"
         RutaCompleta: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con OneDrive. Por favor, verifique sus credenciales.');
+            Error(AuthenticationErrorMsg);
 
         Ticket := Token();
         //GET https://graph.microsoft.com/v1.0/sites/{site-id}/drive/items/{item-id}
@@ -2638,7 +2691,7 @@ codeunit 95102 "OneDrive Manager"
                 RutaCompleta := PathBase.AsValue().AsText();
         end
         else
-            Error('No se pudo obtener el path del archivo');
+            Error(GetFilePathErrorMsg);
 
         exit(RutaCompleta);
     end;

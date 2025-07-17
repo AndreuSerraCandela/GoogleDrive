@@ -12,6 +12,18 @@ codeunit 95106 "SharePoint Manager"
         upload_endpoint: Label '/sites/%1/drive/root:/%2:/content'; // %1 = site-id, %2 = path/filename
         download_endpoint: Label '/sites/%1/drive/items/%2/content'; // %1 = site-id, %2 = item-id
 
+        // Message Labels
+        AuthErrorMsg: Label '❌ Could not authenticate with SharePoint. Please check your credentials.';
+        NoRefreshTokenMsg: Label 'No refresh token configured for SharePoint.';
+        NoResponseMsg: Label 'No response received from SharePoint server.';
+        FileAccessErrorMsg: Label 'Error accessing file: %1';
+        FileLinkErrorMsg: Label 'Could not get file link. Check that the file ID is correct and you have permission.';
+        EditFileErrorMsg: Label 'Error opening file in browser: %1';
+        FolderNotFoundMsg: Label 'Folder not found: %1';
+        CreateFolderErrorMsg: Label 'Error creating folder';
+        // Confirmation Labels
+        DeleteFolderConfirmMsg: Label 'Are you sure you want to delete the folder?';
+
     procedure Initialize()
     begin
         CompanyInfo.Get();
@@ -49,7 +61,7 @@ codeunit 95106 "SharePoint Manager"
         if not CompanyInfo."SharePoint Access Token".HasValue Then
             ObtenerToken(CompanyInfo."Code SharePoint");
         if not CompanyInfo."SharePoint Refresh Token".HasValue then
-            Error('No hay refresh token configurado para SharePoint.');
+            Error(NoRefreshTokenMsg);
         RefreshToken();
     end;
 
@@ -359,7 +371,7 @@ codeunit 95106 "SharePoint Manager"
         SiteId: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con SharePoint. Por favor, verifique sus credenciales.');
+            Error(AuthErrorMsg);
 
         Ticket := Token();
         SiteId := CompanyInfo."SharePoint Site ID";
@@ -407,7 +419,7 @@ codeunit 95106 "SharePoint Manager"
         SiteId: Text;
     begin
         if not HideDialog then
-            if not Confirm('¿Está seguro de que desea eliminar la carpeta?', true) then
+            if not Confirm(DeleteFolderConfirmMsg, true) then
                 exit('');
 
         Ticket := Format(Token());
@@ -417,7 +429,7 @@ codeunit 95106 "SharePoint Manager"
         Id := GetFileId(Carpeta);
 
         if Id = '' then
-            Error('Carpeta no encontrada: %1', Carpeta);
+            Error(FolderNotFoundMsg, Carpeta);
 
         Url := graph_endpoint + '/sites/' + SiteId + '/drive/items/' + Id;
 
@@ -517,7 +529,7 @@ codeunit 95106 "SharePoint Manager"
         SiteId: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con SharePoint. Por favor, verifique sus credenciales.');
+            Error(AuthErrorMsg);
 
         Ticket := Token();
         SiteId := CompanyInfo."SharePoint Site ID";
@@ -527,13 +539,13 @@ codeunit 95106 "SharePoint Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de SharePoint.');
+            Error(NoResponseMsg);
 
         StatusInfo.ReadFrom(Respuesta);
 
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            Error(FileLinkErrorMsg, ErrorMessage);
         end;
 
         if StatusInfo.Get('link', JToken) then begin
@@ -543,7 +555,7 @@ codeunit 95106 "SharePoint Manager"
                 exit(WebUrl);
             end;
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            Error(FileLinkErrorMsg);
         end;
     end;
 
@@ -563,7 +575,7 @@ codeunit 95106 "SharePoint Manager"
         SiteId: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con SharePoint. Por favor, verifique sus credenciales.');
+            Error(AuthErrorMsg);
 
         Ticket := Token();
         SiteId := CompanyInfo."SharePoint Site ID";
@@ -574,13 +586,13 @@ codeunit 95106 "SharePoint Manager"
         Respuesta := RestApiToken(Url, Ticket, RequestType::post, Json);
 
         if Respuesta = '' then
-            Error('No se recibió respuesta del servidor de SharePoint.');
+            Error(NoResponseMsg);
 
         StatusInfo.ReadFrom(Respuesta);
 
         if StatusInfo.Get('error', JToken) then begin
             ErrorMessage := JToken.AsValue().AsText();
-            Error('Error al acceder al archivo: %1', ErrorMessage);
+            Error(EditFileErrorMsg, ErrorMessage);
         end;
 
         if StatusInfo.Get('link', JToken) then begin
@@ -590,7 +602,7 @@ codeunit 95106 "SharePoint Manager"
                 Hyperlink(WebUrl);
             end;
         end else begin
-            Error('No se pudo obtener el enlace del archivo. Verifique que el ID del archivo sea correcto y que tenga permisos para acceder a él.');
+            Error(FileLinkErrorMsg);
         end;
     end;
 
@@ -640,7 +652,7 @@ codeunit 95106 "SharePoint Manager"
         SiteId: Text;
     begin
         if not Authenticate() then
-            Error('No se pudo autenticar con SharePoint. Por favor, verifique sus credenciales.');
+            Error(AuthErrorMsg);
 
         Ticket := Token();
         SiteId := CompanyInfo."SharePoint Site ID";
@@ -704,8 +716,34 @@ codeunit 95106 "SharePoint Manager"
                 Error('El archivo se copió pero no se pudo eliminar el original. ID del archivo copiado: %1', Filename);
             end;
         end;
-        if CopiedFileId = '' then Error('No se pudo copiar el archivo');
+        if CopiedFileId = '' then Error(CreateFolderErrorMsg);
         exit(CopiedFileId);
+    end;
+
+    procedure GetTargetFolderForDocument(TableID: Integer; DocumentNo: Text; DocumentDate: Date; Origen: Enum "Data Storage Provider"): Text
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        TargetFolderId: Text;
+        SubfolderPath: Text;
+    begin
+        // Get the configured folder for this table
+        TargetFolderId := FolderMapping.GetDefaultFolderForTable(TableID);
+
+        if TargetFolderId = '' then begin
+            // No specific configuration, use root or default folder
+            exit(''); // Empty means root folder
+        end;
+        if DocumentNo = '' then
+            exit(TargetFolderId);
+        // Check if we need to create subfolders
+        SubfolderPath := FolderMapping.CreateSubfolderPath(TableID, DocumentNo, DocumentDate, Origen);
+
+        if SubfolderPath <> TargetFolderId then begin
+            // Need to create subfolder structure
+            TargetFolderId := CreateFolderStructure(TargetFolderId, SubfolderPath);
+        end;
+
+        exit(TargetFolderId);
     end;
 
     procedure ListFolder(FolderId: Text; var Files: Record "Name/Value Buffer" temporary; SoloSubfolder: Boolean)
@@ -870,7 +908,7 @@ codeunit 95106 "SharePoint Manager"
             if StatusInfo.Get('id', JToken) then
                 NewFolderId := JToken.AsValue().AsText()
             else
-                Error('Failed to create folder in SharePoint: %1 con esta url: %2 y este json: %3', Respuesta, Url, Json);
+                Error(CreateFolderErrorMsg, Respuesta, Url, Json);
         end;
         exit(NewFolderId);
     end;

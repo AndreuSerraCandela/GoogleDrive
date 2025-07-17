@@ -560,9 +560,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             action(UploadToGoogleDrive)
             {
                 ApplicationArea = All;
-                Caption = 'Cargar archivo desde el drive';
+                Caption = 'Load file from drive';
                 Image = FileContract;
-                Visible = IsDrive;
+                Visible = IsDriveExt;
                 trigger OnAction()
                 var
                     DocumentAttachment: Record "Document Attachment";
@@ -674,9 +674,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             action(MoveToGoogleDrive)
             {
                 ApplicationArea = All;
-                Caption = 'Mover a Drive';
+                Caption = 'Move to Drive';
                 Image = SendTo;
-                ToolTip = 'Mueve los documentos seleccionados al Drive y los elimina del almacenamiento local.';
+                ToolTip = 'Moves selected documents to Drive and removes them from local storage.';
                 Visible = IsDrive;
                 trigger OnAction()
                 var
@@ -866,9 +866,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             action("Editar en Drive")
             {
                 ApplicationArea = All;
-                Caption = 'Editar en Drive';
+                Caption = 'Edit in Drive';
                 Image = Edit;
-                ToolTip = 'Edita el archivo en Drive.';
+                ToolTip = 'Edits the file in Drive.';
                 Scope = Repeater;
                 Visible = IsDrive;
                 trigger OnAction()
@@ -901,11 +901,11 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             }
             action(DownloadFile)
             {
-                Visible = IsDrive;
+                Visible = IsDriveExt;
                 ApplicationArea = All;
-                Caption = 'Descargar Archivo';
+                Caption = 'Download File';
                 Image = Download;
-                ToolTip = 'Descarga el archivo desde el almacenamiento en la nube.';
+                ToolTip = 'Downloads the file from cloud storage.';
                 Scope = Repeater;
                 trigger OnAction()
                 var
@@ -936,11 +936,11 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
             action(MoveFile)
             {
-                Visible = IsDrive;
+                Visible = IsDriveExt;
                 ApplicationArea = All;
-                Caption = 'Mover';
+                Caption = 'Move';
                 Image = Change;
-                ToolTip = 'Mueve el archivo a otra carpeta.';
+                ToolTip = 'Moves the file to another folder.';
                 trigger OnAction()
                 var
                     GoogleDriveManager: Codeunit "Google Drive Manager";
@@ -1064,11 +1064,11 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
             action(CopyFile)
             {
-                Visible = IsDrive;
+                Visible = IsDriveExt;
                 ApplicationArea = All;
-                Caption = 'Copiar Archivo';
+                Caption = 'Copy File';
                 Image = Copy;
-                ToolTip = 'Copia el archivo a otra carpeta.';
+                ToolTip = 'Copies the file to another folder.';
                 trigger OnAction()
                 var
                     GoogleDriveManager: Codeunit "Google Drive Manager";
@@ -1188,11 +1188,11 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
             action(CreateFolder)
             {
-                Visible = IsDrive;
+                Visible = IsDriveExt;
                 ApplicationArea = All;
-                Caption = 'Crear Carpeta';
+                Caption = 'Create Folder';
                 Image = ToggleBreakpoint;
-                ToolTip = 'Crea una carpeta en el almacenamiento en la nube.';
+                ToolTip = 'Creates a folder in cloud storage.';
                 trigger OnAction()
                 var
                     GoogleDriveManager: Codeunit "Google Drive Manager";
@@ -1265,9 +1265,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             {
                 Visible = IsDrive;
                 ApplicationArea = All;
-                Caption = 'Borrar';
+                Caption = 'Delete';
                 Image = Delete;
-                ToolTip = 'Elimina el archivo del almacenamiento en la nube.';
+                ToolTip = 'Deletes the file from cloud storage.';
                 trigger OnAction()
                 var
                     GoogleDriveManager: Codeunit "Google Drive Manager";
@@ -1391,6 +1391,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         IsStrapi: Boolean;
         IsSharePoint: Boolean;
         IsDrive: Boolean;
+        IsDriveExt: Boolean;
     // Add triggers
     trigger OnOpenPage()
     var
@@ -1408,6 +1409,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         IsStrapi := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Strapi;
         IsSharePoint := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::SharePoint;
         IsDrive := IsGoogle or IsOndrive or IsDropBox or IsStrapi or IsSharePoint;
+        IsDriveExt := CompanyInfo."Funcionalidad extendida";
         // Initialize Google Drive Manager when the page opens
         If IsGoogle Then
             GoogleDriveManager.Initialize();

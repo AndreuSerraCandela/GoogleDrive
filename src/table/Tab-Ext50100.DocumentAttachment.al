@@ -90,6 +90,12 @@ tableextension 95100 "Doc. Attachment GoogleDrive" extends "Document Attachment"
             Caption = 'SharePoint ID';
             DataClassification = CustomerContent;
         }
+        field(95115; "Posted Document"; Boolean)
+        {
+            Caption = 'Posted Document';
+            DataClassification = CustomerContent;
+            InitValue = false;
+        }
 
 
         // Campo genérico para URL del documento

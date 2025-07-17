@@ -13,7 +13,7 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
             }
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
             }
@@ -28,7 +28,7 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
         if Maestro = Rec."No." then
             exit;
         RecRef.GetTable(Rec);
-        If Not CodeuniDocAtchManager.OnAfterGetRecord(Maestro, Recargar, RecRef, Id, Rec."No.") then
+        If Not CodeuniDocAtchManager.OnAfterGetRecord(Maestro, Recargar, RecRef, Id, Rec."No.", 0D) then
             exit;
         If Recargar Then
             CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
