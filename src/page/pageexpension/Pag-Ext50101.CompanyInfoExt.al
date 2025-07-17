@@ -202,21 +202,21 @@ page 95112 "Drive Configuration"
                     field("OneDrive Access Token"; Rec."OneDrive Access Token")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Token de acceso actual de OneDrive.';
+                        ToolTip = 'Current access token for OneDrive.';
                         Editable = TokenFieldsEditable;
                     }
 
                     field("OneDrive Refresh Token"; Rec."OneDrive Refresh Token")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Token de actualización de OneDrive.';
+                        ToolTip = 'Refresh token for OneDrive.';
                         Editable = TokenFieldsEditable;
                     }
 
                     field("OneDrive Token Expiration"; Rec."OneDrive Token Expiration")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Fecha y hora de expiración del token de acceso.';
+                        ToolTip = 'Date and time when the access token expires.';
                         Editable = false;
                     }
                 }
@@ -229,26 +229,26 @@ page 95112 "Drive Configuration"
                     field("DropBox App Key"; Rec."DropBox App Key")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la App Key de la aplicación DropBox.';
+                        ToolTip = 'Specifies the App Key of the DropBox application.';
                     }
 
                     field("DropBox App Secret"; Rec."DropBox App Secret")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la App Secret de la aplicación DropBox.';
+                        ToolTip = 'Specifies the App Secret of the DropBox application.';
                         ExtendedDatatype = Masked;
                     }
 
                     field("Url Api DropBox"; Rec."Url Api DropBox")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la URL base de la API de DropBox.';
+                        ToolTip = 'Specifies the base URL of the DropBox API.';
                     }
 
                     field("DropBox Root Folder"; Rec."Root Folder")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la carpeta raíz de DropBox.';
+                        ToolTip = 'Specifies the root folder of DropBox.';
                     }
                     field("Code DropBox"; Rec."Code DropBox")
                     {
@@ -264,7 +264,7 @@ page 95112 "Drive Configuration"
                     field("DropBox Access Token"; TokenDropBox)
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Token de acceso actual de DropBox.';
+                        ToolTip = 'Current access token for DropBox.';
                         ExtendedDatatype = Masked;
                         Editable = TokenFieldsEditable;
                         trigger OnValidate()
@@ -276,7 +276,7 @@ page 95112 "Drive Configuration"
                     field("DropBox Refresh Token"; Rec."DropBox Refresh Token")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Token de actualización de DropBox.';
+                        ToolTip = 'Refresh token for DropBox.';
                         ExtendedDatatype = Masked;
                         Editable = TokenFieldsEditable;
                     }
@@ -284,7 +284,7 @@ page 95112 "Drive Configuration"
                     field("DropBox Token Expiration"; Rec."DropBox Token Expiration")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Fecha y hora de expiración del token de acceso.';
+                        ToolTip = 'Date and time when the access token expires.';
                         Editable = false;
                     }
                 }
@@ -297,33 +297,33 @@ page 95112 "Drive Configuration"
                     field("Strapi Base URL"; Rec."Strapi Base URL")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la URL base de la API de Strapi.';
+                        ToolTip = 'Specifies the base URL of the Strapi API.';
                     }
 
                     field("Strapi API Token"; Rec."Strapi API Token")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el token de API de Strapi.';
+                        ToolTip = 'Specifies the API token of Strapi.';
                         ExtendedDatatype = Masked;
                     }
 
                     field("Strapi Username"; Rec."Strapi Username")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el nombre de usuario de Strapi.';
+                        ToolTip = 'Specifies the Strapi username.';
                     }
 
                     field("Strapi Password"; Rec."Strapi Password")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la contraseña de Strapi.';
+                        ToolTip = 'Specifies the Strapi password.';
                         ExtendedDatatype = Masked;
                     }
 
                     field("Strapi Collection Name"; Rec."Strapi Collection Name")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el nombre de la colección en Strapi.';
+                        ToolTip = 'Specifies the collection name in Strapi.';
                     }
                 }
                 group("SharePoint Configuration")
@@ -334,29 +334,29 @@ page 95112 "Drive Configuration"
                     field("SharePoint Client ID"; Rec."SharePoint Client ID")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el Client ID de la aplicación SharePoint OAuth.';
+                        ToolTip = 'Specifies the Client ID of the SharePoint OAuth application.';
                     }
 
                     field("SharePoint Client Secret"; Rec."SharePoint Client Secret")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el Client Secret de la aplicación SharePoint OAuth.';
+                        ToolTip = 'Specifies the Client Secret of the SharePoint OAuth application.';
                         ExtendedDatatype = Masked;
                     }
                     field("SharePoint Tenant ID"; Rec."SharePoint Tenant ID")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el Tenant ID de Microsoft Azure.';
+                        ToolTip = 'Specifies the Tenant ID from Microsoft Azure.';
                     }
                     field("SharePoint Site ID"; Rec."SharePoint Site ID")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica el Site ID de SharePoint.';
+                        ToolTip = 'Specifies the Site ID of SharePoint.';
                     }
                     field("Url Api SharePoint"; Rec."Url Api SharePoint")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Especifica la URL base de la API de SharePoint.';
+                        ToolTip = 'Specifies the base URL of the SharePoint API.';
                     }
                 }
                 group("SharePoint Tokens")
@@ -366,19 +366,19 @@ page 95112 "Drive Configuration"
                     field("SharePoint Access Token"; Rec."SharePoint Access Token")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Token de acceso actual de SharePoint.';
+                        ToolTip = 'Current access token for SharePoint.';
                         Editable = TokenFieldsEditable;
                     }
                     field("SharePoint Refresh Token"; Rec."SharePoint Refresh Token")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Token de actualización de SharePoint.';
+                        ToolTip = 'Refresh token for SharePoint.';
                         Editable = TokenFieldsEditable;
                     }
                     field("SharePoint Token Expiration"; Rec."SharePoint Token Expiration")
                     {
                         ApplicationArea = All;
-                        ToolTip = 'Fecha y hora de expiración del token de acceso.';
+                        ToolTip = 'Date and time when the access token expires.';
                         Editable = false;
                     }
                 }
@@ -598,8 +598,8 @@ page 95112 "Drive Configuration"
                 action("Liberar Google Drive Id")
                 {
                     ApplicationArea = All;
-                    Caption = 'Liberar Google Drive Id';
-                    ToolTip = 'Liberar el Google Drive Id.';
+                    Caption = 'Release Google Drive Id';
+                    ToolTip = 'Release the Google Drive Id.';
                     Image = Web;
 
                     trigger OnAction()

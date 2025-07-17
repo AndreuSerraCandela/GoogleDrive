@@ -729,22 +729,22 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Dropbox - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 2429493653 - Control 3192175264 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Teclee fecha</source>
+          <source>Enter Date</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Dropbox - Control Date - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 2429493653 - Control 2688099599 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Teclee fecha</source>
+          <source>Enter Date</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Dropbox - Control Date1 - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 2429493653 - Control 472720858 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Teclee valor</source>
+          <source>Enter Value</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Dropbox - Control Valor - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 2429493653 - Control 443158777 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Teclee valor</source>
+          <source>Enter Value</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Dropbox - Control Valor1 - Property Caption</note>
         </trans-unit>
@@ -754,22 +754,22 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Google Drive - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 119800846 - Control 3192175264 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Teclee fecha</source>
+          <source>Enter date</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Google Drive - Control Date - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 119800846 - Control 2688099599 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Teclee fecha</source>
+          <source>Enter Date</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Google Drive - Control Date1 - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 119800846 - Control 472720858 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Teclee valor</source>
+          <source>Enter Value</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Google Drive - Control Valor - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 119800846 - Control 443158777 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Teclee valor</source>
+          <source>Enter Value</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Google Drive - Control Valor1 - Property Caption</note>
         </trans-unit>
@@ -784,22 +784,22 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox Configuration - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 2488241142 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica la App Key de la aplicación DropBox.</source>
+          <source>Specifies the App Key of the DropBox application.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox App Key - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 128218221 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica la App Secret de la aplicación DropBox.</source>
+          <source>Specifies the App Secret of the DropBox application.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox App Secret - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 2569946936 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica la carpeta raíz de DropBox.</source>
+          <source>Specifies the root folder of DropBox.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox Root Folder - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 211956657 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica la URL base de la API de DropBox.</source>
+          <source>Specifies the base URL of the DropBox API.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Url Api DropBox - Property ToolTip</note>
         </trans-unit>
@@ -809,17 +809,17 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox Tokens - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 4135971357 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Token de acceso actual de DropBox.</source>
+          <source>Current access token for DropBox.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox Access Token - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 2759503982 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Token de actualización de DropBox.</source>
+          <source>Refresh token for DropBox.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox Refresh Token - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 1364126888 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Fecha y hora de expiración del token de acceso.</source>
+          <source>Date and time when the access token expires.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox Token Expiration - Property ToolTip</note>
         </trans-unit>
@@ -944,17 +944,17 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDrive Tokens - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 1887542201 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Token de acceso actual de OneDrive.</source>
+          <source>Current access token for OneDrive.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDrive Access Token - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 1599754090 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Token de actualización de OneDrive.</source>
+          <source>Refresh token for OneDrive.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDrive Refresh Token - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 2119495052 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Fecha y hora de expiración del token de acceso.</source>
+          <source>Date and time when the access token expires.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDrive Token Expiration - Property ToolTip</note>
         </trans-unit>
@@ -964,27 +964,27 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control SharePoint Configuration - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 2248734183 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica el Client ID de la aplicación SharePoint OAuth.</source>
+          <source>Specifies the Client ID of the SharePoint OAuth application.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control SharePoint Client ID - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 2104195930 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica el Client Secret de la aplicación SharePoint OAuth.</source>
+          <source>Specifies the Client Secret of the SharePoint OAuth application.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control SharePoint Client Secret - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 1894561681 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica el Site ID de SharePoint.</source>
+          <source>Specifies the Site ID of SharePoint.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control SharePoint Site ID - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 76939604 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica el Tenant ID de Microsoft Azure.</source>
+          <source>Specifies the Tenant ID from Microsoft Azure.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control SharePoint Tenant ID - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 800046590 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica la URL base de la API de SharePoint.</source>
+          <source>Specifies the base URL of the SharePoint API.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Url Api SharePoint - Property ToolTip</note>
         </trans-unit>
@@ -994,17 +994,17 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control SharePoint Tokens - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 1706501090 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Token de acceso actual de SharePoint.</source>
+          <source>Current access token for SharePoint.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control SharePoint Access Token - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 1713108105 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Token de actualización de SharePoint.</source>
+          <source>Refresh token for SharePoint.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control SharePoint Refresh Token - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 2682310627 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Fecha y hora de expiración del token de acceso.</source>
+          <source>Date and time when the access token expires.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control SharePoint Token Expiration - Property ToolTip</note>
         </trans-unit>
@@ -1029,27 +1029,27 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Strapi Configuration - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 3771291026 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica el token de API de Strapi.</source>
+          <source>Specifies the API token of Strapi.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Strapi API Token - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 3547209069 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica la URL base de la API de Strapi.</source>
+          <source>Specifies the base URL of the Strapi API.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Strapi Base URL - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 293695152 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica el nombre de la colección en Strapi.</source>
+          <source>Specifies the collection name in Strapi.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Strapi Collection Name - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 3531253518 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica la contraseña de Strapi.</source>
+          <source>Specifies the Strapi password.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Strapi Password - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 1947287909 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica el nombre de usuario de Strapi.</source>
+          <source>Specifies the Strapi username.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Strapi Username - Property ToolTip</note>
         </trans-unit>
@@ -1164,12 +1164,12 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action Google Drive Id Drive - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 2595669717 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Liberar el Google Drive Id.</source>
+          <source>Release the Google Drive Id.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action Liberar Google Drive Id - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 2595669717 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Liberar Google Drive Id</source>
+          <source>Release Google Drive Id</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action Liberar Google Drive Id - Property Caption</note>
         </trans-unit>
@@ -1463,53 +1463,93 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 1163388225 - NamedType 4039018142" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Could not generate subfolder path. Verify the configuration.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - NamedType CouldNotGenerateSubfolderPathLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 1163388225 - NamedType 3981014873" size-unit="char" translate="yes" xml:space="preserve">
+          <source>❌ Error creating test subfolder.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - NamedType ErrorCreatingTestSubfolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 1163388225 - NamedType 2022272445" size-unit="char" translate="yes" xml:space="preserve">
+          <source>✅ Successful folder access. Found %1 items.</source>
+          <note from="Developer" annotates="general" priority="2">%1 = Number of items found</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - NamedType FolderAccessSuccessLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 1163388225 - NamedType 3095192917" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Folder browser functionality will be implemented soon.\For now, you can get the folder ID from Google Drive:\1. Open Google Drive in your browser\2. Navigate to the desired folder\3. Copy the ID from the URL (the part after /folders/)</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - NamedType FolderBrowserNotImplementedLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 1163388225 - NamedType 3902951687" size-unit="char" translate="yes" xml:space="preserve">
+          <source>⚠️ The folder is empty or could not be accessed. Verify the folder ID and permissions.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - NamedType FolderEmptyOrInaccessibleLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 1163388225 - NamedType 2968485544" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Please specify a folder ID first.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - NamedType PleaseSpecifyFolderIDLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 1163388225 - NamedType 1412058955" size-unit="char" translate="yes" xml:space="preserve">
+          <source>This page allows you to configure where files from different tables will be stored in Drive.\Use "Setup Default Mappings" to create initial configurations.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - NamedType SetupDefaultMappingsLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 1163388225 - NamedType 508573679" size-unit="char" translate="yes" xml:space="preserve">
+          <source>✅ Test subfolder created successfully.\Folder ID: %1</source>
+          <note from="Developer" annotates="general" priority="2">%1 = Folder ID</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - NamedType TestSubfolderCreatedSuccessLbl</note>
+        </trans-unit>
         <trans-unit id="Page 1163388225 - Control 1090351696 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica si esta configuración está activa.</source>
+          <source>Specifies if this configuration is active.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Active - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Control 825495798 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Si está habilitado, creará automáticamente subcarpetas basadas en el patrón especificado.</source>
+          <source>If enabled, it will automatically create subfolders based on the specified pattern.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Auto Create Subfolders - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Control 2500892784 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Fecha y hora de creación de este registro.</source>
+          <source>Date and time when this record was created.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Created Date - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Control 1127021900 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica el ID de la carpeta del Drive donde se almacenarán los archivos.</source>
+          <source>Specifies the ID of the Drive folder where files will be stored.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Default Folder ID - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Control 141400118 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica el nombre de la carpeta del Drive (solo para referencia).</source>
+          <source>Specifies the name of the Drive folder (for reference only).</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Default Folder Name - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Control 3461834954 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Descripción opcional para esta configuración.</source>
+          <source>Optional description for this configuration.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Description - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Control 699646855 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Fecha y hora de última modificación de este registro.</source>
+          <source>Date and time when this record was last modified.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Modified Date - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Control 2782705678 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Patrón para crear subcarpetas. Use {DOCNO} para número de documento, {NO} para el Código, {YEAR} para año, {MONTH} para mes.</source>
+          <source>Pattern for creating subfolders. Use {DOCNO} for document number, {NO} for Code, {YEAR} for year, {MONTH} for month.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Subfolder Pattern - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Control 3135334477 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Especifica el ID de la tabla de Business Central.</source>
+          <source>Specifies the ID of the Business Central table.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Table ID - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Control 3808951907 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Muestra el nombre de la tabla de Business Central.</source>
+          <source>Shows the name of the Business Central table.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Table Name - Property ToolTip</note>
         </trans-unit>
@@ -1519,62 +1559,62 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control GoogleDriveFolders - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 3126609683 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Abre el Drive en el navegador.</source>
+          <source>Opens Drive in the browser.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Open Google Drive - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 3126609683 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Abrir  Drive</source>
+          <source>Open Drive</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Open Google Drive - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 3071540127 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Abre el explorador de Google Drive para seleccionar una carpeta.</source>
+          <source>Opens the Google Drive browser to select a folder.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Browse Google Drive Folder - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 3071540127 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Explorar Carpeta Drive</source>
+          <source>Browse Drive Folder</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Browse Google Drive Folder - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 2041472052 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Crea una subcarpeta de prueba usando el patrón especificado.</source>
+          <source>Creates a test subfolder using the specified pattern.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Create Test Subfolder - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 2041472052 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Crear Subcarpeta de Prueba</source>
+          <source>Create Test Subfolder</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Create Test Subfolder - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 1800816931 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Recupera el ID de la carpeta especificada.</source>
+          <source>Retrieves the ID of the specified folder.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Recuperar ID de Carpeta - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 1800816931 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Recuperar ID de Carpeta</source>
+          <source>Retrieve Folder ID</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Recuperar ID de Carpeta - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 284370949 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Crea configuraciones por defecto para las tablas más comunes.</source>
+          <source>Creates default configurations for the most common tables.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Setup Default Mappings - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 284370949 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Configurar Mapeos por Defecto</source>
+          <source>Setup Default Mappings</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Setup Default Mappings - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 178287432 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Prueba si se puede acceder a la carpeta especificada.</source>
+          <source>Tests if the specified folder can be accessed.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Test Folder Access - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Action 178287432 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Probar Acceso a Carpeta</source>
+          <source>Test Folder Access</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Action Test Folder Access - Property Caption</note>
         </trans-unit>
@@ -1584,29 +1624,29 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1387985265 - Control 3414364457 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Extensión</source>
+          <source>Extension</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Control File Extension - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1387985265 - Control 2961552353 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Nombre</source>
+          <source>Name</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Control Name - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1387985265 - Control 1131619133 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Tipo</source>
+          <source>Type</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Control Value - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 1387985265 - Action 2944983729 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Crea una carpeta en el Drive</source>
+        <trans-unit id="Page 1387985265 - Action 1939812918 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Create a folder in the Drive</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Action Crear Carpeta - Property ToolTip</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Action Create Folder - Property ToolTip</note>
         </trans-unit>
-        <trans-unit id="Page 1387985265 - Action 2944983729 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Crear Carpeta</source>
+        <trans-unit id="Page 1387985265 - Action 1939812918 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Create Folder</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Action Crear Carpeta - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Action Create Folder - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 2199573959 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Manual del Drive</source>

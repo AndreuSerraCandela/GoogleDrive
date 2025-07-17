@@ -6,6 +6,8 @@ page 95106 "Google Drive Folder Mapping"
     SourceTable = "Google Drive Folder Mapping";
     Caption = 'Drive Folder Mapping';
 
+
+
     layout
     {
         area(Content)
@@ -15,67 +17,66 @@ page 95106 "Google Drive Folder Mapping"
                 field("Table ID"; Rec."Table ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Especifica el ID de la tabla de Business Central.';
+                    ToolTip = 'Specifies the ID of the Business Central table.';
 
                     trigger OnValidate()
                     begin
                         CurrPage.Update();
                     end;
                 }
-
                 field("Table Name"; Rec."Table Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Muestra el nombre de la tabla de Business Central.';
+                    ToolTip = 'Shows the name of the Business Central table.';
                 }
 
                 field("Default Folder Name"; Rec."Default Folder Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Especifica el nombre de la carpeta del Drive (solo para referencia).';
+                    ToolTip = 'Specifies the name of the Drive folder (for reference only).';
                 }
 
                 field("Default Folder ID"; Rec."Default Folder ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Especifica el ID de la carpeta del Drive donde se almacenarán los archivos.';
+                    ToolTip = 'Specifies the ID of the Drive folder where files will be stored.';
                     Editable = false;
                 }
 
                 field("Auto Create Subfolders"; Rec."Auto Create Subfolders")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Si está habilitado, creará automáticamente subcarpetas basadas en el patrón especificado.';
+                    ToolTip = 'If enabled, it will automatically create subfolders based on the specified pattern.';
                 }
 
                 field("Subfolder Pattern"; Rec."Subfolder Pattern")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Patrón para crear subcarpetas. Use {DOCNO} para número de documento, {NO} para el Código, {YEAR} para año, {MONTH} para mes.';
+                    ToolTip = 'Pattern for creating subfolders. Use {DOCNO} for document number, {NO} for Code, {YEAR} for year, {MONTH} for month.';
                 }
 
                 field("Active"; Rec."Active")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Especifica si esta configuración está activa.';
+                    ToolTip = 'Specifies if this configuration is active.';
                 }
 
                 field("Description"; Rec."Description")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Descripción opcional para esta configuración.';
+                    ToolTip = 'Optional description for this configuration.';
                 }
 
                 field("Created Date"; Rec."Created Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Fecha y hora de creación de este registro.';
+                    ToolTip = 'Date and time when this record was created.';
                 }
 
                 field("Modified Date"; Rec."Modified Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Fecha y hora de última modificación de este registro.';
+                    ToolTip = 'Date and time when this record was last modified.';
                 }
             }
         }
@@ -97,8 +98,8 @@ page 95106 "Google Drive Folder Mapping"
             action("Setup Default Mappings")
             {
                 ApplicationArea = All;
-                Caption = 'Configurar Mapeos por Defecto';
-                ToolTip = 'Crea configuraciones por defecto para las tablas más comunes.';
+                Caption = 'Setup Default Mappings';
+                ToolTip = 'Creates default configurations for the most common tables.';
                 Image = Setup;
 
                 trigger OnAction()
@@ -111,8 +112,8 @@ page 95106 "Google Drive Folder Mapping"
             action("Browse Google Drive Folder")
             {
                 ApplicationArea = All;
-                Caption = 'Explorar Carpeta Drive';
-                ToolTip = 'Abre el explorador de Google Drive para seleccionar una carpeta.';
+                Caption = 'Browse Drive Folder';
+                ToolTip = 'Opens the Google Drive browser to select a folder.';
                 Image = AddToHome;
                 Scope = Repeater;
 
@@ -122,19 +123,14 @@ page 95106 "Google Drive Folder Mapping"
                     FolderBrowser: Page "Google Drive Factbox";
                 begin
                     // Open Google Drive folder browser
-                    Message('Funcionalidad de explorador de carpetas será implementada próximamente.\' +
-                           'Por ahora, puede obtener el ID de carpeta desde Google Drive:\' +
-                           '\' +
-                           '1. Abra Google Drive en su navegador\' +
-                           '2. Navegue a la carpeta deseada\' +
-                           '3. Copie el ID de la URL (la parte después de /folders/)');
+                    Message(FolderBrowserNotImplementedLbl);
                 end;
             }
             action("Recuperar ID de Carpeta")
             {
                 ApplicationArea = All;
-                Caption = 'Recuperar ID de Carpeta';
-                ToolTip = 'Recupera el ID de la carpeta especificada.';
+                Caption = 'Retrieve Folder ID';
+                ToolTip = 'Retrieves the ID of the specified folder.';
                 Image = Indent;
                 Scope = Repeater;
 
@@ -150,8 +146,8 @@ page 95106 "Google Drive Folder Mapping"
             action("Test Folder Access")
             {
                 ApplicationArea = All;
-                Caption = 'Probar Acceso a Carpeta';
-                ToolTip = 'Prueba si se puede acceder a la carpeta especificada.';
+                Caption = 'Test Folder Access';
+                ToolTip = 'Tests if the specified folder can be accessed.';
                 Image = TestReport;
                 Scope = Repeater;
 
@@ -161,7 +157,7 @@ page 95106 "Google Drive Folder Mapping"
                     Files: Record "Name/Value Buffer" temporary;
                 begin
                     if Rec."Default Folder ID" = '' then begin
-                        Message('Por favor, especifique un ID de carpeta primero.');
+                        Message(PleaseSpecifyFolderIDLbl);
                         exit;
                     end;
 
@@ -169,17 +165,17 @@ page 95106 "Google Drive Folder Mapping"
                     GoogleDriveManager.ListFolder(Rec."Default Folder ID", Files, false);
 
                     if Files.FindFirst() then
-                        Message('✅ Acceso exitoso a la carpeta. Se encontraron %1 elementos.', Files.Count)
+                        Message(FolderAccessSuccessLbl, Files.Count)
                     else
-                        Message('⚠️ La carpeta está vacía o no se pudo acceder. Verifique el ID de carpeta y los permisos.');
+                        Message(FolderEmptyOrInaccessibleLbl);
                 end;
             }
 
             action("Create Test Subfolder")
             {
                 ApplicationArea = All;
-                Caption = 'Crear Subcarpeta de Prueba';
-                ToolTip = 'Crea una subcarpeta de prueba usando el patrón especificado.';
+                Caption = 'Create Test Subfolder';
+                ToolTip = 'Creates a test subfolder using the specified pattern.';
                 Image = Documents;
                 Scope = Repeater;
 
@@ -193,7 +189,7 @@ page 95106 "Google Drive Folder Mapping"
                     Origen: Enum "Data Storage Provider";
                 begin
                     if Rec."Default Folder ID" = '' then begin
-                        Message('Por favor, especifique un ID de carpeta primero.');
+                        Message(PleaseSpecifyFolderIDLbl);
                         exit;
                     end;
 
@@ -203,7 +199,7 @@ page 95106 "Google Drive Folder Mapping"
                     TestPath := Rec.CreateSubfolderPath(Rec."Table ID", TestDocNo, TestDate, Origen::"Google Drive");
 
                     if TestPath = '' then begin
-                        Message('No se pudo generar la ruta de subcarpeta. Verifique la configuración.');
+                        Message(CouldNotGenerateSubfolderPathLbl);
                         exit;
                     end;
 
@@ -211,9 +207,9 @@ page 95106 "Google Drive Folder Mapping"
                     FolderId := GoogleDriveManager.CreateFolder('TEST-' + Format(CurrentDateTime, 0, '<Year4><Month,2><Day,2>-<Hours24><Minutes,2>'), '', false);
 
                     if FolderId <> '' then
-                        Message('✅ Subcarpeta de prueba creada exitosamente.\ID de carpeta: %1', FolderId)
+                        Message(TestSubfolderCreatedSuccessLbl, FolderId)
                     else
-                        Message('❌ Error al crear la subcarpeta de prueba.');
+                        Message(ErrorCreatingTestSubfolderLbl);
                 end;
             }
         }
@@ -223,8 +219,8 @@ page 95106 "Google Drive Folder Mapping"
             action("Open Google Drive")
             {
                 ApplicationArea = All;
-                Caption = 'Abrir  Drive';
-                ToolTip = 'Abre el Drive en el navegador.';
+                Caption = 'Open Drive';
+                ToolTip = 'Opens Drive in the browser.';
                 Image = Web;
 
                 trigger OnAction()
@@ -239,9 +235,18 @@ page 95106 "Google Drive Folder Mapping"
     begin
         // Show helpful message on first open
         if not Rec.FindFirst() then begin
-            Message('Esta página permite configurar dónde se almacenarán los archivos de diferentes tablas en el Drive.\' +
-                   '\' +
-                   'Use "Configurar Mapeos por Defecto" para crear configuraciones iniciales.');
+            Message(SetupDefaultMappingsLbl);
         end;
     end;
+
+    var
+        FolderBrowserNotImplementedLbl: Label 'Folder browser functionality will be implemented soon.\For now, you can get the folder ID from Google Drive:\1. Open Google Drive in your browser\2. Navigate to the desired folder\3. Copy the ID from the URL (the part after /folders/)';
+        PleaseSpecifyFolderIDLbl: Label 'Please specify a folder ID first.';
+        FolderAccessSuccessLbl: Label '✅ Successful folder access. Found %1 items.', Comment = '%1 = Number of items found';
+        FolderEmptyOrInaccessibleLbl: Label '⚠️ The folder is empty or could not be accessed. Verify the folder ID and permissions.';
+        CouldNotGenerateSubfolderPathLbl: Label 'Could not generate subfolder path. Verify the configuration.';
+        TestSubfolderCreatedSuccessLbl: Label '✅ Test subfolder created successfully.\Folder ID: %1', Comment = '%1 = Folder ID';
+        ErrorCreatingTestSubfolderLbl: Label '❌ Error creating test subfolder.';
+        SetupDefaultMappingsLbl: Label 'This page allows you to configure where files from different tables will be stored in Drive.\Use "Setup Default Mappings" to create initial configurations.';
+
 }

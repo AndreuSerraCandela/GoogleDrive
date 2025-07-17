@@ -21,25 +21,25 @@ page 95121 "Dialogo Dropbox"
             {
                 ApplicationArea = ALL;
                 Visible = VerFecha;
-                Caption = 'Teclee fecha';
+                Caption = 'Enter Date';
             }
             field(Date1; DateValue1)
             {
                 ApplicationArea = ALL;
                 Visible = VerFecha1;
-                Caption = 'Teclee fecha';
+                Caption = 'Enter Date';
             }
             field(Valor; ValorValue)
             {
                 ApplicationArea = ALL;
                 Visible = VerValor;
-                Caption = 'Teclee valor';
+                Caption = 'Enter Value';
             }
             field(Valor1; ValorValue1)
             {
                 ApplicationArea = ALL;
                 Visible = VerValor1;
-                Caption = 'Teclee valor';
+                Caption = 'Enter Value';
             }
             field(Texto; TextValue)
             {

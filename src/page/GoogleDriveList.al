@@ -15,7 +15,7 @@ page 95105 "Google Drive List"
                 field(Name; Rec.Name)
                 {
                     ApplicationArea = All;
-                    Caption = 'Nombre';
+                    Caption = 'Name';
                     DrillDown = true;
                     StyleExpr = Stilo;
                     trigger OnDrillDown()
@@ -76,13 +76,13 @@ page 95105 "Google Drive List"
                 field(Value; Rec.Value)
                 {
                     ApplicationArea = All;
-                    Caption = 'Tipo';
+                    Caption = 'Type';
                     Visible = false;
                 }
                 field("File Extension"; Rec."File Extension")
                 {
                     ApplicationArea = All;
-                    Caption = 'Extensión';
+                    Caption = 'Extension';
                     Visible = true;
                 }
             }
@@ -93,8 +93,10 @@ page 95105 "Google Drive List"
     {
         area(Processing)
         {
-            action("Seleccionar")
+            action("Select")
             {
+                CaptionML = ENU = 'Select',
+                            ESP = 'Seleccionar';
                 ApplicationArea = All;
                 Scope = Repeater;
                 Visible = (Not arChivo and Mueve);
@@ -106,8 +108,10 @@ page 95105 "Google Drive List"
                     CurrPage.Close();
                 end;
             }
-            action("Descargar Archivo")
+            action("Download File")
             {
+                CaptionML = ENU = 'Download File',
+                            ESP = 'Descargar Archivo';
                 ApplicationArea = All;
                 Scope = Repeater;
                 Visible = (Archivo and Not Mueve);
@@ -217,13 +221,13 @@ page 95105 "Google Drive List"
             //         end;
             //     end;
             // }
-            action("Crear Carpeta")
+            action("Create Folder")
             {
                 ApplicationArea = All;
                 Image = ToggleBreakpoint;
                 Visible = not Mueve;
-                Caption = 'Crear Carpeta';
-                ToolTip = 'Crea una carpeta en el Drive';
+                Caption = 'Create Folder';
+                ToolTip = 'Create a folder in the Drive';
                 trigger OnAction()
                 var
                     DorpBox: Codeunit "Google Drive Manager";
@@ -281,8 +285,10 @@ page 95105 "Google Drive List"
                     Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }
-            action(Borrar)
+            action(Delete)
             {
+                CaptionML = ENU = 'Delete',
+                            ESP = 'Borrar';
                 ApplicationArea = All;
                 Image = Delete;
                 Visible = not Mueve;
@@ -298,8 +304,10 @@ page 95105 "Google Drive List"
                     Recargar(root, CarpetaAnterior[Indice], Indice);
                 end;
             }
-            action("Subir Archivo")
+            action("Upload File")
             {
+                CaptionML = ENU = 'Upload File',
+                            ESP = 'Subir Archivo';
                 ApplicationArea = All;
                 Image = Import;
                 Visible = (not Mueve);
