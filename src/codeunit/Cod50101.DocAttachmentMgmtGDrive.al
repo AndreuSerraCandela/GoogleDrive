@@ -25,6 +25,9 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         PurchaseHeader: Record "Purchase Header";
         PurchaseInvoiceHeader: Record "Purch. Inv. Header";
         PurchaseCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        PurcchaseRcptHeader: Record "Purch. Rcpt. Header";
+
     begin
         Fecha := 0D;
         case DocumentAttachment."Table ID" of
@@ -58,6 +61,17 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                     If PurchaseCrMemoHeader.Get(DocumentAttachment."No.") then
                         Fecha := PurchaseCrMemoHeader."Document Date";
                 end;
+            Database::"Purch. Rcpt. Header":
+                begin
+                    If PurcchaseRcptHeader.Get(DocumentAttachment."No.") then
+                        Fecha := PurcchaseRcptHeader."Document Date";
+                end;
+            Database::"Sales Shipment Header":
+                begin
+                    If SalesShipmentHeader.Get(DocumentAttachment."No.") then
+                        Fecha := SalesShipmentHeader."Document Date";
+                end;
+
         end;
         CompanyInfo.Get();
         if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Local then exit;
@@ -109,6 +123,60 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
 
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, 80, OnRunOnBeforeFinalizePosting, '', false, false)]
+    local procedure OnRunOnBeforeFinalizePosting(var SalesHeader: Record "Sales Header"; var SalesShipmentHeader: Record "Sales Shipment Header"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var ReturnReceiptHeader: Record "Return Receipt Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; CommitIsSuppressed: Boolean; GenJnlLineExtDocNo: Code[35]; var EverythingInvoiced: Boolean; GenJnlLineDocNo: Code[20]; SrcCode: Code[10]; PreviewMode: Boolean)
+    var
+        DocumentAttachment: Record "Document Attachment";
+        FolderMappingSH: Record "Google Drive Folder Mapping";
+        FolderMappingSalesInv: Record "Google Drive Folder Mapping";
+        FolderMappingSalesCrMemo: Record "Google Drive Folder Mapping";
+        FolderMappingSalesShipment: Record "Google Drive Folder Mapping";
+        RecRef: RecordRef;
+    begin
+        If not FolderMappingSH.Get(Database::"Sales Header") then
+            FolderMappingSH.init;
+        if not FolderMappingSalesInv.Get(Database::"Sales Invoice Header") then
+            FolderMappingSalesInv.init;
+        if not FolderMappingSalesCrMemo.Get(Database::"Sales Cr.Memo Header") then
+            FolderMappingSalesCrMemo.init;
+        if not FolderMappingSalesShipment.Get(Database::"Sales Shipment Header") then
+            FolderMappingSalesShipment.init;
+        If (SalesInvoiceHeader."No." <> '') Or (SalesCrMemoHeader."No." <> '') then begin
+            DocumentAttachment.SetRange("Table ID", Database::"Sales Header");
+            DocumentAttachment.SetRange("No.", SalesHeader."No.");
+            DocumentAttachment.SetRange("Document Type", SalesHeader."Document Type");
+            DocumentAttachment.SetRange("Posted Document", false);
+            DocumentAttachment.ModifyAll("Posted Document", true);
+        end;
+        if (SalesInvoiceHeader."No." <> '') then begin
+            DocumentAttachment.Reset();
+            DocumentAttachment.SetRange("Table ID", Database::"Sales Invoice Header");
+            DocumentAttachment.SetRange("No.", SalesInvoiceHeader."No.");
+            if DocumentAttachment.FindFirst() then
+                repeat
+                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Invoice Header", RecRef, SalesHeader."Document Date");
+                until DocumentAttachment.Next() = 0;
+        end;
+        if (SalesCrMemoHeader."No." <> '') then begin
+            DocumentAttachment.Reset();
+            DocumentAttachment.SetRange("Table ID", Database::"Sales Cr.Memo Header");
+            DocumentAttachment.SetRange("No.", SalesCrMemoHeader."No.");
+            if DocumentAttachment.FindFirst() then
+                repeat
+                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Cr.Memo Header", RecRef, SalesHeader."Document Date");
+                until DocumentAttachment.Next() = 0;
+        end;
+        if (SalesShipmentHeader."No." <> '') then begin
+            DocumentAttachment.Reset();
+            DocumentAttachment.SetRange("Table ID", Database::"Sales Shipment Header");
+            DocumentAttachment.SetRange("No.", SalesShipmentHeader."No.");
+            if DocumentAttachment.FindFirst() then
+                repeat
+                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Shipment Header", RecRef, SalesHeader."Document Date");
+                until DocumentAttachment.Next() = 0;
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, 80, OnBeforeDeleteAfterPosting, '', false, false)]
     local procedure OnBeforeDeleteAfterPosting(var SalesHeader: Record "Sales Header"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SkipDelete: Boolean; CommitIsSuppressed: Boolean; EverythingInvoiced: Boolean; var TempSalesLineGlobal: Record "Sales Line" temporary)
     var
@@ -131,6 +199,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             DocumentAttachment.SetRange("Table ID", Database::"Sales Header");
             DocumentAttachment.SetRange("No.", SalesHeader."No.");
             DocumentAttachment.SetRange("Document Type", SalesHeader."Document Type");
+            DocumentAttachment.SetRange("Posted Document", false);
             DocumentAttachment.ModifyAll("Posted Document", true);
         end;
         if (SalesInvoiceHeader."No." <> '') then begin

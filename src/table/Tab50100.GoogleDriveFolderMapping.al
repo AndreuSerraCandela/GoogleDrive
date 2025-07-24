@@ -388,35 +388,35 @@ table 95100 "Google Drive Folder Mapping"
                 begin
                     IdCarpetaOrigen := GoogleDriveManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
                     IdCarpetaDestino := GoogleDriveManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
-                    DocumentAttachment."Google Drive ID" := GoogleDriveManager.MoveFile(DocumentAttachment."Google Drive ID", IdCarpetaDestino, IdCarpetaOrigen);
+                    DocumentAttachment."Google Drive ID" := GoogleDriveManager.CopyFile(DocumentAttachment."Google Drive ID", IdCarpetaDestino);
                     DocumentAttachment.Modify();
                 end;
             DataStorageProvider::OneDrive:
                 begin
                     IdCarpetaOrigen := OnDriveManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
                     IdCarpetaDestino := OnDriveManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
-                    DocumentAttachment."OneDrive ID" := OnDriveManager.MoveFile(DocumentAttachment."OneDrive ID", IdCarpetaDestino, IdCarpetaOrigen, true, DocumentAttachment."File Name");
+                    DocumentAttachment."OneDrive ID" := OnDriveManager.MoveFile(DocumentAttachment."OneDrive ID", IdCarpetaDestino, IdCarpetaOrigen, false, DocumentAttachment."File Name");
                     DocumentAttachment.Modify();
                 end;
             DataStorageProvider::DropBox:
                 begin
                     IdCarpetaOrigen := DropBoxManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
                     IdCarpetaDestino := DropBoxManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
-                    DocumentAttachment."DropBox ID" := DropBoxManager.MoveFile(DocumentAttachment."DropBox ID", IdCarpetaDestino, DocumentAttachment."File Name", true);
+                    DocumentAttachment."DropBox ID" := DropBoxManager.MoveFile(DocumentAttachment."DropBox ID", IdCarpetaDestino, DocumentAttachment."File Name", false);
                     DocumentAttachment.Modify();
                 end;
             DataStorageProvider::Strapi:
                 begin
                     IdCarpetaOrigen := StrapiManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
                     IdCarpetaDestino := StrapiManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
-                    DocumentAttachment."Strapi ID" := StrapiManager.MoveFile(DocumentAttachment."Strapi ID", IdCarpetaDestino, IdCarpetaOrigen);
+                    DocumentAttachment."Strapi ID" := StrapiManager.CopyFile(DocumentAttachment."Strapi ID", IdCarpetaDestino, IdCarpetaOrigen);
                     DocumentAttachment.Modify();
                 end;
             DataStorageProvider::SharePoint:
                 begin
                     IdCarpetaOrigen := SharePointManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
                     IdCarpetaDestino := SharePointManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
-                    DocumentAttachment."SharePoint ID" := SharePointManager.MoveFile(DocumentAttachment."SharePoint ID", IdCarpetaDestino, true, DocumentAttachment."File Name");
+                    DocumentAttachment."SharePoint ID" := SharePointManager.MoveFile(DocumentAttachment."SharePoint ID", IdCarpetaDestino, false, DocumentAttachment."File Name");
                     DocumentAttachment.Modify();
                 end;
         end;

@@ -96,6 +96,12 @@ tableextension 95100 "Doc. Attachment GoogleDrive" extends "Document Attachment"
             DataClassification = CustomerContent;
             InitValue = false;
         }
+        field(95116; "Moved Document"; Boolean)
+        {
+            Caption = 'Moved Document';
+            DataClassification = CustomerContent;
+            InitValue = false;
+        }
 
 
         // Campo genérico para URL del documento
