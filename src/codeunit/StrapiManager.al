@@ -799,40 +799,4 @@ codeunit 95104 "Strapi Manager"
         exit('');
     end;
 
-    procedure CreateSubfolderPath(TableID: Integer; DocumentNo: Text; DocumentDate: Date; Origen: Enum "Data Storage Provider"): Text
-    var
-        FolderMapping: Record "Google Drive Folder Mapping";
-        SubfolderPath: Text;
-        Year: Text;
-        Month: Text;
-    begin
-        if not FolderMapping.Get(TableID) then
-            exit('');
-
-        if not FolderMapping."Auto Create Subfolders" then
-            exit(FolderMapping."Default Folder ID");
-
-        if FolderMapping."Subfolder Pattern" = '' then
-            exit(FolderMapping."Default Folder ID");
-        SubfolderPath := FolderMapping."Subfolder Pattern";
-
-        // Replace patterns
-        if StrPos(SubfolderPath, '{DOCNO}') > 0 then
-            SubfolderPath := DocumentNo;
-        if StrPos(SubfolderPath, '{NO}') > 0 then
-            SubfolderPath := DocumentNo;
-        if DocumentDate = 0D then
-            exit(SubfolderPath);
-        if StrPos(SubfolderPath, '{YEAR}') > 0 then begin
-            Year := Format(Date2DMY(DocumentDate, 3));
-            SubfolderPath := Year;
-        end;
-
-        if StrPos(SubfolderPath, '{MONTH}') > 0 then begin
-            Month := Format(DocumentDate, 0, '<Month Text>');
-            SubfolderPath := Month;
-        end;
-
-        exit(SubfolderPath);
-    end;
 }

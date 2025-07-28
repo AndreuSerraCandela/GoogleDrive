@@ -150,6 +150,7 @@ table 95100 "Google Drive Folder Mapping"
     var
         FolderMapping: Record "Google Drive Folder Mapping";
         SubfolderPath: Text;
+        SubfolderPath2: Text;
         Year: Text;
         Month: Text;
     begin
@@ -165,27 +166,50 @@ table 95100 "Google Drive Folder Mapping"
 
         // Replace patterns
         if StrPos(SubfolderPath, '{DOCNO}') > 0 then
-            SubfolderPath := DocumentNo;
+            SubfolderPath2 := DocumentNo;
         if StrPos(SubfolderPath, '{NO}') > 0 then
-            SubfolderPath := DocumentNo;
+            SubfolderPath2 := DocumentNo;
         if DocumentDate = 0D then
-            exit(SubfolderPath);
+            exit(SubfolderPath2);
         if StrPos(SubfolderPath, '{YEAR}') > 0 then begin
             Year := Format(Date2DMY(DocumentDate, 3));
-            SubfolderPath := Year;
+            SubfolderPath2 := Year;
         end;
 
         if StrPos(SubfolderPath, '{MONTH}') > 0 then begin
             Month := Format(DocumentDate, 0, '<Month Text>');
-            SubfolderPath := Month;
+            SubfolderPath2 := Month;
         end;
         if StrPos(SubfolderPath, '{YEAR}/{MONTH}') > 0 then begin
             Year := Format(Date2DMY(DocumentDate, 3));
             Month := Format(DocumentDate, 0, '<Month Text>');
-            SubfolderPath := Year + '-' + Month;
+            SubfolderPath2 := Year + '-' + Month;
+        end;
+        if FolderMapping."Subfolder Pattern" = '{YEAR}/{DOCNO}' then begin
+            Year := Format(Date2DMY(DocumentDate, 3));
+            SubfolderPath2 := Year + '/' + DocumentNo;
+        end;
+        if FolderMapping."Subfolder Pattern" = '{YEAR}/{MONTH}' then begin
+            Year := Format(Date2DMY(DocumentDate, 3));
+            Month := Format(DocumentDate, 0, '<Month Text>');
+            SubfolderPath2 := Year + '/' + Month;
+        end;
+        if FolderMapping."Subfolder Pattern" = '{YEAR}/{MONTH}/{NO}' then begin
+            Year := Format(Date2DMY(DocumentDate, 3));
+            Month := Format(DocumentDate, 0, '<Month Text>');
+            SubfolderPath2 := Year + '/' + Month + '/' + DocumentNo;
+        end;
+        if FolderMapping."Subfolder Pattern" = '{YEAR}/{MONTH}/{DOCNO}' then begin
+            Year := Format(Date2DMY(DocumentDate, 3));
+            Month := Format(DocumentDate, 0, '<Month Text>');
+            SubfolderPath2 := Year + '/' + Month + '/' + DocumentNo;
         end;
 
-        exit(SubfolderPath);
+
+        exit(SubfolderPath2);
+
+
+
     end;
 
     procedure SetupDefaultMappings()
@@ -356,7 +380,9 @@ table 95100 "Google Drive Folder Mapping"
         end;
     end;
 
-    internal procedure MoveFileH(DataStorageProvider: Enum "Data Storage Provider"; var DocumentAttachment: Record "Document Attachment"; Origen: Integer; TableId: Integer; Var RecRef: RecordRef; Fecha: Date)
+    internal procedure MoveFileH(DataStorageProvider: Enum "Data Storage Provider";
+    var DocumentAttachment: Record "Document Attachment";
+    Origen: Integer; TableId: Integer; Var RecRef: RecordRef; Fecha: Date)
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
         OnDriveManager: Codeunit "OneDrive Manager";
@@ -371,18 +397,20 @@ table 95100 "Google Drive Folder Mapping"
         DocDate: Date;
 
     begin
-        Case Origen of
-            Database::"Purchase Header":
-                begin
-                    DocNo := RecRef.Field(PurchaseHeader.FieldNo("No.")).Value;
-                    DocDate := RecRef.Field(PurchaseHeader.FieldNo("Document Date")).Value;
-                end;
-            Database::"Sales Header":
-                begin
-                    DocNo := RecRef.Field(SalesHeader.FieldNo("No.")).Value;
-                    DocDate := RecRef.Field(SalesHeader.FieldNo("Document Date")).Value;
-                end;
-        end;
+        DocDate := Fecha;
+        DocNo := DocumentAttachment."No.";
+        // Case Origen of
+        //     Database::"Purchase Header":
+        //         begin
+        //             DocNo := RecRef.Field(PurchaseHeader.FieldNo("No.")).Value;
+        //             DocDate := RecRef.Field(PurchaseHeader.FieldNo("Document Date")).Value;
+        //         end;
+        //     Database::"Sales Header":
+        //         begin
+        //             DocNo := RecRef.Field(SalesHeader.FieldNo("No.")).Value;
+        //             DocDate := RecRef.Field(SalesHeader.FieldNo("Document Date")).Value;
+        //         end;
+        // end;
         case DataStorageProvider of
             DataStorageProvider::"Google Drive":
                 begin

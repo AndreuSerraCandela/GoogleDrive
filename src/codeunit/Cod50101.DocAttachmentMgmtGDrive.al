@@ -11,6 +11,26 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         SharePointManager: Codeunit "SharePoint Manager";
         CompanyInfo: Record "Company Information";
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnAfterTableHasNumberFieldPrimaryKey, '', false, false)]
+    local procedure OnAfterTableHasNumberFieldPrimaryKey(TableNo: Integer; var Result: Boolean; var FieldNo: Integer)
+    begin
+        Case TableNo of
+            Database::"Bank Account",
+            Database::"G/L Account":
+                begin
+                    FieldNo := 1;
+                    Result := true;
+                end;
+            Database::"Sales Shipment Header",
+            Database::"Purch. Rcpt. Header":
+                begin
+                    FieldNo := 3;
+                    Result := true;
+                end;
+        end;
+    end;
+
+
     [EventSubscriber(ObjectType::Table, Database::"Document Attachment", OnInsertAttachmentOnBeforeImportStream, '', false, false)]
     local procedure OnInsertAttachmentOnBeforeImportStream(var DocumentAttachment: Record "Document Attachment"; DocInStream: InStream; FileName: Text; var IsHandled: Boolean)
     var
@@ -127,12 +147,15 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
     local procedure OnRunOnBeforeFinalizePosting(var SalesHeader: Record "Sales Header"; var SalesShipmentHeader: Record "Sales Shipment Header"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var ReturnReceiptHeader: Record "Return Receipt Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; CommitIsSuppressed: Boolean; GenJnlLineExtDocNo: Code[35]; var EverythingInvoiced: Boolean; GenJnlLineDocNo: Code[20]; SrcCode: Code[10]; PreviewMode: Boolean)
     var
         DocumentAttachment: Record "Document Attachment";
+        DocumentAttachment2: Record "Document Attachment";
         FolderMappingSH: Record "Google Drive Folder Mapping";
         FolderMappingSalesInv: Record "Google Drive Folder Mapping";
         FolderMappingSalesCrMemo: Record "Google Drive Folder Mapping";
         FolderMappingSalesShipment: Record "Google Drive Folder Mapping";
         RecRef: RecordRef;
     begin
+        CompanyInfo.Get();
+        RecRef.GetTable(SalesHeader);
         If not FolderMappingSH.Get(Database::"Sales Header") then
             FolderMappingSH.init;
         if not FolderMappingSalesInv.Get(Database::"Sales Invoice Header") then
@@ -170,10 +193,24 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             DocumentAttachment.Reset();
             DocumentAttachment.SetRange("Table ID", Database::"Sales Shipment Header");
             DocumentAttachment.SetRange("No.", SalesShipmentHeader."No.");
-            if DocumentAttachment.FindFirst() then
-                repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Shipment Header", RecRef, SalesHeader."Document Date");
-                until DocumentAttachment.Next() = 0;
+            if not DocumentAttachment.FindFirst() then begin
+                DocumentAttachment.SetRange("Table ID", Database::"Sales Header");
+                DocumentAttachment.SetRange("No.", SalesHeader."No.");
+                DocumentAttachment.SetRange("Document Type", SalesHeader."Document Type");
+                if DocumentAttachment.FindFirst() then
+                    repeat
+                        DocumentAttachment2 := DocumentAttachment;
+                        DocumentAttachment2."Table ID" := Database::"Sales Shipment Header";
+                        DocumentAttachment2."No." := SalesShipmentHeader."No.";
+                        DocumentAttachment2."Document Type" := 0;
+                        DocumentAttachment2.Insert();
+
+                    until DocumentAttachment.Next() = 0;
+            end;
+
+            repeat
+                FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Shipment Header", RecRef, SalesHeader."Document Date");
+            until DocumentAttachment.Next() = 0;
         end;
     end;
 
@@ -218,6 +255,122 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             if DocumentAttachment.FindFirst() then
                 repeat
                     FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Cr.Memo Header", RecRef, SalesHeader."Document Date");
+                until DocumentAttachment.Next() = 0;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, 90, OnRunOnBeforeFinalizePosting, '', false, false)]
+    local procedure OnRunOnBeforeFinalizePosting2(var PurchaseHeader: Record "Purchase Header"; var PurchRcptHeader: Record "Purch. Rcpt. Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var ReturnShipmentHeader: Record "Return Shipment Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; CommitIsSuppressed: Boolean)
+    var
+        DocumentAttachment: Record "Document Attachment";
+        DocumentAttachment2: Record "Document Attachment";
+        FolderMappingSH: Record "Google Drive Folder Mapping";
+        FolderMappingSalesInv: Record "Google Drive Folder Mapping";
+        FolderMappingSalesCrMemo: Record "Google Drive Folder Mapping";
+        FolderMappingSalesShipment: Record "Google Drive Folder Mapping";
+        RecRef: RecordRef;
+    begin
+        CompanyInfo.Get();
+        RecRef.GetTable(PurchaseHeader);
+        If not FolderMappingSH.Get(Database::"Purchase Header") then
+            FolderMappingSH.init;
+        if not FolderMappingSalesInv.Get(Database::"Purch. Inv. Header") then
+            FolderMappingSalesInv.init;
+        if not FolderMappingSalesCrMemo.Get(Database::"Purch. Cr. Memo Hdr.") then
+            FolderMappingSalesCrMemo.init;
+        if not FolderMappingSalesShipment.Get(Database::"Purch. Rcpt. Header") then
+            FolderMappingSalesShipment.init;
+        If (PurchInvHeader."No." <> '') Or (PurchCrMemoHdr."No." <> '') then begin
+            DocumentAttachment.SetRange("Table ID", Database::"Purchase Header");
+            DocumentAttachment.SetRange("No.", PurchaseHeader."No.");
+            DocumentAttachment.SetRange("Document Type", PurchaseHeader."Document Type");
+            DocumentAttachment.SetRange("Posted Document", false);
+            DocumentAttachment.ModifyAll("Posted Document", true);
+        end;
+        if (PurchInvHeader."No." <> '') then begin
+            DocumentAttachment.Reset();
+            DocumentAttachment.SetRange("Table ID", Database::"Purch. Inv. Header");
+            DocumentAttachment.SetRange("No.", PurchInvHeader."No.");
+            if DocumentAttachment.FindFirst() then
+                repeat
+                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Inv. Header", RecRef, PurchaseHeader."Document Date");
+                until DocumentAttachment.Next() = 0;
+        end;
+        if (PurchCrMemoHdr."No." <> '') then begin
+            DocumentAttachment.Reset();
+            DocumentAttachment.SetRange("Table ID", Database::"Purch. Cr. Memo Hdr.");
+            DocumentAttachment.SetRange("No.", PurchCrMemoHdr."No.");
+            if DocumentAttachment.FindFirst() then
+                repeat
+                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Cr. Memo Hdr.", RecRef, PurchaseHeader."Document Date");
+                until DocumentAttachment.Next() = 0;
+        end;
+        if (PurchRcptHeader."No." <> '') then begin
+            DocumentAttachment.Reset();
+            DocumentAttachment.SetRange("Table ID", Database::"Purch. Rcpt. Header");
+            DocumentAttachment.SetRange("No.", PurchRcptHeader."No.");
+            if not DocumentAttachment.FindFirst() then begin
+                DocumentAttachment.SetRange("Table ID", Database::"Purchase Header");
+                DocumentAttachment.SetRange("No.", PurchaseHeader."No.");
+                DocumentAttachment.SetRange("Document Type", PurchaseHeader."Document Type");
+                if DocumentAttachment.FindFirst() then
+                    repeat
+                        DocumentAttachment2 := DocumentAttachment;
+                        DocumentAttachment2."Table ID" := Database::"Purch. Rcpt. Header";
+                        DocumentAttachment2."No." := PurchRcptHeader."No.";
+                        DocumentAttachment2."Document Type" := 0;
+                        DocumentAttachment2.Insert();
+
+                    until DocumentAttachment.Next() = 0;
+            end;
+
+            repeat
+                FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Rcpt. Header", RecRef, PurchaseHeader."Document Date");
+            until DocumentAttachment.Next() = 0;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, 90, OnBeforeDeleteAfterPosting, '', false, false)]
+    local procedure OnBeforeDeleteAfterPosting2(var PurchaseHeader: Record "Purchase Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var SkipDelete: Boolean; CommitIsSupressed: Boolean; var TempPurchLine: Record "Purchase Line" temporary; var TempPurchLineGlobal: Record "Purchase Line" temporary; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    var
+        DocumentAttachment: Record "Document Attachment";
+        FolderMappingSH: Record "Google Drive Folder Mapping";
+        FolderMappingSalesInv: Record "Google Drive Folder Mapping";
+        FolderMappingSalesCrMemo: Record "Google Drive Folder Mapping";
+        RecRef: RecordRef;
+    begin
+        CompanyInfo.Get();
+        RecRef.GetTable(PurchaseHeader);
+        If not FolderMappingSH.Get(Database::"Purchase Header") then
+            exit;
+        if not FolderMappingSalesInv.Get(Database::"Purch. Inv. Header") then
+            exit;
+        if not FolderMappingSalesCrMemo.Get(Database::"Purch. Cr. Memo Hdr.") then
+            exit;
+
+        If (PurchInvHeader."No." <> '') Or (PurchCrMemoHdr."No." <> '') then begin
+            DocumentAttachment.SetRange("Table ID", Database::"Purchase Header");
+            DocumentAttachment.SetRange("No.", PurchaseHeader."No.");
+            DocumentAttachment.SetRange("Document Type", PurchaseHeader."Document Type");
+            DocumentAttachment.SetRange("Posted Document", false);
+            DocumentAttachment.ModifyAll("Posted Document", true);
+        end;
+        if (PurchInvHeader."No." <> '') then begin
+            DocumentAttachment.Reset();
+            DocumentAttachment.SetRange("Table ID", Database::"Purch. Inv. Header");
+            DocumentAttachment.SetRange("No.", PurchInvHeader."No.");
+            if DocumentAttachment.FindFirst() then
+                repeat
+                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Inv. Header", RecRef, PurchaseHeader."Document Date");
+                until DocumentAttachment.Next() = 0;
+        end;
+        if (PurchCrMemoHdr."No." <> '') then begin
+            DocumentAttachment.Reset();
+            DocumentAttachment.SetRange("Table ID", Database::"Purch. Cr. Memo Hdr.");
+            DocumentAttachment.SetRange("No.", PurchCrMemoHdr."No.");
+            if DocumentAttachment.FindFirst() then
+                repeat
+                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Cr. Memo Hdr.", RecRef, PurchaseHeader."Document Date");
                 until DocumentAttachment.Next() = 0;
         end;
     end;

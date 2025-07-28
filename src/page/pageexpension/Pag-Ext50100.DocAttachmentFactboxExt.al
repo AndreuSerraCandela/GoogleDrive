@@ -367,6 +367,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         ServiceInvoiceHeader: Record "Service Invoice Header";
                         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
                         ServiceContractHeader: Record "Service Contract Header";
+                        BankAccount: Record "Bank Account";
+                        PurchRcptHeader: Record "Purch. Rcpt. Header";
+                        SalesShipmentHeader: Record "Sales Shipment Header";
                         Ventana: Dialog;
                     begin
                         case Rec."Table ID" of
@@ -389,6 +392,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     RecRef.Open(Database::Item);
                                     if Item.Get(Rec."No.") then
                                         RecRef.GetTable(Item);
+                                end;
+                            Database::"Bank Account":
+                                begin
+                                    RecRef.Open(Database::"Bank Account");
+                                    if BankAccount.Get(Rec."No.") then
+                                        RecRef.GetTable(BankAccount);
                                 end;
                             Database::Employee:
                                 begin
@@ -426,6 +435,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     if SalesInvoiceHeader.Get(Rec."No.") then
                                         RecRef.GetTable(SalesInvoiceHeader);
                                 end;
+                            Database::"Sales Shipment Header":
+                                begin
+                                    RecRef.Open(Database::"Sales Shipment Header");
+                                    if SalesShipmentHeader.Get(Rec."No.") then
+                                        RecRef.GetTable(SalesShipmentHeader);
+                                end;
                             Database::"Sales Cr.Memo Header":
                                 begin
                                     RecRef.Open(Database::"Sales Cr.Memo Header");
@@ -449,6 +464,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     RecRef.Open(Database::"Purch. Cr. Memo Hdr.");
                                     if PurchCrMemoHdr.Get(Rec."No.") then
                                         RecRef.GetTable(PurchCrMemoHdr);
+                                end;
+                            Database::"Purch. Rcpt. Header":
+                                begin
+                                    RecRef.Open(Database::"Purch. Rcpt. Header");
+                                    if PurchRcptHeader.Get(Rec."No.") then
+                                        RecRef.GetTable(PurchRcptHeader);
                                 end;
                             Database::"VAT Report Header":
                                 begin
@@ -1048,7 +1069,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     end;
                     if NombreCarpetaDestino <> '' then begin
                         Case Rec."Table ID" of
-                            Database::Customer, Database::Vendor, Database::Item, Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
+                            Database::Customer, Database::Vendor, Database::Item, Database::"Bank Account", Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
                                 begin
                                     DocRef.Open(Rec."Table ID");
                                     FieldRef.SetRange(DocRef.Field(1), NombreCarpetaDestino);
@@ -1167,7 +1188,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     end;
                     if NombreCarpetaDestino <> '' then begin
                         Case Rec."Table ID" of
-                            Database::Customer, Database::Vendor, Database::Item, Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
+                            Database::Customer, Database::Vendor, Database::Item, Database::"Bank Account", Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
                                 begin
                                     DocRef.Open(Rec."Table ID");
                                     FieldRef.SetRange(DocRef.Field(1), NombreCarpetaDestino);
@@ -1450,6 +1471,10 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
         VATReportHeader: Record "VAT Report Header";
         Opportunity: Record Opportunity;
+        BankAccount: Record "Bank Account";
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        PurchRcptHeader: Record "Purch. Rcpt. Header";
+        GLAccount: Record "G/L Account";
     begin
         case DocumentAttachment."Table ID" of
             0:
@@ -1472,6 +1497,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     if Item.Get(DocumentAttachment."No.") then
                         RecRef.GetTable(Item);
                 end;
+            Database::"G/L Account":
+                begin
+                    RecRef.Open(Database::"G/L Account");
+                    if GLAccount.Get(DocumentAttachment."No.") then
+                        RecRef.GetTable(GLAccount);
+                end;
             Database::Employee:
                 begin
                     RecRef.Open(Database::Employee);
@@ -1489,6 +1520,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     RecRef.Open(Database::Resource);
                     if Resource.Get(DocumentAttachment."No.") then
                         RecRef.GetTable(Resource);
+                end;
+            Database::"Bank Account":
+                begin
+                    RecRef.Open(Database::"Bank Account");
+                    if BankAccount.Get(DocumentAttachment."No.") then
+                        RecRef.GetTable(BankAccount);
                 end;
             Database::Job:
                 begin
@@ -1514,6 +1551,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     if SalesCrMemoHeader.Get(DocumentAttachment."No.") then
                         RecRef.GetTable(SalesCrMemoHeader);
                 end;
+            Database::"Sales Shipment Header":
+                begin
+                    RecRef.Open(Database::"Sales Shipment Header");
+                    if SalesShipmentHeader.Get(DocumentAttachment."No.") then
+                        RecRef.GetTable(SalesShipmentHeader);
+                end;
             Database::"Purchase Header":
                 begin
                     RecRef.Open(Database::"Purchase Header");
@@ -1531,6 +1574,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     RecRef.Open(Database::"Purch. Cr. Memo Hdr.");
                     if PurchCrMemoHdr.Get(DocumentAttachment."No.") then
                         RecRef.GetTable(PurchCrMemoHdr);
+                end;
+            Database::"Purch. Rcpt. Header":
+                begin
+                    RecRef.Open(Database::"Purch. Rcpt. Header");
+                    if PurchRcptHeader.Get(DocumentAttachment."No.") then
+                        RecRef.GetTable(PurchRcptHeader);
                 end;
             Database::"VAT Report Header":
                 begin
@@ -2017,11 +2066,11 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
                 end;
             CompanyInfo."Data Storage Provider"::DropBox:
-                SubFolder := DropBoxManager.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
             CompanyInfo."Data Storage Provider"::Strapi:
-                SubFolder := StrapiManager.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
             CompanyInfo."Data Storage Provider"::SharePoint:
-                SubFolder := SharePointManager.CreateFolderStructure(Id, SubFolder);
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
         end;
         exit(SubFolder);
     end;

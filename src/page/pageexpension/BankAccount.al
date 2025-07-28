@@ -2,8 +2,16 @@ pageextension 95108 BankAccountExt extends "Bank Account Card"
 {
     layout
     {
-        addlast(factboxes)
+        addafter(Control1900383207)
         {
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Documents';
+                UpdatePropagation = Both;
+                SubPageLink = "Table ID" = const(Database::"Bank Account"),
+                              "No." = field("No.");
+            }
             part(Visor; "PDF Viewer Part Google Drive")
             {
                 //SubPageLink = "Entry No." = field("Incoming Document Entry No.");

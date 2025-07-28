@@ -2258,6 +2258,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page PDF Viewer Part Google Drive - Property Caption</note>
         </trans-unit>
+        <trans-unit id="PageExtension 2049204610 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2292249509">
+          <source>Documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension BankAccountExt - Control Attached Documents List - Property Caption</note>
+        </trans-unit>
         <trans-unit id="PageExtension 2049204610 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2292249509">
           <source>Drive Files</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -2613,6 +2618,21 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostInvoiceExt - Control Visor - Property Caption</note>
         </trans-unit>
+        <trans-unit id="PageExtension 4130058626 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2344297010">
+          <source>Documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostReceiptExt - Control Attached Documents List - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 4130058626 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2344297010">
+          <source>Archivos del Drive</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostReceiptExt - Control GoogleDriveFiles - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 4130058626 - Control 822531619 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2344297010">
+          <source>PDF Viewer</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostReceiptExt - Control Visor - Property Caption</note>
+        </trans-unit>
         <trans-unit id="PageExtension 558681197 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1580859378">
           <source>Drive Files</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -2672,6 +2692,21 @@
           <source>PDF Viewer</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostInvoiceExt - Control Visor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 4254993347 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3373253667">
+          <source>Documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostShipmentExt - Control Attached Documents List - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 4254993347 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3373253667">
+          <source>Archivos del Drive</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostShipmentExt - Control GoogleDriveFiles - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 4254993347 - Control 822531619 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3373253667">
+          <source>PDF Viewer</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostShipmentExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3990907967 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 4055858012">
           <source>Drive Files</source>
@@ -2962,6 +2997,11 @@
           <source>Google Drive URL</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Doc. Attachment GoogleDrive - Field Google Drive URL - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 2969727918 - Field 2012756198 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 282138634">
+          <source>Moved Document</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Doc. Attachment GoogleDrive - Field Moved Document - Property Caption</note>
         </trans-unit>
         <trans-unit id="TableExtension 2969727918 - Field 943209143 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 282138634">
           <source>OneDrive ID</source>

@@ -273,6 +273,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+
     begin
         CompaniInfo.Get();
         //Clear(PDFStorageArray);
@@ -303,7 +304,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         end;
         PDFStorage.SetRange("Table ID", gSourceRecordId.TableNo);
         Case gSourceRecordId.TableNo of
-            Database::Customer, Database::Vendor, Database::Item, Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
+            Database::Customer, Database::Vendor, Database::Item, Database::"Bank Account", Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
                 begin
 
                     PDFStorage.SetRange("No.", RecRef.Field(1).Value);
@@ -349,26 +350,31 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                             PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Return Order");
                     End;
                 end;
-            112:
+            110, 112, 114, 120, 122, 124:
                 begin
-                    PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::Invoice);
+                    PDFStorage.SetRange("No.", RecRef.Field(3).Value);
                     SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
                 end;
-            114:
-                begin
-                    PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Credit Memo");
-                    SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
-                end;
-            122:
-                begin
-                    PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::Invoice);
-                    SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
-                end;
-            144:
-                begin
-                    PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Credit Memo");
-                    SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
-                end;
+            // 112:
+            //     begin
+            //         PDFStorage.SetRange("No.", RecRef.Field(3).Value);
+            //         SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
+            //     end;
+            // 114:
+            //     begin
+            //         PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Credit Memo");
+            //         SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
+            //     end;
+            // 122:
+            //     begin
+            //         PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::Invoice);
+            //         SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
+            //     end;
+            // 144:
+            //     begin
+            //         PDFStorage.SetRange("Document Type", PDFStorage."Document Type"::"Credit Memo");
+            //         SubFolder := ObtenerSubfolder(gSourceRecordId.TableNo, RecRef.Field(3).Value, RecRef.Field(20).Value, SubFolder, Path);
+            //     end;
             1173:
                 begin
                     PDFStorage.SetRange(ID, RecRef.Field(PDFStorage.FieldNo("ID")).Value);
@@ -443,7 +449,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
 
                         until FileList.Next() = 0;
                 end;
-            Database::Customer, Database::Vendor, Database::Item, Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
+            Database::Customer, Database::Vendor, Database::Item, Database::"Bank Account", Database::"G/L Account", Database::"Fixed Asset", Database::Employee, Database::Job, Database::Resource:
                 begin
                     if FileList.FindFirst() then
                         repeat
@@ -460,7 +466,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                             If PDFStorageT.Insert() Then;
                         until FileList.Next() = 0;
                 end;
-            112, 114, 122, 144:
+            110, 112, 114, 120, 122, 124:
                 begin
                     if FileList.FindFirst() then
                         repeat
@@ -573,9 +579,10 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                     SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
                 end;
             CompanyInfo."Data Storage Provider"::DropBox:
-                SubFolder := DropBoxManager.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
             CompanyInfo."Data Storage Provider"::Strapi:
-                SubFolder := StrapiManager.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+
         end;
         exit(SubFolder);
     end;
