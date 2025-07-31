@@ -1,5 +1,9 @@
 codeunit 95106 "SharePoint Manager"
 {
+    permissions = tabledata "Company Information" = RIMD,
+                  tabledata "Document Attachment" = RIMD,
+                  tabledata "Name/Value Buffer" = RIMD;
+
     var
         CompanyInfo: Record "Company Information";
         // Endpoints de SharePoint API
@@ -60,9 +64,16 @@ codeunit 95106 "SharePoint Manager"
     end;
 
     procedure RefreshAccessToken()
+    var
+        DriveTokenManagement: Record "Drive Token Management";
     begin
-        CompanyInfo.CalcFields("SharePoint Access Token", "SharePoint Refresh Token");
-        if not CompanyInfo."SharePoint Access Token".HasValue Then
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"SharePoint") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"SharePoint";
+            DriveTokenManagement.Insert();
+        end;
+        DriveTokenManagement.CalcFields("Access Token", "Refresh Token");
+        if not DriveTokenManagement."Access Token".HasValue Then
             ObtenerToken(CompanyInfo."Code SharePoint");
         if not CompanyInfo."SharePoint Refresh Token".HasValue then
             Error(NoRefreshTokenMsg);
@@ -135,8 +146,8 @@ codeunit 95106 "SharePoint Manager"
                 CompanyInfo."SharePoint Token Expiration" := CurrentDateTime + 3600000; // 1 hora por defecto
             end;
         end;
-
-        CompanyInfo.Modify(true);
+        if CompanyInfo.WritePermission() then
+            CompanyInfo.Modify();
         exit(Id);
     end;
 
@@ -158,8 +169,14 @@ codeunit 95106 "SharePoint Manager"
         OldRefreshToken: Text;
         OutStr: OutStream;
         InStr: InStream;
+        DriveTokenManagement: Record "Drive Token Management";
     begin
         CompanyInfo.Get();
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"SharePoint") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"SharePoint";
+            DriveTokenManagement.Insert();
+        end;
         Url := StrSubstNo(token_endpoint, CompanyInfo."SharePoint Tenant ID");
 
         CompanyInfo.CalcFields("SharePoint Refresh Token");
@@ -198,7 +215,7 @@ codeunit 95106 "SharePoint Manager"
             CompanyInfo."SharePoint Access Token".CreateOutStream(OutStr);
             OutStr.WriteText(AccessToken);
             Id := AccessToken;
-
+            DriveTokenManagement.SetAccessToken(AccessToken);
             if StatusInfo.Get('expires_in', JnodeEntryToken) then begin
                 CompanyInfo."SharePoint Token Expiration" := CurrentDateTime + (JnodeEntryToken.AsValue().AsInteger() * 1000);
             end else begin
@@ -209,9 +226,11 @@ codeunit 95106 "SharePoint Manager"
                 RefreshToken := JnodeEntryToken.AsValue().AsText();
                 CompanyInfo."SharePoint Refresh Token".CreateOutStream(OutStr);
                 OutStr.WriteText(RefreshToken);
+                DriveTokenManagement.SetRefreshToken(RefreshToken);
             end;
         end;
-        CompanyInfo.Modify(true);
+        if CompanyInfo.WritePermission() then
+            CompanyInfo.Modify();
         exit(Id);
     end;
 

@@ -5,7 +5,10 @@ page 95112 "Drive Configuration"
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "Company Information";
-
+    Permissions = tabledata "Company Information" = RIMD,
+                  tabledata "Document Attachment" = RIMD,
+                  tabledata "Name/Value Buffer" = RIMD,
+                  tabledata "Google Drive Folder Mapping" = RIMD;
 
     layout
     {
@@ -488,9 +491,10 @@ page 95112 "Drive Configuration"
                     trigger OnAction()
                     var
                         GoogleDriveManager: Codeunit "Google Drive Manager";
+                        AccessToken: Text;
                     begin
                         GoogleDriveManager.Initialize();
-                        GoogleDriveManager.RefreshAccessToken();
+                        GoogleDriveManager.RefreshAccessToken(AccessToken);
                     end;
                 }
 
@@ -592,7 +596,8 @@ page 95112 "Drive Configuration"
                     begin
                         GoogleDriveManager.Initialize();
                         Rec."Google Shared Drive ID" := GoogleDriveManager.GetSharedDriveId(Rec."Google Shared Drive Name");
-                        Rec.Modify();
+                        if Rec.WritePermission() then
+                            Rec.Modify();
                     end;
                 }
                 action("Liberar Google Drive Id")
@@ -607,7 +612,8 @@ page 95112 "Drive Configuration"
                         GoogleDriveManager: Codeunit "Google Drive Manager";
                     begin
                         Rec."Google Shared Drive ID" := '';
-                        Rec.Modify();
+                        if Rec.WritePermission() then
+                            Rec.Modify();
                     end;
                 }
 
@@ -663,11 +669,17 @@ page 95112 "Drive Configuration"
                     trigger OnAction()
                     var
                         OneDriveManager: Codeunit "OneDrive Manager";
+                        DriveTokenManagement: Record "Drive Token Management";
                     begin
                         OneDriveManager.Initialize();
+                        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"OneDrive") then begin
+                            DriveTokenManagement.Init();
+                            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"OneDrive";
+                            DriveTokenManagement.Insert();
+                        end;
                         Rec.CalcFields("OneDrive Access Token");
                         if Rec."OneDrive Access Token".HasValue = false Then begin
-                            OneDriveManager.ObtenerToken(Rec."Code Ondrive");
+                            OneDriveManager.ObtenerToken(Rec."Code Ondrive", DriveTokenManagement);
                             Commit();
                         end;
                         OneDriveManager.RefreshAccessToken();
@@ -705,7 +717,8 @@ page 95112 "Drive Configuration"
                         OneDriveManager: Codeunit "OneDrive Manager";
                     begin
                         Rec."OneDrive Site ID" := OneDriveManager.GetSharedSiteId(Rec."OneDrive Site Url");
-                        Rec.Modify();
+                        if Rec.WritePermission() then
+                            Rec.Modify();
                     end;
                 }
 
@@ -975,6 +988,7 @@ page 95112 "Drive Configuration"
         TokenExpiredSinceLbl: Label '❌ Token expired since: %1. Use "Refresh Token" to renew it.';
         RevokeAccessConfirmLbl: Label 'Are you sure you want to revoke Google Drive access?';
         ChooseStorageTypeCaptionLbl: Label 'Choose storage type';
+
 
     trigger OnOpenPage()
     begin

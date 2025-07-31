@@ -119,19 +119,20 @@ table 95100 "Google Drive Folder Mapping"
         SharePointManager: Codeunit "SharePoint Manager";
         Files: Record "Name/Value Buffer" temporary;
         Id: Text;
-        CompaiInfo: Record "Company Information";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+        DataStorageProvider: Enum "Data Storage Provider";
     begin
-        CompaiInfo.Get();
-        case CompaiInfo."Data Storage Provider" of
-            CompaiInfo."Data Storage Provider"::"Google Drive":
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
                 exit(GoogleDriveManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
-            CompaiInfo."Data Storage Provider"::OneDrive:
+            DataStorageProvider::OneDrive:
                 exit(OnDriveManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
-            CompaiInfo."Data Storage Provider"::DropBox:
+            DataStorageProvider::DropBox:
                 exit(DropBoxManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
-            CompaiInfo."Data Storage Provider"::Strapi:
+            DataStorageProvider::Strapi:
                 exit(StrapiManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
-            CompaiInfo."Data Storage Provider"::SharePoint:
+            DataStorageProvider::SharePoint:
                 exit(SharePointManager.RecuperaIdFolder(Id, Folder, Files, Crear, RootFolder));
         end;
     end;
@@ -363,26 +364,27 @@ table 95100 "Google Drive Folder Mapping"
         SharePointManager: Codeunit "SharePoint Manager";
         Files: Record "Name/Value Buffer" temporary;
         Id: Text;
-        CompaiInfo: Record "Company Information";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+        DataStorageProvider: Enum "Data Storage Provider";
     begin
-        CompaiInfo.Get();
-        case CompaiInfo."Data Storage Provider" of
-            CompaiInfo."Data Storage Provider"::"Google Drive":
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
                 exit(GoogleDriveManager.RenameFolder(RootFolderID, RootFolder));
-            CompaiInfo."Data Storage Provider"::OneDrive:
+            DataStorageProvider::OneDrive:
                 exit(OnDriveManager.RenameFolder(RootFolderID, RootFolder));
-            CompaiInfo."Data Storage Provider"::DropBox:
+            DataStorageProvider::DropBox:
                 exit(DropBoxManager.RenameFolder(RootFolderID, RootFolder));
-            CompaiInfo."Data Storage Provider"::Strapi:
+            DataStorageProvider::Strapi:
                 exit(StrapiManager.RenameFolder(RootFolderID, RootFolder));
-            CompaiInfo."Data Storage Provider"::SharePoint:
+            DataStorageProvider::SharePoint:
                 exit(SharePointManager.RenameFolder(RootFolderID, RootFolder));
         end;
     end;
 
     internal procedure MoveFileH(DataStorageProvider: Enum "Data Storage Provider";
     var DocumentAttachment: Record "Document Attachment";
-    Origen: Integer; TableId: Integer; Var RecRef: RecordRef; Fecha: Date)
+    Origen: Integer; TableId: Integer; Var RecRef: RecordRef; FechaOrigen: Date; FechaDestino: Date; DocOrigenNo: Text; DocDestino: Text)
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
         OnDriveManager: Codeunit "OneDrive Manager";
@@ -393,12 +395,8 @@ table 95100 "Google Drive Folder Mapping"
         IdCarpetaDestino: Text;
         PurchaseHeader: Record "Purchase Header";
         SalesHeader: Record "Sales Header";
-        DocNo: Text;
-        DocDate: Date;
 
     begin
-        DocDate := Fecha;
-        DocNo := DocumentAttachment."No.";
         // Case Origen of
         //     Database::"Purchase Header":
         //         begin
@@ -414,36 +412,36 @@ table 95100 "Google Drive Folder Mapping"
         case DataStorageProvider of
             DataStorageProvider::"Google Drive":
                 begin
-                    IdCarpetaOrigen := GoogleDriveManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
-                    IdCarpetaDestino := GoogleDriveManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
+                    IdCarpetaOrigen := GoogleDriveManager.GetTargetFolderForDocument(Origen, DocOrigenNo, FechaOrigen, DataStorageProvider);
+                    IdCarpetaDestino := GoogleDriveManager.GetTargetFolderForDocument(TableId, DocDestino, FechaDestino, DataStorageProvider);
                     DocumentAttachment."Google Drive ID" := GoogleDriveManager.CopyFile(DocumentAttachment."Google Drive ID", IdCarpetaDestino);
                     DocumentAttachment.Modify();
                 end;
             DataStorageProvider::OneDrive:
                 begin
-                    IdCarpetaOrigen := OnDriveManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
-                    IdCarpetaDestino := OnDriveManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
+                    IdCarpetaOrigen := OnDriveManager.GetTargetFolderForDocument(Origen, DocOrigenNo, FechaOrigen, DataStorageProvider);
+                    IdCarpetaDestino := OnDriveManager.GetTargetFolderForDocument(TableId, DocDestino, FechaDestino, DataStorageProvider);
                     DocumentAttachment."OneDrive ID" := OnDriveManager.MoveFile(DocumentAttachment."OneDrive ID", IdCarpetaDestino, IdCarpetaOrigen, false, DocumentAttachment."File Name");
                     DocumentAttachment.Modify();
                 end;
             DataStorageProvider::DropBox:
                 begin
-                    IdCarpetaOrigen := DropBoxManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
-                    IdCarpetaDestino := DropBoxManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
+                    IdCarpetaOrigen := DropBoxManager.GetTargetFolderForDocument(Origen, DocOrigenNo, FechaOrigen, DataStorageProvider);
+                    IdCarpetaDestino := DropBoxManager.GetTargetFolderForDocument(TableId, DocDestino, FechaDestino, DataStorageProvider);
                     DocumentAttachment."DropBox ID" := DropBoxManager.MoveFile(DocumentAttachment."DropBox ID", IdCarpetaDestino, DocumentAttachment."File Name", false);
                     DocumentAttachment.Modify();
                 end;
             DataStorageProvider::Strapi:
                 begin
-                    IdCarpetaOrigen := StrapiManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
-                    IdCarpetaDestino := StrapiManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
+                    IdCarpetaOrigen := StrapiManager.GetTargetFolderForDocument(Origen, DocOrigenNo, FechaOrigen, DataStorageProvider);
+                    IdCarpetaDestino := StrapiManager.GetTargetFolderForDocument(TableId, DocDestino, FechaDestino, DataStorageProvider);
                     DocumentAttachment."Strapi ID" := StrapiManager.CopyFile(DocumentAttachment."Strapi ID", IdCarpetaDestino, IdCarpetaOrigen);
                     DocumentAttachment.Modify();
                 end;
             DataStorageProvider::SharePoint:
                 begin
-                    IdCarpetaOrigen := SharePointManager.GetTargetFolderForDocument(Origen, DocNo, DocDate, DataStorageProvider);
-                    IdCarpetaDestino := SharePointManager.GetTargetFolderForDocument(TableId, DocumentAttachment."No.", Fecha, DataStorageProvider);
+                    IdCarpetaOrigen := SharePointManager.GetTargetFolderForDocument(Origen, DocOrigenNo, FechaOrigen, DataStorageProvider);
+                    IdCarpetaDestino := SharePointManager.GetTargetFolderForDocument(TableId, DocDestino, FechaDestino, DataStorageProvider);
                     DocumentAttachment."SharePoint ID" := SharePointManager.MoveFile(DocumentAttachment."SharePoint ID", IdCarpetaDestino, false, DocumentAttachment."File Name");
                     DocumentAttachment.Modify();
                 end;

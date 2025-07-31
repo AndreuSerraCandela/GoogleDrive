@@ -1,5 +1,7 @@
 codeunit 95115 "Google Drive Manual Mgt"
 {
+    permissions = tabledata "Company Information" = RIMD,
+                  tabledata "Document Attachment" = RIMD;
     procedure GetManualContent(var TempBlob: Codeunit "Temp Blob")
     var
         CompanyInfo: Record "Company Information";

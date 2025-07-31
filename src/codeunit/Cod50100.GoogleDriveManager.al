@@ -1,6 +1,10 @@
 codeunit 95100 "Google Drive Manager"
 {
     // Codeunit to handle Google Drive operations
+    permissions = tabledata "Company Information" = RIMD,
+                  tabledata "Document Attachment" = RIMD,
+                  tabledata "Google Drive Folder Mapping" = RIMD,
+                  tabledata "Name/Value Buffer" = RIMD;
 
     var
         SecretKey: Text;
@@ -120,6 +124,7 @@ codeunit 95100 "Google Drive Manager"
         TokenExpiredMsg: Label 'Expired since: %1 ❌';
         TokenValidMsg: Label 'Valid until: %1 ✅';
         UnknowErrorMsg: Label 'Unknown error';
+        MisisinDocActchPermision: Label 'Error: Permission to modify the Document Attachment record is missing';
 
         // OAuth Playground Instructions Labels
         PlaygroundInstructionsTitleMsg: Label 'CONFIGURE OAUTH PLAYGROUND WITH YOUR CREDENTIALS:';
@@ -175,9 +180,9 @@ codeunit 95100 "Google Drive Manager"
                 exit(true);
             end else begin
                 // Token expired, try to refresh
-                if RefreshAccessToken() then begin
-                    CompanyInfo.GET();
-                    AccessToken := CompanyInfo."Token GoogleDrive";
+                if RefreshAccessToken(AccessToken) then begin
+                    //CompanyInfo.GET();
+                    //AccessToken := CompanyInfo."Token GoogleDrive";
                     exit(true);
                 end;
             end;
@@ -206,11 +211,12 @@ codeunit 95100 "Google Drive Manager"
         // Set default Auth URI if not configured
         if CompanyInfo."Google Auth URI" = '' then begin
             CompanyInfo."Google Auth URI" := 'https://accounts.google.com/o/oauth2/auth';
-            CompanyInfo.Modify();
+            if CompanyInfo.WritePermission() then
+                CompanyInfo.Modify();
         end;
 
         // Build scopes and encode them
-        Scopes := 'https://www.googleapis.com/auth/drive.file';// https://www.googleapis.com/auth/drive';
+        Scopes := 'https://www.googleapis.com/auth/drive';// https://www.googleapis.com/auth/drive';
         EncodedScopes := UrlEncode(Scopes);
 
         // Encode redirect URI
@@ -231,7 +237,8 @@ codeunit 95100 "Google Drive Manager"
 
         // Store state for validation
         CompanyInfo."Google Project ID" := State; // Temporarily store state here
-        CompanyInfo.Modify();
+        if CompanyInfo.WritePermission() then
+            CompanyInfo.Modify();
 
         // Try to open browser automatically, fallback to showing URL
         if not TryOpenBrowser(AuthUrl) then begin
@@ -387,7 +394,8 @@ codeunit 95100 "Google Drive Manager"
 
                         // Clear temporary state
                         CompanyInfo."Google Project ID" := '';
-                        CompanyInfo.Modify();
+                        if CompanyInfo.WritePermission() then
+                            CompanyInfo.Modify();
 
                         AccessToken := CompanyInfo."Token GoogleDrive";
                         Message(AuthenticationCompletedMsg);
@@ -405,9 +413,10 @@ codeunit 95100 "Google Drive Manager"
         exit(false);
     end;
 
-    procedure RefreshAccessToken(): Boolean
+    procedure RefreshAccessToken(var Token: Text): Boolean
     var
         CompanyInfo: Record "Company Information";
+        DriveTokenManagement: Record "Drive Token Management";
         Client: HttpClient;
         RequestContent: HttpContent;
         ResponseMessage: HttpResponseMessage;
@@ -423,6 +432,11 @@ codeunit 95100 "Google Drive Manager"
         DiagnosticInfo: Text;
     begin
         CompanyInfo.GET();
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"Google Drive") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"Google Drive";
+            DriveTokenManagement.Insert();
+        end;
 
         if CompanyInfo."Refresh Token GoogleDrive" = '' then begin
             Message(NoRefreshTokenMsg);
@@ -457,7 +471,7 @@ codeunit 95100 "Google Drive Manager"
                     // Extract new access token
                     if JObject.Get('access_token', JToken) then begin
                         CompanyInfo."Token GoogleDrive" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(CompanyInfo."Token GoogleDrive"));
-
+                        Token := JToken.AsValue().AsText();
                         // Update expiration time
                         if JObject.Get('expires_in', JToken) then begin
                             CompanyInfo."Expiracion Token GoogleDrive" := CurrentDateTime + (JToken.AsValue().AsInteger() * 1000);
@@ -468,10 +482,13 @@ codeunit 95100 "Google Drive Manager"
                         // Check for new refresh token (Google may provide a new one)
                         if JObject.Get('refresh_token', JToken) then begin
                             CompanyInfo."Refresh Token GoogleDrive" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(CompanyInfo."Refresh Token GoogleDrive"));
+                            DriveTokenManagement.SetRefreshToken(JToken.AsValue().AsText());
                         end;
 
-                        CompanyInfo.Modify();
-                        Message(TokenUpdatedMsg, CompanyInfo."Expiracion Token GoogleDrive");
+                        DriveTokenManagement.SetAccessToken(Token);
+                        if CompanyInfo.WritePermission() then
+                            CompanyInfo.Modify();
+                        //Message(TokenUpdatedMsg, CompanyInfo."Expiracion Token GoogleDrive");
                         exit(true);
                     end else begin
                         Message(NoAccessTokenMsg, ResponseText);
@@ -641,7 +658,8 @@ codeunit 95100 "Google Drive Manager"
             CompanyInfo."Token GoogleDrive" := '';
             CompanyInfo."Refresh Token GoogleDrive" := '';
             CompanyInfo."Expiracion Token GoogleDrive" := 0DT;
-            CompanyInfo.Modify();
+            if CompanyInfo.WritePermission() then
+                CompanyInfo.Modify();
 
             Message(AccessRevokedMsg);
             exit(true);
@@ -690,6 +708,7 @@ codeunit 95100 "Google Drive Manager"
             if FileId <> '' then begin
                 DocumentAttachment."Google Drive ID" := FileId;
                 DocumentAttachment."Store in Google Drive" := true;
+                if not DocumentAttachment.WritePermission() then Error(MisisinDocActchPermision);
                 DocumentAttachment.Modify();
                 exit(true);
             end;
@@ -748,6 +767,7 @@ codeunit 95100 "Google Drive Manager"
         // Update the Document Attachment record with the Google Drive URL
         DocumentAttachment."Google Drive ID" := FileId;
         DocumentAttachment."Store in Google Drive" := true;
+        if not DocumentAttachment.WritePermission() then Error(MisisinDocActchPermision);
         DocumentAttachment.Modify();
 
         exit(true);
@@ -899,17 +919,22 @@ codeunit 95100 "Google Drive Manager"
     procedure Token(): Text
     var
         CompanyInfo: Record "Company Information";
+        DriveTokenManagement: Record "Drive Token Management";
     begin
-        CompanyInfo.GET();
-        if CompanyInfo."Expiracion Token GoogleDrive" < CurrentDateTime then begin
-            if not RefreshAccessToken() then begin
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"Google Drive") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"Google Drive";
+            DriveTokenManagement.Insert();
+        end;
+        AccessToken := DriveTokenManagement.GetAccessToken();
+        if DriveTokenManagement."Token Expiration" < CurrentDateTime then begin
+            if not RefreshAccessToken(AccessToken) then begin
                 Message(TokenUpdateFailedMsg);
                 exit('');
             end;
         end;
         Commit();
-        CompanyInfo.GET();
-        exit(CompanyInfo.GetTokenGoogleDrive());
+        exit(AccessToken);
     end;
 
     procedure RecuperaIdFolder(IdCarpeta: Text; Carpeta: Text; Var Files: Record "Name/Value Buffer" temporary; Crear: Boolean; RootFolder: Boolean) Id: Text;
@@ -1389,6 +1414,8 @@ codeunit 95100 "Google Drive Manager"
         Id: Text;
         ParentsArray: JsonArray;
         SharedDriveId: Text;
+        ErrorMessage: Text;
+        JToken: JsonToken;
     begin
         Inf.Get();
         SharedDriveId := Inf."Google Shared Drive ID";
@@ -1411,10 +1438,13 @@ codeunit 95100 "Google Drive Manager"
         end;
 
         if Id = '' then begin
-            if StatusInfo.Get('error', JTok) then begin
-                Error(JTok.AsValue().AsText());
+            if StatusInfo.Get('error', JToken) then begin
+                if JToken.AsObject().Get('message', JToken) then begin
+                    ErrorMessage := JToken.AsValue().AsText();
+                    Error(CopyFileErrorErr + ' ' + ErrorMessage);
+                end;
             end;
-            Error(CopyFileErrorErr);
+
         end;
 
         exit(Id);
@@ -1747,7 +1777,8 @@ codeunit 95100 "Google Drive Manager"
         else
             CompanyInfo."Expiracion Token GoogleDrive" := CurrentDateTime + 3600000; // Default 1 hour
 
-        CompanyInfo.Modify();
+        if CompanyInfo.WritePermission() then
+            CompanyInfo.Modify();
 
         Message(TokensConfiguredManuallyMsg);
     end;
@@ -1859,6 +1890,7 @@ codeunit 95100 "Google Drive Manager"
             // Update Document Attachment record
             DocumentAttachment."Google Drive ID" := FileId;
             DocumentAttachment."Store in Google Drive" := true;
+            if not DocumentAttachment.WritePermission() then Error(MisisinDocActchPermision);
             DocumentAttachment.Modify();
             exit(true);
         end;
@@ -2824,8 +2856,31 @@ codeunit 95100 "Google Drive Manager"
             StatusInfo.ReadFrom(Respuesta);
             if StatusInfo.Get('id', JToken) then
                 NewFolderId := JToken.AsValue().AsText()
-            else
+            else begin
+                // {
+                // "error": {
+                //     "code": 401,
+                //     "message": "Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+                //     "errors": [
+                //     {
+                //         "message": "Invalid Credentials",
+                //         "domain": "global",
+                //         "reason": "authError",
+                //         "location": "Authorization",
+                //         "locationType": "header"
+                //     }
+                //     ],
+                //     "status": "UNAUTHENTICATED"
+                // }
+                // }
+                if StatusInfo.Get('error', JToken) then begin
+                    if JToken.AsObject().Get('code', JToken) then begin
+                        if JToken.AsValue().AsInteger() = 401 then
+                            Error(CreateSharedFolderErrorErr, 'Not Permisions set in Shared Drive', Url, Json);
+                    end;
+                end;
                 Error(CreateSharedFolderErrorErr, Respuesta, Url, Json);
+            end;
         end;
         exit(NewFolderId);
     end;
@@ -3043,6 +3098,7 @@ codeunit 95100 "Google Drive Manager"
         Inf: Record "Company Information";
         GoogleDrive: Codeunit "Google Drive Manager";
         ParentsArray: JsonArray;
+        ErrorMessage: Text;
     begin
         if not Authenticate() then
             Error(NotAuthenticatedErr);
@@ -3068,7 +3124,10 @@ codeunit 95100 "Google Drive Manager"
 
         if Id = '' then begin
             if StatusInfo.Get('error', JTok) then begin
-                Error(JTok.AsValue().AsText());
+                if JTok.AsObject().Get('message', JTok) then begin
+                    ErrorMessage := JTok.AsValue().AsText();
+                    Error(CopyFileErrorErr + ' ' + ErrorMessage);
+                end;
             end;
             Error(CopyFileErrorErr);
         end;
@@ -3292,7 +3351,7 @@ codeunit 95100 "Google Drive Manager"
 
         Ticket := Token();
         // Para drives compartidos, necesitamos especificar el drive en la URL
-        Url := GoogleDriveBaseURL + '/files/' + GoogleDriveID + '?fields=webViewLink&supportsAllDrives=true';
+        Url := GoogleDriveBaseURL + '/files/' + GoogleDriveID + '?fields=webViewLink,webContentLink&supportsAllDrives=true';
 
         Respuesta := RestApiToken(Url, Ticket, RequestType::get, '');
 

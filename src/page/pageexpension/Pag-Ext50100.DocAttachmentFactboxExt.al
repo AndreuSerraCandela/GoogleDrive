@@ -602,10 +602,11 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     TargetFolderId: Text;
                     FilesSelected: Page "Google Drive List";
                     Id: Integer;
-                    CompanyInfo: Record "Company Information";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+                    DataStorageProvider: Enum "Data Storage Provider";
                     FileMgt: Codeunit "File Management";
                 begin
-                    CompanyInfo.Get();
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
 
                     IdTable := Rec."Table ID";
                     if IdTable = 0 then
@@ -615,28 +616,28 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     No := Rec."No.";
 
                     // Obtener la carpeta objetivo según el proveedor configurado
-                    case CompanyInfo."Data Storage Provider" of
-                        CompanyInfo."Data Storage Provider"::"Google Drive":
+                    case DataStorageProvider of
+                        DataStorageProvider::"Google Drive":
                             begin
-                                TargetFolderId := GoogleDriveManager.GetTargetFolderForDocument(IdTable, No, 0D, CompanyInfo."Data Storage Provider");
+                                TargetFolderId := GoogleDriveManager.GetTargetFolderForDocument(IdTable, No, 0D, DataStorageProvider);
                                 GoogleDriveManager.Carpetas(TargetFolderId, Files);
                             end;
-                        CompanyInfo."Data Storage Provider"::OneDrive:
+                        DataStorageProvider::OneDrive:
                             begin
                                 // Para OneDrive, usar la carpeta raíz por defecto
                                 OneDriveManager.ListFolder('', Files, false);
                             end;
-                        CompanyInfo."Data Storage Provider"::DropBox:
+                        DataStorageProvider::DropBox:
                             begin
                                 // Para DropBox, usar la carpeta raíz por defecto
                                 DropBoxManager.ListFolder('', Files, false);
                             end;
-                        CompanyInfo."Data Storage Provider"::Strapi:
+                        DataStorageProvider::Strapi:
                             begin
                                 // Para Strapi, listar todos los archivos
                                 StrapiManager.ListFolder('', Files, false);
                             end;
-                        CompanyInfo."Data Storage Provider"::SharePoint:
+                        DataStorageProvider::SharePoint:
                             begin
                                 // Para SharePoint, listar todos los archivos
                                 SharePointManager.ListFolder('', Files, false);
@@ -653,31 +654,31 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 Rec.Init();
                                 Rec.ID := 0;
                                 Rec.InitFieldsFromRecRef(RecRef);
-                                Rec."Storage Provider" := CompanyInfo."Data Storage Provider";
+                                Rec."Storage Provider" := DataStorageProvider;
 
                                 // Asignar el ID según el proveedor
-                                case CompanyInfo."Data Storage Provider" of
-                                    CompanyInfo."Data Storage Provider"::"Google Drive":
+                                case DataStorageProvider of
+                                    DataStorageProvider::"Google Drive":
                                         begin
                                             Rec."Store in Google Drive" := true;
                                             Rec."Google Drive ID" := Files."Google Drive ID";
                                         end;
-                                    CompanyInfo."Data Storage Provider"::OneDrive:
+                                    DataStorageProvider::OneDrive:
                                         begin
                                             Rec."Store in OneDrive" := true;
                                             Rec."OneDrive ID" := Files."Google Drive ID"; // Reutilizamos el campo
                                         end;
-                                    CompanyInfo."Data Storage Provider"::DropBox:
+                                    DataStorageProvider::DropBox:
                                         begin
                                             Rec."Store in DropBox" := true;
                                             Rec."DropBox ID" := Files."Google Drive ID"; // Reutilizamos el campo
                                         end;
-                                    CompanyInfo."Data Storage Provider"::Strapi:
+                                    DataStorageProvider::Strapi:
                                         begin
                                             Rec."Store in Strapi" := true;
                                             Rec."Strapi ID" := Files."Google Drive ID"; // Reutilizamos el campo
                                         end;
-                                    CompanyInfo."Data Storage Provider"::SharePoint:
+                                    DataStorageProvider::SharePoint:
                                         begin
                                             Rec."Store in SharePoint" := true;
                                             Rec."SharePoint ID" := Files."Google Drive ID"; // Reutilizamos el campo
@@ -687,6 +688,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 Rec."File Name" := Files.Name;
                                 Rec.Validate("File Extension", FileMgt.GetExtension(Files.Name));
                                 DocAttachmentGrDriveMgmt.SetDocumentAttachmentFileType(Rec, '');
+                                if not Rec.WritePermission() then Error(MisisinDocActchPermision);
                                 Rec.Insert(true);
                             until Files.Next() = 0;
                     end;
@@ -716,7 +718,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     SubFolder: Text;
                     InStream: InStream;
                     TenantMedia: Record "Tenant Media";
-                    CompanyInfo: Record "Company Information";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+                    DataStorageProvider: Enum "Data Storage Provider";
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
@@ -728,14 +731,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 begin
                     if not Confirm(ConfirmMsg) then
                         exit;
-                    CompanyInfo.Get();
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
 
                     CurrPage.SetSelectionFilter(DocumentAttachment);
                     if DocumentAttachment.FindSet() then
                         repeat
                             If DocumentAttachment."Document Reference ID".HasValue() then begin
-                                case CompanyInfo."Data Storage Provider" of
-                                    CompanyInfo."Data Storage Provider"::"Google Drive":
+                                case DataStorageProvider of
+                                    DataStorageProvider::"Google Drive":
                                         begin
 
                                             if not DocumentAttachment."Store in Google Drive" then begin
@@ -743,7 +746,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                 Clear(DocumentStream);
                                                 TempBlob.CreateOutStream(DocumentStream);
                                                 GoogleDriveManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, DataStorageProvider);
                                                 IF SubFolder <> '' then
                                                     Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
                                                 DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
@@ -755,15 +758,16 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     DocumentAttachment."Store in Google Drive" := true;
                                                     Clear(DocumentAttachment."Document Reference ID");
                                                     DocumentAttachment."Google Drive ID" := FileId;
-                                                    DocumentAttachment.Modify;
+                                                    if not DocumentAttachment.WritePermission() then Error(MisisinDocActchPermision);
+                                                    DocumentAttachment.Modify();
 
                                                 end;
                                             end;
                                         end;
-                                    CompanyInfo."Data Storage Provider"::OneDrive:
+                                    DataStorageProvider::OneDrive:
                                         begin
                                             if not DocumentAttachment."Store in OneDrive" then begin
-                                                Path := CompanyInfo."Root Folder" + '/';
+                                                Path := DocAttachmentMgmtGDrive.GetRootFolder() + '/';
                                                 DocumentAttachment."Store in OneDrive" := true;
                                                 FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
                                                 if FolderMapping.FindFirst() Then begin
@@ -771,7 +775,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
                                                 ;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := OneDriveManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'
@@ -787,14 +791,15 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     DocumentAttachment."Store in OneDrive" := true;
                                                     Clear(DocumentAttachment."Document Reference ID");
                                                     DocumentAttachment."OneDrive ID" := FileId;
+                                                    if not DocumentAttachment.WritePermission() then Error(MisisinDocActchPermision);
                                                     DocumentAttachment.Modify();
                                                 end;
                                             end;
                                         end;
-                                    CompanyInfo."Data Storage Provider"::DropBox:
+                                    DataStorageProvider::DropBox:
                                         begin
                                             if not DocumentAttachment."Store in DropBox" then begin
-                                                Path := CompanyInfo."Root Folder" + '/';
+                                                Path := DocAttachmentMgmtGDrive.GetRootFolder() + '/';
                                                 DocumentAttachment."Store in OneDrive" := true;
                                                 FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
                                                 if FolderMapping.FindFirst() Then begin
@@ -802,7 +807,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
                                                 ;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := DropBoxManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'
@@ -818,15 +823,16 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     DocumentAttachment."Store in DropBox" := true;
                                                     Clear(DocumentAttachment."Document Reference ID");
                                                     DocumentAttachment."DropBox ID" := FileId;
+                                                    if not DocumentAttachment.WritePermission() then Error(MisisinDocActchPermision);
                                                     DocumentAttachment.Modify();
                                                 end;
 
                                             end;
                                         end;
-                                    CompanyInfo."Data Storage Provider"::Strapi:
+                                    DataStorageProvider::Strapi:
                                         begin
                                             if not DocumentAttachment."Store in Strapi" then begin
-                                                Path := CompanyInfo."Root Folder" + '/';
+                                                Path := DocAttachmentMgmtGDrive.GetRootFolder() + '/';
                                                 DocumentAttachment."Store in OneDrive" := true;
                                                 FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
                                                 if FolderMapping.FindFirst() Then begin
@@ -834,7 +840,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
                                                 ;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := StrapiManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'
@@ -848,17 +854,17 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Message(ErrorMsg, DocumentAttachment."File Name")
                                             end;
                                         end;
-                                    CompanyInfo."Data Storage Provider"::SharePoint:
+                                    DataStorageProvider::SharePoint:
                                         begin
                                             if not DocumentAttachment."Store in SharePoint" then begin
-                                                Path := CompanyInfo."Root Folder" + '/';
+                                                Path := DocAttachmentMgmtGDrive.GetRootFolder() + '/';
                                                 DocumentAttachment."Store in OneDrive" := true;
                                                 FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
                                                 if FolderMapping.FindFirst() Then begin
                                                     Folder := FolderMapping."Default Folder Id";
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := SharePointManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'
@@ -903,19 +909,20 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     OneDrive: Codeunit "OneDrive Manager";
                     DropBox: Codeunit "DropBox Manager";
                     Strapi: Codeunit "Strapi Manager";
-                    CompanyInfo: Record "Company Information";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+                    DataStorageProvider: Enum "Data Storage Provider";
                 begin
-                    CompanyInfo.Get();
-                    case CompanyInfo."Data Storage Provider" of
-                        CompanyInfo."Data Storage Provider"::"Google Drive":
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+                    case DataStorageProvider of
+                        DataStorageProvider::"Google Drive":
                             GoogleDrive.EditFile(Rec."Google Drive ID");
-                        CompanyInfo."Data Storage Provider"::OneDrive:
+                        DataStorageProvider::OneDrive:
                             OneDrive.EditFile(Rec."OneDrive ID");
-                        CompanyInfo."Data Storage Provider"::DropBox:
+                        DataStorageProvider::DropBox:
                             DropBox.EditFile(Rec."DropBox ID");
-                        CompanyInfo."Data Storage Provider"::Strapi:
+                        DataStorageProvider::Strapi:
                             Strapi.EditFile(Rec."Strapi ID");
-                        CompanyInfo."Data Storage Provider"::SharePoint:
+                        DataStorageProvider::SharePoint:
                             SharePointManager.EditFile(Rec."SharePoint ID");
                     end;
                 end;
@@ -976,18 +983,19 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     GoogleDrive: Codeunit "Google Drive Manager";
                     root: Boolean;
                     CarpetaAnterior: List of [Text];
-                    Inf: Record "Company Information";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+                    DataStorageProvider: Enum "Data Storage Provider";
                     NewId: Text;
                     NombreCarpetaDestino: Text;
                     DocRef: RecordRef;
                     FieldRef: FieldRef;
                 begin
-                    Inf.Get();
-                    case Inf."Data Storage Provider" of
-                        Inf."Data Storage Provider"::"Google Drive":
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+                    case DataStorageProvider of
+                        DataStorageProvider::"Google Drive":
                             begin
-                                GoogleDrive.ListFolder(Inf."Root Folder ID", TempFiles, false);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDrive.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, false);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
 
@@ -1001,10 +1009,10 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
 
                             end;
-                        Inf."Data Storage Provider"::OneDrive:
+                        DataStorageProvider::OneDrive:
                             begin
-                                OneDriveManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                OneDriveManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -1014,14 +1022,15 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     NewId := OneDriveManager.Movefile(Rec."OneDrive ID", Destino, '', true, Rec."File Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
                                     Rec."OneDrive ID" := NewId;
+                                    if not Rec.WritePermission() then Error(MisisinDocActchPermision);
                                     Rec.Modify();
                                 end;
                             end;
-                        Inf."Data Storage Provider"::DropBox:
+                        DataStorageProvider::DropBox:
                             // DropBoxManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
                             begin
-                                DropBoxManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                DropBoxManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -1031,13 +1040,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     NewId := DropBoxManager.MoveFile(Rec."DropBox ID", Destino, Rec."File Name" + '.' + Rec."File Extension", true);
                                 if NewId <> '' then begin
                                     Rec."DropBox ID" := NewId;
+                                    if not Rec.WritePermission() then Error(MisisinDocActchPermision);
                                     Rec.Modify();
                                 end;
                             end;
-                        Inf."Data Storage Provider"::Strapi:
+                        DataStorageProvider::Strapi:
                             begin
-                                StrapiManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                StrapiManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -1047,13 +1057,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     NewId := StrapiManager.MoveFile(Rec."Strapi ID", Destino, Rec."File Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
                                     Rec."Strapi ID" := NewId;
+                                    if not Rec.WritePermission() then Error(MisisinDocActchPermision);
                                     Rec.Modify();
                                 end;
                             end;
-                        Inf."Data Storage Provider"::SharePoint:
+                        DataStorageProvider::SharePoint:
                             begin
-                                SharePointManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                SharePointManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -1063,6 +1074,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     NewId := SharePointManager.MoveFile(Rec."SharePoint ID", Destino, true, Rec."File Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
                                     Rec."SharePoint ID" := NewId;
+                                    if not Rec.WritePermission() then Error(MisisinDocActchPermision);
                                     Rec.Modify();
                                 end;
                             end;
@@ -1075,6 +1087,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     FieldRef.SetRange(DocRef.Field(1), NombreCarpetaDestino);
                                     If DocRef.FindFirst() then begin
                                         Rec."No." := NombreCarpetaDestino;
+                                        if not Rec.WritePermission() then Error(MisisinDocActchPermision);
                                         Rec.Modify();
                                     End;
                                 end;
@@ -1103,7 +1116,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     GoogleDrive: Codeunit "Google Drive Manager";
                     root: Boolean;
                     CarpetaAnterior: List of [Text];
-                    Inf: Record "Company Information";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+                    DataStorageProvider: Enum "Data Storage Provider";
                     NewId: Text;
                     NombreCarpetaDestino: Text;
                     // TODO: Implementar diálogo de selección de carpeta destino
@@ -1115,8 +1129,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     case Rec."Storage Provider" of
                         Rec."Storage Provider"::"Google Drive":
                             begin
-                                GoogleDrive.ListFolder(Inf."Root Folder ID", TempFiles, false);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDrive.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, false);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
                                 if destino = '' then
@@ -1126,8 +1140,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                             end;
                         Rec."Storage Provider"::OneDrive:
                             begin
-                                OneDriveManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                OneDriveManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -1139,8 +1153,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                             end;
                         Rec."Storage Provider"::DropBox:
                             begin
-                                DropBoxManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                DropBoxManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -1150,13 +1164,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     NewId := DropBoxManager.MoveFile(Rec."DropBox ID", Destino, Rec."File Name" + '.' + Rec."File Extension", false);
                                 if NewId <> '' then begin
                                     Rec."DropBox ID" := NewId;
+                                    if not Rec.WritePermission() then Error(MisisinDocActchPermision);
                                     Rec.Modify();
                                 end;
                             end;
                         Rec."Storage Provider"::Strapi:
                             begin
-                                StrapiManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                StrapiManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -1166,13 +1181,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     NewId := StrapiManager.MoveFile(Rec."Strapi ID", Destino, Rec."File Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
                                     Rec."Strapi ID" := NewId;
+                                    if not Rec.WritePermission() then Error(MisisinDocActchPermision);
                                     Rec.Modify();
                                 end;
                             end;
                         Rec."Storage Provider"::SharePoint:
                             begin
-                                SharePointManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                SharePointManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -1182,6 +1198,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     NewId := SharePointManager.MoveFile(Rec."SharePoint ID", Destino, true, Rec."File Name" + '.' + Rec."File Extension");
                                 if NewId <> '' then begin
                                     Rec."SharePoint ID" := NewId;
+                                    if not Rec.WritePermission() then Error(MisisinDocActchPermision);
                                     Rec.Modify();
                                 end;
                             end;
@@ -1199,6 +1216,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                         DocumentAttachment := Rec;
                                         DocumentAttachment."No." := NombreCarpetaDestino;
                                         DocumentAttachment.ID := Id + 1;
+                                        if not DocumentAttachment.WritePermission() then Error(MisisinDocActchPermision);
                                         DocumentAttachment.Insert();
                                     End;
                                 end;
@@ -1226,16 +1244,17 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     Id: Text;
                     SubFolder: Text;
                     path: Text;
-                    Inf: Record "Company Information";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+                    DataStorageProvider: Enum "Data Storage Provider";
                     FolderMapping: Record "Google Drive Folder Mapping";
                 begin
                     DialogPage.SetTexto('Nombre Carpeta');
-                    Inf.Get();
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
                     if DialogPage.RunModal() = Action::OK then begin
                         DialogPage.GetTexto(FolderName);
                         if FolderName <> '' then begin
-                            case Inf."Data Storage Provider" of
-                                Inf."Data Storage Provider"::"Google Drive":
+                            case DataStorageProvider of
+                                DataStorageProvider::"Google Drive":
                                     begin
                                         GoogleDriveManager.GetFolderMapping(Rec."Table ID", Id);
                                         SubFolder := GoogleDriveManager.CreateFolderStructure(Id, Rec."No.");
@@ -1244,14 +1263,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                         GoogleDriveManager.CreateFolder(FolderName, Id, false);
 
                                     end;
-                                Inf."Data Storage Provider"::OneDrive:
+                                DataStorageProvider::OneDrive:
                                     begin
                                         OneDriveManager.GetFolderMapping(Rec."Table ID", Id);
-                                        SubFolder := FolderMapping.CreateSubfolderPath(Rec."Table ID", Rec."No.", 0D, Inf."Data Storage Provider");
+                                        SubFolder := FolderMapping.CreateSubfolderPath(Rec."Table ID", Rec."No.", 0D, DataStorageProvider);
                                         SubFolder := OneDriveManager.FindOrCreateSubfolder(Id, SubFolder, true);
                                         OneDriveManager.CreateFolderStructure(SubFolder, FolderName);
                                     end;
-                                Inf."Data Storage Provider"::DropBox:
+                                DataStorageProvider::DropBox:
                                     begin
                                         DropBoxManager.GetFolderMapping(Rec."Table ID", Id);
                                         SubFolder := DropBoxManager.CreateFolderStructure(Id, Rec."No.");
@@ -1259,7 +1278,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                             Id := DropBoxManager.CreateFolderStructure(Id, SubFolder);
                                         DropBoxManager.CreateFolder(FolderName, Id, false);
                                     end;
-                                Inf."Data Storage Provider"::Strapi:
+                                DataStorageProvider::Strapi:
                                     begin
                                         StrapiManager.GetFolderMapping(Rec."Table ID", Id);
                                         SubFolder := StrapiManager.CreateFolderStructure(Id, Rec."No.");
@@ -1267,7 +1286,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                             Id := StrapiManager.CreateFolderStructure(Id, SubFolder);
                                         StrapiManager.CreateFolder(FolderName, Id, false);
                                     end;
-                                Inf."Data Storage Provider"::SharePoint:
+                                DataStorageProvider::SharePoint:
                                     begin
                                         SharePointManager.GetFolderMapping(Rec."Table ID", Id);
                                         SubFolder := SharePointManager.CreateFolderStructure(Id, Rec."No.");
@@ -1419,6 +1438,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         DocumentsMovedSuccessMsg: Label 'Documents moved successfully to Drive.';
         ErrorMovingDocumentsMsg: Label 'Error moving documents: %1';
         DeleteFileConfirmMsg: Label 'Are you sure you want to delete the file "%1"?';
+        MisisinDocActchPermision: Label 'Error: Permission to modify the Document Attachment record is missing';
     // Add triggers
     trigger OnOpenPage()
     var
@@ -1427,16 +1447,15 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
         SharePointManager: Codeunit "SharePoint Manager";
-        CompanyInfo: Record "Company Information";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
     begin
-        CompanyInfo.GET();
-        IsGoogle := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::"Google Drive";
-        IsOndrive := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::OneDrive;
-        IsDropBox := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::DropBox;
-        IsStrapi := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Strapi;
-        IsSharePoint := CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::SharePoint;
+        IsGoogle := DocAttachmentMgmtGDrive.IsGoogleDrive();
+        IsOndrive := DocAttachmentMgmtGDrive.IsOneDrive();
+        IsDropBox := DocAttachmentMgmtGDrive.IsDropBox();
+        IsStrapi := DocAttachmentMgmtGDrive.IsStrapi();
+        IsSharePoint := DocAttachmentMgmtGDrive.IsSharePoint();
         IsDrive := IsGoogle or IsOndrive or IsDropBox or IsStrapi or IsSharePoint;
-        IsDriveExt := CompanyInfo."Funcionalidad extendida";
+        IsDriveExt := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
         // Initialize Google Drive Manager when the page opens
         If IsGoogle Then
             GoogleDriveManager.Initialize();
@@ -1777,7 +1796,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         DocTypeD: Enum "Purchase Document Type";
         FileList: Record "Name/Value Buffer" temporary;
         Instream: InStream;
-        CompaniInfo: Record "Company Information";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+        DataStorageProvider: Enum "Data Storage Provider";
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
@@ -1790,7 +1810,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
     begin
         DocumentAttachment.CopyFilters(Rec);
         DocumentAttachment.SetRange("File Type", DocumentAttachment."File Type"::PDF);
-        CompaniInfo.Get();
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
         //Clear(PDFStorageArray);
         Clear(VisibleControl1);
         Clear(VisibleControl2);
@@ -1804,29 +1824,29 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             VisibleControl1 := false;
             exit;
         end;
-        case CompaniInfo."Data Storage Provider" of
-            CompaniInfo."Data Storage Provider"::"Google Drive":
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
                 GoogleDriveManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
-            CompaniInfo."Data Storage Provider"::OneDrive:
+            DataStorageProvider::OneDrive:
                 OneDriveManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
-            CompaniInfo."Data Storage Provider"::DropBox:
+            DataStorageProvider::DropBox:
                 DropBoxManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
-            CompaniInfo."Data Storage Provider"::Strapi:
+            DataStorageProvider::Strapi:
                 StrapiManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
-            CompaniInfo."Data Storage Provider"::SharePoint:
+            DataStorageProvider::SharePoint:
                 SharePointManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
         end;
 
         SubFolder := ObtenerSubfolder(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, SubFolder, Path);
         IF SubFolder <> '' then begin
-            case CompaniInfo."Data Storage Provider" of
-                CompaniInfo."Data Storage Provider"::"Google Drive":
+            case DataStorageProvider of
+                DataStorageProvider::"Google Drive":
                     begin
                         Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
                         GoogleDriveManager.ListFolder(Id, FileList, true);
                         DriveType := 'google';
                     end;
-                CompaniInfo."Data Storage Provider"::OneDrive:
+                DataStorageProvider::OneDrive:
                     begin
                         IF SubFolder <> '' then begin
                             Id := OneDriveManager.CreateFolderStructure(Id, SubFolder);
@@ -1835,19 +1855,19 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         OneDriveManager.ListFolder(Id, FileList, true);
                         DriveType := 'onedrive';
                     end;
-                CompaniInfo."Data Storage Provider"::DropBox:
+                DataStorageProvider::DropBox:
                     begin
                         Id := DropBoxManager.CreateSubfolderStructure(Id, SubFolder);
                         DropBoxManager.ListFolder(Id, FileList, true);
                         DriveType := 'dropbox';
                     end;
-                CompaniInfo."Data Storage Provider"::Strapi:
+                DataStorageProvider::Strapi:
                     begin
                         Id := StrapiManager.CreateSubfolderStructure(Id, SubFolder);
                         StrapiManager.ListFolder(Id, FileList, true);
                         DriveType := 'strapi';
                     end;
-                CompaniInfo."Data Storage Provider"::SharePoint:
+                DataStorageProvider::SharePoint:
                     begin
                         Id := SharePointManager.CreateFolderStructure(Id, SubFolder);
                         SharePointManager.ListFolder(Id, FileList, true);
@@ -2046,7 +2066,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
     local procedure ObtenerSubfolder(TableNo: Integer; Value: Variant; Date: Date; var SubFolder: Text; var Path: Text): Text
     var
         FolderMapping: Record "Google Drive Folder Mapping";
-        CompanyInfo: Record "Company Information";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+        DataStorageProvider: Enum "Data Storage Provider";
         Id: Text;
         GoogleDriveManager: Codeunit "Google Drive Manager";
         OneDriveManager: Codeunit "OneDrive Manager";
@@ -2054,23 +2075,23 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         StrapiManager: Codeunit "Strapi Manager";
         SharePointManager: Codeunit "SharePoint Manager";
     begin
-        CompanyInfo.Get();
-        case CompanyInfo."Data Storage Provider" of
-            CompanyInfo."Data Storage Provider"::"Google Drive":
-                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
-            CompanyInfo."Data Storage Provider"::OneDrive:
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, DataStorageProvider);
+            DataStorageProvider::OneDrive:
                 begin
                     SubFolder := OneDriveManager.CreateFolderStructure(Id, SubFolder);
                     FolderMapping.SetRange("Table ID", TableNo);
                     if FolderMapping.FindFirst() Then Path += FolderMapping."Default Folder Name" + '/';
-                    SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, DataStorageProvider);
                 end;
-            CompanyInfo."Data Storage Provider"::DropBox:
-                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
-            CompanyInfo."Data Storage Provider"::Strapi:
-                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
-            CompanyInfo."Data Storage Provider"::SharePoint:
-                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+            DataStorageProvider::DropBox:
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, DataStorageProvider);
+            DataStorageProvider::Strapi:
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, DataStorageProvider);
+            DataStorageProvider::SharePoint:
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, DataStorageProvider);
         end;
         exit(SubFolder);
     end;

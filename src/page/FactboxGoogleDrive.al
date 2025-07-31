@@ -7,7 +7,10 @@ page 95100 "Google Drive Factbox"
     SourceTable = "Name/Value Buffer";
     SourceTableTemporary = true;
     DeleteAllowed = false;
-
+    Permissions = tabledata "Company Information" = RIMD,
+                  tabledata "Document Attachment" = RIMD,
+                  tabledata "Name/Value Buffer" = RIMD,
+                  tabledata "Google Drive Folder Mapping" = RIMD;
     layout
     {
         area(Content)
@@ -27,7 +30,8 @@ page 95100 "Google Drive Factbox"
                         OneDriveManager: Codeunit "OneDrive Manager";
                         DropBoxManager: Codeunit "DropBox Manager";
                         StrapiManager: Codeunit "Strapi Manager";
-                        CompanyInfo: Record "Company Information";
+                        DataStorageProvider: Enum "Data Storage Provider";
+                        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                         a: Integer;
                     begin
                         Nombre := Rec.Name;
@@ -57,17 +61,17 @@ page 95100 "Google Drive Factbox"
                                 // Descargar archivo
                                 Accion := Accion::"Descargar Archivo";
                                 //Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
-                                CompanyInfo.Get();
-                                case CompanyInfo."Data Storage Provider" of
-                                    CompanyInfo."Data Storage Provider"::"Google Drive":
+                                DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+                                case DataStorageProvider of
+                                    DataStorageProvider::"Google Drive":
                                         GoogleDriveManager.OpenFileInBrowser(Rec."Google Drive ID");
-                                    CompanyInfo."Data Storage Provider"::OneDrive:
+                                    DataStorageProvider::OneDrive:
                                         OneDriveManager.OpenFileInBrowser(Rec."Google Drive ID", false);
-                                    CompanyInfo."Data Storage Provider"::DropBox:
+                                    DataStorageProvider::DropBox:
                                         DropBoxManager.OpenFileInBrowser(Rec."Google Drive ID");
-                                    CompanyInfo."Data Storage Provider"::Strapi:
+                                    DataStorageProvider::Strapi:
                                         StrapiManager.OpenFileInBrowser(Rec."Google Drive ID");
-                                    CompanyInfo."Data Storage Provider"::SharePoint:
+                                    DataStorageProvider::SharePoint:
                                         SharePointManager.OpenFileInBrowser(Rec."Google Drive ID", false);
                                 end;
                                 Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
@@ -114,19 +118,20 @@ page 95100 "Google Drive Factbox"
                     DropBox: Codeunit "DropBox Manager";
                     Strapi: Codeunit "Strapi Manager";
                     SharePoint: Codeunit "SharePoint Manager";
-                    CompanyInfo: Record "Company Information";
+                    DataStorageProvider: Enum "Data Storage Provider";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                 begin
-                    CompanyInfo.Get();
-                    case CompanyInfo."Data Storage Provider" of
-                        CompanyInfo."Data Storage Provider"::"Google Drive":
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+                    case DataStorageProvider of
+                        DataStorageProvider::"Google Drive":
                             GoogleDrive.EditFile(Rec."Google Drive ID");
-                        CompanyInfo."Data Storage Provider"::OneDrive:
+                        DataStorageProvider::OneDrive:
                             OneDrive.EditFile(Rec."Google Drive ID");
-                        CompanyInfo."Data Storage Provider"::DropBox:
+                        DataStorageProvider::DropBox:
                             DropBox.EditFile(Rec."Google Drive ID");
-                        CompanyInfo."Data Storage Provider"::Strapi:
+                        DataStorageProvider::Strapi:
                             Strapi.EditFile(Rec."Google Drive ID");
-                        CompanyInfo."Data Storage Provider"::SharePoint:
+                        DataStorageProvider::SharePoint:
                             SharePoint.EditFile(Rec."Google Drive ID");
                     end;
                 end;
@@ -142,38 +147,39 @@ page 95100 "Google Drive Factbox"
                 trigger OnAction()
                 var
                     Base64Data: Text;
-                    CompanyInfo: Record "Company Information";
                     GoogleDriveManager: Codeunit "Google Drive Manager";
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
                     SharePointManager: Codeunit "SharePoint Manager";
+                    DataStorageProvider: Enum "Data Storage Provider";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                     a: Integer;
                     Nombre: Text;
 
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::"Descargar Archivo";
-                    CompanyInfo.Get();
-                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::"Google Drive" then begin
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+                    if DataStorageProvider = DataStorageProvider::"Google Drive" then begin
                         If Not GoogleDriveManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true, Base64Data) then
                             exit;
 
                     end;
-                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::OneDrive then begin
+                    if DataStorageProvider = DataStorageProvider::OneDrive then begin
                         If Not OneDriveManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true, Base64Data) then
                             exit;
 
                     end;
-                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::DropBox then begin
+                    if DataStorageProvider = DataStorageProvider::DropBox then begin
                         If Not DropBoxManager.DownloadFileB64('', Rec.Name, true, Base64Data) then
                             exit;
 
                     end;
-                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Strapi then begin
+                    if DataStorageProvider = DataStorageProvider::Strapi then begin
                         Base64Data := StrapiManager.DownloadFileB64('', Rec."Google Drive ID", Rec.Name, true);
                     end;
-                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::SharePoint then begin
+                    if DataStorageProvider = DataStorageProvider::SharePoint then begin
                         SharePointManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true, Base64Data);
                     end;
                     Recargar(root, CarpetaAnterior[Indice], Indice, GRecRef);
@@ -191,7 +197,8 @@ page 95100 "Google Drive Factbox"
                     destino: Text;
                     TempFiles: Record "Name/Value Buffer" temporary;
                     GoogleDriveList: Page "Google Drive List";
-                    Inf: Record "Company Information";
+                    DataStorageProvider: Enum "Data Storage Provider";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                     NewId: Text;
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
@@ -206,12 +213,12 @@ page 95100 "Google Drive Factbox"
 
 
                     // Get folder list
-                    Inf.Get();
-                    case Inf."Data Storage Provider" of
-                        Inf."Data Storage Provider"::"Google Drive":
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+                    case DataStorageProvider of
+                        DataStorageProvider::"Google Drive":
                             begin
-                                GoogleDrive.ListFolder(Inf."Root Folder ID", TempFiles, false);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                GoogleDrive.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, false);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
 
@@ -225,10 +232,10 @@ page 95100 "Google Drive Factbox"
 
 
                             end;
-                        Inf."Data Storage Provider"::OneDrive:
+                        DataStorageProvider::OneDrive:
                             begin
-                                OneDriveManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                OneDriveManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -241,11 +248,11 @@ page 95100 "Google Drive Factbox"
                                     Rec.Modify();
                                 end;
                             end;
-                        Inf."Data Storage Provider"::DropBox:
+                        DataStorageProvider::DropBox:
                             // DropBoxManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
                             begin
-                                DropBoxManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                DropBoxManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -258,11 +265,11 @@ page 95100 "Google Drive Factbox"
                                     Rec.Modify();
                                 end;
                             end;
-                        Inf."Data Storage Provider"::Strapi:
+                        DataStorageProvider::Strapi:
                             // StrapiManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
                             begin
-                                StrapiManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                StrapiManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -275,10 +282,10 @@ page 95100 "Google Drive Factbox"
                                     Rec.Modify();
                                 end;
                             end;
-                        Inf."Data Storage Provider"::SharePoint:
+                        DataStorageProvider::SharePoint:
                             begin
-                                SharePointManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                SharePointManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                 Commit;
                                 GoogleDriveList.RunModal();
                                 GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -310,7 +317,8 @@ page 95100 "Google Drive Factbox"
                     destino: Text;
                     TempFiles: Record "Name/Value Buffer" temporary;
                     GoogleDriveList: Page "Google Drive List";
-                    Inf: Record "Company Information";
+                    DataStorageProvider: Enum "Data Storage Provider";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                     OneDriveManager: Codeunit "OneDrive Manager";
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
@@ -330,14 +338,14 @@ page 95100 "Google Drive Factbox"
                     if destino = '' then
                         Error(NoDestinationSelectedErr)
                     else begin
-                        Inf.Get();
-                        case Inf."Data Storage Provider" of
-                            Inf."Data Storage Provider"::"Google Drive":
+                        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+                        case DataStorageProvider of
+                            DataStorageProvider::"Google Drive":
                                 GoogleDrive.CopyFile(Rec."Google Drive ID", destino);
-                            Inf."Data Storage Provider"::OneDrive:
+                            DataStorageProvider::OneDrive:
                                 begin
-                                    OneDriveManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                    GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                    OneDriveManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                    GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                     Commit;
                                     GoogleDriveList.RunModal();
                                     GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -350,11 +358,11 @@ page 95100 "Google Drive Factbox"
                                         Rec.Modify();
                                     end;
                                 end;
-                            Inf."Data Storage Provider"::DropBox:
+                            DataStorageProvider::DropBox:
                                 begin
                                     // DropBoxManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
-                                    DropBoxManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                    GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                    DropBoxManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                    GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                     Commit;
                                     GoogleDriveList.RunModal();
                                     GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -367,11 +375,11 @@ page 95100 "Google Drive Factbox"
                                         Rec.Modify();
                                     end;
                                 end;
-                            Inf."Data Storage Provider"::Strapi:
+                            DataStorageProvider::Strapi:
                                 begin
                                     // StrapiManager.MoveFile(Rec.GetDocumentID(), destino, Rec."File Name");
-                                    StrapiManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                    GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                    StrapiManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                    GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                     Commit;
                                     GoogleDriveList.RunModal();
                                     GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -384,10 +392,10 @@ page 95100 "Google Drive Factbox"
                                         Rec.Modify();
                                     end;
                                 end;
-                            Inf."Data Storage Provider"::SharePoint:
+                            DataStorageProvider::SharePoint:
                                 begin
-                                    SharePointManager.ListFolder(Inf."Root Folder ID", TempFiles, true);
-                                    GoogleDriveList.SetRecords(Inf."Root Folder ID", TempFiles, true);
+                                    SharePointManager.ListFolder(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
+                                    GoogleDriveList.SetRecords(DocAttachmentMgmtGDrive.GetRootFolderId(), TempFiles, true);
                                     Commit;
                                     GoogleDriveList.RunModal();
                                     GoogleDriveList.GetDestino(destino, NombreCarpetaDestino);
@@ -419,24 +427,25 @@ page 95100 "Google Drive Factbox"
                     DorpBox: Codeunit "Google Drive Manager";
                     Ventana: Page "Dialogo Google Drive";
                     Carpeta: Text;
-                    Inf: Record "Company Information";
+                    DataStorageProvider: Enum "Data Storage Provider";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                 begin
                     Ventana.SetTexto('Folder Name');
                     Ventana.RunModal();
                     Ventana.GetTexto(Carpeta);
                     Nombre := Carpeta;
                     Accion := Accion::"Crear Carpeta";
-                    Inf.Get();
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
                     if Carpeta <> '' then begin
-                        case Inf."Data Storage Provider" of
-                            Inf."Data Storage Provider"::"Google Drive":
+                        case DataStorageProvider of
+                            DataStorageProvider::"Google Drive":
                                 begin
                                     If CarpetaAnterior[Indice] = '' then
                                         GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal, false)
                                     else
                                         GoogleDrive.CreateFolder(Carpeta, root, false);
                                 end;
-                            Inf."Data Storage Provider"::OneDrive:
+                            DataStorageProvider::OneDrive:
                                 begin
                                     If CarpetaAnterior[Indice] = '' then
                                         OneDrive.CreateOneDriveFolder(Carpeta, CarpetaPrincipal, false)
@@ -444,21 +453,21 @@ page 95100 "Google Drive Factbox"
                                         OneDrive.CreateOneDriveFolder(Carpeta, root, false);
 
                                 end;
-                            Inf."Data Storage Provider"::DropBox:
+                            DataStorageProvider::DropBox:
                                 begin
                                     If CarpetaAnterior[Indice] = '' then
                                         DropBox.CreateFolder(Carpeta, CarpetaPrincipal, false)
                                     else
                                         DropBox.CreateFolder(Carpeta, root, false);
                                 end;
-                            Inf."Data Storage Provider"::Strapi:
+                            DataStorageProvider::Strapi:
                                 begin
                                     If CarpetaAnterior[Indice] = '' then
                                         Strapi.CreateFolder(Carpeta, CarpetaPrincipal, false)
                                     else
                                         Strapi.CreateFolder(Carpeta, root, false);
                                 end;
-                            Inf."Data Storage Provider"::SharePoint:
+                            DataStorageProvider::SharePoint:
                                 begin
                                     If CarpetaAnterior[Indice] = '' then
                                         SharePoint.CreateSharePointFolder(Carpeta, CarpetaPrincipal, false)
@@ -513,8 +522,9 @@ page 95100 "Google Drive Factbox"
                     Id: Text;
                     Doc: Record "Document Attachment";
                     a: Integer;
-                    CompanyInfo: Record "Company Information";
                     FolderMapping: Record "Google Drive Folder Mapping";
+                    DataStorageProvider: Enum "Data Storage Provider";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                     Folder: Text;
                     SubFolder: Text;
                     OneDriveManager: Codeunit "OneDrive Manager";
@@ -529,28 +539,27 @@ page 95100 "Google Drive Factbox"
                     UPLOADINTOSTREAM('Import', '', ' All Files (*.*)|*.*', Filename, NVInStream);
                     FileExtension := FileMgt.GetExtension(FileName);
                     Id := GoogleDrive.UploadFileB64(root, NVInStream, Filename, FileExtension);
-                    CompanyInfo.Get();
-                    case CompanyInfo."Data Storage Provider" of
-                        CompanyInfo."Data Storage Provider"::"Google Drive":
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+                    case DataStorageProvider of
+                        DataStorageProvider::"Google Drive":
                             begin
                                 Id := GoogleDrive.UploadFileB64(root, NVInStream, Filename, FileExtension);
                             end;
-                        CompanyInfo.
-                        "Data Storage Provider"::OneDrive:
+                        DataStorageProvider::OneDrive:
                             begin
                                 Path := OneDriveManager.OptenerPath(Rec."Google Drive ID");
                                 Id := OneDriveManager.UploadFileB64(Path, NVInStream, FileName, FileExtension);
                             end;
-                        CompanyInfo."Data Storage Provider"::DropBox:
+                        DataStorageProvider::DropBox:
                             begin
                                 Path := DropBoxManager.OptenerPath(Rec."Google Drive ID");
                                 Id := DropBoxManager.UploadFileB64(Path, NVInStream, FileName + FileExtension);
                             end;
-                        CompanyInfo."Data Storage Provider"::Strapi:
+                        DataStorageProvider::Strapi:
                             begin
                                 Id := StrapiManager.UploadFileB64(Path, NVInStream, FileName + FileExtension);
                             end;
-                        CompanyInfo."Data Storage Provider"::SharePoint:
+                        DataStorageProvider::SharePoint:
                             begin
                                 Id := SharePointManager.UploadFileB64(Path, NVInStream, FileName, FileExtension);
                             end;
@@ -617,7 +626,8 @@ page 95100 "Google Drive Factbox"
     procedure Recargar(FolderId: Text; ParentId: Text; IndiceActual: Integer; RecRef: RecordRef)
     var
         Files: Record "Name/Value Buffer" temporary;
-        Inf: Record "Company Information";
+        DataStorageProvider: Enum "Data Storage Provider";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
         RootFolder: Text;
         i: Integer;
     begin
@@ -625,8 +635,7 @@ page 95100 "Google Drive Factbox"
         if FolderId = '' then FolderId := CarpetaPrincipal;
         GoogleDrive.Carpetas(FolderId, Files);
         Rec.DeleteAll();
-        Inf.Get();
-        RootFolder := Inf."Root Folder";
+        RootFolder := DocAttachmentMgmtGDrive.GetRootFolder();
         // Agregar la carpeta ".." al inicio
         Rec.Init();
         Rec.ID := -99;
@@ -658,23 +667,24 @@ page 95100 "Google Drive Factbox"
     procedure DeleteFile(Id: Text)
     var
         GoogleDrive: Codeunit "Google Drive Manager";
-        Inf: Record "Company Information";
+        DataStorageProvider: Enum "Data Storage Provider";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
         SharePointManager: Codeunit "SharePoint Manager";
     begin
-        Inf.Get();
-        case Inf."Data Storage Provider" of
-            Inf."Data Storage Provider"::"Google Drive":
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
                 GoogleDrive.DeleteFile(Id);
-            Inf."Data Storage Provider"::OneDrive:
+            DataStorageProvider::OneDrive:
                 OneDriveManager.DeleteFile(Id);
-            Inf."Data Storage Provider"::DropBox:
+            DataStorageProvider::DropBox:
                 DropBoxManager.DeleteFile(Id);
-            Inf."Data Storage Provider"::Strapi:
+            DataStorageProvider::Strapi:
                 StrapiManager.DeleteFile(Id);
-            Inf."Data Storage Provider"::SharePoint:
+            DataStorageProvider::SharePoint:
                 SharePointManager.DeleteFile(Id);
         end;
     end;
@@ -682,23 +692,24 @@ page 95100 "Google Drive Factbox"
     procedure DeleteFolder(Id: Text; HideDialog: Boolean)
     var
         GoogleDrive: Codeunit "Google Drive Manager";
-        Inf: Record "Company Information";
+        DataStorageProvider: Enum "Data Storage Provider";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
         SharePointManager: Codeunit "SharePoint Manager";
     begin
-        Inf.Get();
-        case Inf."Data Storage Provider" of
-            Inf."Data Storage Provider"::"Google Drive":
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
                 GoogleDrive.DeleteFolder(Id, HideDialog);
-            Inf."Data Storage Provider"::OneDrive:
+            DataStorageProvider::OneDrive:
                 OneDriveManager.DeleteFolder(Id, HideDialog);
-            Inf."Data Storage Provider"::DropBox:
+            DataStorageProvider::DropBox:
                 DropBoxManager.DeleteFolder(Id, HideDialog);
-            Inf."Data Storage Provider"::Strapi:
+            DataStorageProvider::Strapi:
                 StrapiManager.DeleteFolder(Id, HideDialog);
-            Inf."Data Storage Provider"::SharePoint:
+            DataStorageProvider::SharePoint:
                 SharePointManager.DeleteFolder(Id, HideDialog);
         end;
     end;

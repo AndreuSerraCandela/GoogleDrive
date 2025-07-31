@@ -1,5 +1,9 @@
 codeunit 95103 "DropBox Manager"
 {
+    permissions = tabledata "Company Information" = RIMD,
+                  tabledata "Document Attachment" = RIMD,
+                  tabledata "Name/Value Buffer" = RIMD;
+
     var
         CompanyInfo: Record "Company Information";
         get_metadata: Label '2/files/get_metadata';
@@ -38,12 +42,19 @@ codeunit 95103 "DropBox Manager"
     end;
 
     procedure Authenticate(): Boolean
+    var
+        DriveTokenManagement: Record "Drive Token Management";
     begin
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"DropBox") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"DropBox";
+            DriveTokenManagement.Insert();
+        end;
         // Verificar si el token está válido
-        if CompanyInfo."DropBox Token Expiration" < CurrentDateTime then
+        if DriveTokenManagement."Token Expiration" < CurrentDateTime then
             RefreshAccessToken();
 
-        exit(CompanyInfo."DropBox Access Token".HasValue);
+        exit(DriveTokenManagement."Token Status" = DriveTokenManagement."Token Status"::Valid);
     end;
 
     procedure StartOAuthFlow()
@@ -70,9 +81,15 @@ codeunit 95103 "DropBox Manager"
     end;
 
     procedure RefreshAccessToken()
+    var
+        DriveTokenManagement: Record "Drive Token Management";
     begin
-        CompanyInfo.Get();
-        if CompanyInfo."DropBox Refresh Token" = '' then
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"DropBox") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"DropBox";
+            DriveTokenManagement.Insert();
+        end;
+        if DriveTokenManagement."Refresh Token".HasValue then
             Error(NoRefreshTokenMsg);
 
         RefreshToken();
@@ -121,11 +138,18 @@ codeunit 95103 "DropBox Manager"
     end;
 
     procedure Token(): Text
+    var
+        DriveTokenManagement: Record "Drive Token Management";
     begin
-        if CompanyInfo."DropBox Token Expiration" < CurrentDateTime then
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"DropBox") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"DropBox";
+            DriveTokenManagement.Insert();
+        end;
+        if DriveTokenManagement."Token Expiration" < CurrentDateTime then
             RefreshToken();
 
-        exit(CompanyInfo.GetTokenDropbox());
+        exit(DriveTokenManagement.GetAccessToken());
     end;
 
     procedure ObtenerToken(CodeDropbox: Text): Text
@@ -137,8 +161,14 @@ codeunit 95103 "DropBox Manager"
         JnodeEntryToken: JsonToken;
         Id: Text;
         Respuesta: Text;
+        DriveTokenManagement: Record "Drive Token Management";
     begin
-        CompanyInfo.Get;
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"DropBox") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"DropBox";
+            DriveTokenManagement.Insert();
+        end;
+
         Url := CompanyInfo."Url Api DropBox" + oauth2_token + '?code=' + CodeDropbox + '&grant_type=authorization_code';
         Respuesta := RestApi(Url, RequestType::post, Json, CompanyInfo."DropBox App Key", CompanyInfo."DropBox App Secret");
         StatusInfo.ReadFrom(Respuesta);
@@ -157,15 +187,19 @@ codeunit 95103 "DropBox Manager"
         If StatusInfo.Get('refresh_token', JnodeEntryToken) Then begin
             Id := JnodeEntryToken.AsValue().AsText();
             CompanyInfo."DropBox Refresh Token" := Id;
+            DriveTokenManagement.SetRefreshToken(Id);
             //Añadir 4 horas a la fecha actual
             CompanyInfo."DropBox Token Expiration" := CurrentDateTime + 14400000;
-            CompanyInfo.Modify;
+            if CompanyInfo.WritePermission() then
+                CompanyInfo.Modify();
         end;
 
         If StatusInfo.Get('access_token', JnodeEntryToken) Then begin
             Id := JnodeEntryToken.AsValue().AsText();
             CompanyInfo.SetTokenDropbox(Id);
-            CompanyInfo.Modify();
+            DriveTokenManagement.SetAccessToken(Id);
+            if CompanyInfo.WritePermission() then
+                CompanyInfo.Modify();
         end;
         Commit;
         exit(id);
@@ -179,7 +213,13 @@ codeunit 95103 "DropBox Manager"
         StatusInfo: JsonObject;
         JnodeEntryToken: JsonToken;
         Id: Text;
+        DriveTokenManagement: Record "Drive Token Management";
     begin
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"DropBox") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"DropBox";
+            DriveTokenManagement.Insert();
+        end;
         Url := CompanyInfo."Url Api DropBox" + oauth2_token + '?refresh_token=' + CompanyInfo."DropBox Refresh Token" + '&grant_type=refresh_token';
         Json := RestApi(Url, RequestType::post, '', CompanyInfo."DropBox App Key", CompanyInfo."DropBox App Secret");
 
@@ -188,8 +228,10 @@ codeunit 95103 "DropBox Manager"
         if StatusInfo.Get('access_token', JnodeEntryToken) then begin
             Id := JnodeEntryToken.AsValue().AsText();
             CompanyInfo.SetTokenDropbox(Id);
+            DriveTokenManagement.SetAccessToken(Id);
             CompanyInfo."DropBox Token Expiration" := CurrentDateTime + 14400000; // 4 horas
-            CompanyInfo.Modify();
+            if CompanyInfo.WritePermission() then
+                CompanyInfo.Modify();
         end;
 
         exit(Id);

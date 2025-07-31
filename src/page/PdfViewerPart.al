@@ -11,7 +11,10 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
     InsertAllowed = false;
     LinksAllowed = false;
     RefreshOnActivate = true;
-
+    Permissions = tabledata "Company Information" = RIMD,
+                  tabledata "Document Attachment" = RIMD,
+                  tabledata "Name/Value Buffer" = RIMD,
+                  tabledata "Google Drive Folder Mapping" = RIMD;
     layout
     {
         area(content)
@@ -269,13 +272,14 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         PDFStorage: Record "Document Attachment";
         FileList: Record "Name/Value Buffer" temporary;
         Instream: InStream;
-        CompaniInfo: Record "Company Information";
+        DataStorageProvider: Enum "Data Storage Provider";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
 
     begin
-        CompaniInfo.Get();
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
         //Clear(PDFStorageArray);
         Clear(VisibleControl1);
         Clear(VisibleControl2);
@@ -292,14 +296,14 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
             VisibleControl1 := false;
             exit;
         end;
-        case CompaniInfo."Data Storage Provider" of
-            CompaniInfo."Data Storage Provider"::"Google Drive":
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
                 GoogleDriveManager.GetFolderMapping(gSourceRecordId.TableNo, Id);
-            CompaniInfo."Data Storage Provider"::OneDrive:
+            DataStorageProvider::OneDrive:
                 OneDriveManager.GetFolderMapping(gSourceRecordId.TableNo, Id);
-            CompaniInfo."Data Storage Provider"::DropBox:
+            DataStorageProvider::DropBox:
                 DropBoxManager.GetFolderMapping(gSourceRecordId.TableNo, Id);
-            CompaniInfo."Data Storage Provider"::Strapi:
+            DataStorageProvider::Strapi:
                 StrapiManager.GetFolderMapping(gSourceRecordId.TableNo, Id);
         end;
         PDFStorage.SetRange("Table ID", gSourceRecordId.TableNo);
@@ -390,13 +394,13 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         end;
         //
         IF SubFolder <> '' then begin
-            case CompaniInfo."Data Storage Provider" of
-                CompaniInfo."Data Storage Provider"::"Google Drive":
+            case DataStorageProvider of
+                DataStorageProvider::"Google Drive":
                     begin
                         Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
                         GoogleDriveManager.ListFolder(Id, FileList, true);
                     end;
-                CompaniInfo."Data Storage Provider"::OneDrive:
+                DataStorageProvider::OneDrive:
                     begin
                         IF SubFolder <> '' then begin
                             Id := OneDriveManager.CreateFolderStructure(Id, SubFolder);
@@ -405,12 +409,12 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                         OneDriveManager.ListFolder(Id, FileList, true);
 
                     end;
-                CompaniInfo."Data Storage Provider"::DropBox:
+                DataStorageProvider::DropBox:
                     begin
                         Id := DropBoxManager.CreateSubfolderStructure(Id, SubFolder);
                         DropBoxManager.ListFolder(Id, FileList, true);
                     end;
-                CompaniInfo."Data Storage Provider"::Strapi:
+                DataStorageProvider::Strapi:
                     begin
                         Id := StrapiManager.CreateSubfolderStructure(Id, SubFolder);
                         StrapiManager.ListFolder(Id, FileList, true);
@@ -425,7 +429,8 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         PDFStorageT.DeleteAll();
         repeat
             PDFStorageT := PDFStorage;
-            If PDFStorageT.Insert() Then;
+            if not PDFStorageT.WritePermission() then Error(MisisinDocActchPermision);
+            PDFStorageT.Insert();
         until (PDFStorage.Next() = 0);
         a := 0;
         If PDFStorageT.FindLast() then a := PDFStorageT.id;
@@ -445,7 +450,8 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                             PDFStorageT."File Name" := FileList."Name";
                             PDFStorageT."Store in Google Drive" := True;
                             VisibleControl1 := true;
-                            If PDFStorageT.Insert() Then;
+                            if not PDFStorageT.WritePermission() then Error(MisisinDocActchPermision);
+                            PDFStorageT.Insert();
 
                         until FileList.Next() = 0;
                 end;
@@ -463,7 +469,8 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                             PDFStorageT."File Name" := FileList."Name";
                             PDFStorageT."Store in Google Drive" := True;
                             VisibleControl1 := true;
-                            If PDFStorageT.Insert() Then;
+                            if not PDFStorageT.WritePermission() then Error(MisisinDocActchPermision);
+                            PDFStorageT.Insert();
                         until FileList.Next() = 0;
                 end;
             110, 112, 114, 120, 122, 124:
@@ -480,7 +487,8 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                             PDFStorageT."File Name" := FileList."Name";
                             PDFStorageT."Store in Google Drive" := True;
                             VisibleControl1 := true;
-                            If PDFStorageT.Insert() Then;
+                            if not PDFStorageT.WritePermission() then Error(MisisinDocActchPermision);
+                            PDFStorageT.Insert();
                         until FileList.Next() = 0;
                 end;
         end;
@@ -560,28 +568,29 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
     local procedure ObtenerSubfolder(TableNo: Integer; Value: Variant; Date: Date; var SubFolder: Text; var Path: Text): Text
     var
         FolderMapping: Record "Google Drive Folder Mapping";
-        CompanyInfo: Record "Company Information";
+        DataStorageProvider: Enum "Data Storage Provider";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
         Id: Text;
         GoogleDriveManager: Codeunit "Google Drive Manager";
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
     begin
-        CompanyInfo.Get();
-        case CompanyInfo."Data Storage Provider" of
-            CompanyInfo."Data Storage Provider"::"Google Drive":
-                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
-            CompanyInfo."Data Storage Provider"::OneDrive:
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, DataStorageProvider);
+            DataStorageProvider::OneDrive:
                 begin
                     SubFolder := OneDriveManager.CreateFolderStructure(Id, SubFolder);
                     FolderMapping.SetRange("Table ID", TableNo);
                     if FolderMapping.FindFirst() Then Path += FolderMapping."Default Folder Name" + '/';
-                    SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, DataStorageProvider);
                 end;
-            CompanyInfo."Data Storage Provider"::DropBox:
-                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
-            CompanyInfo."Data Storage Provider"::Strapi:
-                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, CompanyInfo."Data Storage Provider");
+            DataStorageProvider::DropBox:
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, DataStorageProvider);
+            DataStorageProvider::Strapi:
+                SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, DataStorageProvider);
 
         end;
         exit(SubFolder);
@@ -605,4 +614,5 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         IsControlAddInReady: Boolean;
         l: Integer;
         a: Integer;
+        MisisinDocActchPermision: Label 'Error: Permission to modify the Document Attachment record is missing';
 }

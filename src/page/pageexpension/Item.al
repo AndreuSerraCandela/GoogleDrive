@@ -40,10 +40,10 @@ pageextension 95104 ItemExt extends "Item Card"
 
     trigger OnAfterGetCurrRecord()
     var
-        CompanyInfo: Record "Company Information";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
     begin
-        CompanyInfo.Get();
-        if not CompanyInfo."Funcionalidad extendida" then
+        CheckExtendedFunctionality();
+        if not IsExtendedFunctionalityEnabled then
             exit;
         CurrPage.Visor.Page.Update(false);
         CurrPage.GoogleDriveFiles.Page.Update(false);
@@ -57,11 +57,12 @@ pageextension 95104 ItemExt extends "Item Card"
 
     local procedure CheckExtendedFunctionality()
     var
-        CompanyInfo: Record "Company Information";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
     begin
-        CompanyInfo.Get();
-        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
+        IsExtendedFunctionalityEnabled := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
     end;
+
+
 
     var
         Maestro: Text;

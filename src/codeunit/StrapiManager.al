@@ -1,5 +1,8 @@
 codeunit 95104 "Strapi Manager"
 {
+    permissions = tabledata "Company Information" = RIMD,
+                  tabledata "Document Attachment" = RIMD;
+
     var
         CompanyInfo: Record "Company Information";
         // Message Labels

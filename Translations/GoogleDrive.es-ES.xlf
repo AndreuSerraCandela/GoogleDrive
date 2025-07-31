@@ -111,6 +111,12 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - Field Table Name - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3098052707 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error: Permission to modify the Document Attachment record is missing</source>
+          <target>Error: Falta permiso para modificar el registro de Documento Adjunto</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Doc. Attachment Mgmt. GDrive - NamedType MisisinDocActchPermision</note>
+        </trans-unit>
         <trans-unit id="Codeunit 4285443769 - NamedType 3967029355" size-unit="char" translate="yes" xml:space="preserve">
           <source>❌ Could not authenticate with DropBox. Please check your credentials.</source>
           <target>❌ No se pudo autenticar con DropBox. Por favor verifica tus credenciales.</target>
@@ -277,7 +283,6 @@
           <source>✅ All credentials are present and have appropriate length</source>
           <target>✅ Todas las credenciales están presentes y tienen longitud apropiada</target>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">New translation.</note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType AllCredentialsValidMsg</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 3522907960" size-unit="char" translate="yes" xml:space="preserve">
@@ -561,6 +566,12 @@
           <target>files</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType list_folder</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error: Permission to modify the Document Attachment record is missing</source>
+          <target>Error: Falta permiso para modificar el registro de Documento Adjunto</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType MisisinDocActchPermision</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 2646310046" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error moving file</source>
@@ -1575,6 +1586,12 @@
           <target>✅ Conexión a Google Drive exitosa.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType GoogleDriveConnectionSuccessLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error: Permission to modify the Company Information record is missing</source>
+          <target>Error: Falta permiso para modificar el registro de Documento Adjunto</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType MisisinDocActchPermision</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - NamedType 2380359848" size-unit="char" translate="yes" xml:space="preserve">
           <source>❌ No token configured.</source>
@@ -2710,6 +2727,18 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page PDF Viewer Part Google Drive - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 3811955462 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error: Permission to modify the Document Attachment record is missing</source>
+          <target>Error: Falta permiso para modificar el registro de Documento Adjunto</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page PDF Viewer Part Google Drive - NamedType MisisinDocActchPermision</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 2049204610 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2292249509">
+          <source>Documents</source>
+          <target>Documentos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension BankAccountExt - Control Attached Documents List - Property Caption</note>
+        </trans-unit>
         <trans-unit id="PageExtension 2049204610 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2292249509">
           <source>Drive Files</source>
           <target>Archivos de Drive</target>
@@ -2781,6 +2810,12 @@
           <target>Carpeta "%1" creada correctamente.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType FolderCreatedSuccessfullyLbl</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 705205957 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
+          <source>Error: Permission to modify the Document Attachment record is missing</source>
+          <target>Error: Falta permiso para modificar el registro de Documento Adjunto</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType MisisinDocActchPermision</note>
         </trans-unit>
         <trans-unit id="PageExtension 705205957 - NamedType 2683350415" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
           <source>Are you sure you want to move the selected documents to Drive? The documents will be removed from local storage.</source>
@@ -3135,6 +3170,24 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostInvoiceExt - Control Visor - Property Caption</note>
         </trans-unit>
+        <trans-unit id="PageExtension 4130058626 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2344297010">
+          <source>Documents</source>
+          <target>Documentos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostReceiptExt - Control Attached Documents List - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 4130058626 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2344297010">
+          <source>Archivos del Drive</source>
+          <target>Archivos del Drive</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostReceiptExt - Control GoogleDriveFiles - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 4130058626 - Control 822531619 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2344297010">
+          <source>PDF Viewer</source>
+          <target>Visor PDF</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostReceiptExt - Control Visor - Property Caption</note>
+        </trans-unit>
         <trans-unit id="PageExtension 558681197 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1580859378">
           <source>Drive Files</source>
           <target>Archivos de Drive</target>
@@ -3206,6 +3259,24 @@
           <target>Visor PDF</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostInvoiceExt - Control Visor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 4254993347 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3373253667">
+          <source>Documents</source>
+          <target>Documentos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostShipmentExt - Control Attached Documents List - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 4254993347 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3373253667">
+          <source>Archivos del Drive</source>
+          <target>Archivos del Drive</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostShipmentExt - Control GoogleDriveFiles - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 4254993347 - Control 822531619 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3373253667">
+          <source>PDF Viewer</source>
+          <target>Visor PDF</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostShipmentExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3990907967 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 4055858012">
           <source>Drive Files</source>
@@ -3554,6 +3625,12 @@
           <target>URL de Google Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Doc. Attachment GoogleDrive - Field Google Drive URL - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 2969727918 - Field 2012756198 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 282138634">
+          <source>Moved Document</source>
+          <target>Documento Movido</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Doc. Attachment GoogleDrive - Field Moved Document - Property Caption</note>
         </trans-unit>
         <trans-unit id="TableExtension 2969727918 - Field 943209143 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 282138634">
           <source>OneDrive ID</source>

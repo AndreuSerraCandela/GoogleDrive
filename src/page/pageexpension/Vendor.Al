@@ -38,31 +38,26 @@ pageextension 95102 VendorExt extends "Vendor Card"
 
     end;
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        CheckExtendedFunctionality();
+        if not IsExtendedFunctionalityEnabled then
+            exit;
+        CurrPage.Visor.Page.Update(false);
+        CurrPage.GoogleDriveFiles.Page.Update(false);
+    end;
+
     trigger OnOpenPage()
     begin
         Maestro := '';
         CheckExtendedFunctionality();
     end;
 
-    trigger OnAfterGetCurrRecord()
-    var
-        CompanyInfo: Record "Company Information";
-    begin
-        CompanyInfo.Get();
-        if not CompanyInfo."Funcionalidad extendida" then
-            exit;
-        CurrPage.Visor.Page.Update(false);
-        CurrPage.GoogleDriveFiles.Page.Update(false);
-    end;
-
-
-
     local procedure CheckExtendedFunctionality()
     var
-        CompanyInfo: Record "Company Information";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
     begin
-        CompanyInfo.Get();
-        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
+        IsExtendedFunctionalityEnabled := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
     end;
 
     var

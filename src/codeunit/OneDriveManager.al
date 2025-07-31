@@ -1,5 +1,9 @@
 codeunit 95102 "OneDrive Manager"
 {
+    permissions = tabledata "Company Information" = RIMD,
+                  tabledata "Document Attachment" = RIMD,
+                  tabledata "Name/Value Buffer" = RIMD;
+
     var
         CompanyInfo: Record "Company Information";
         // Endpoints de OneDrive API
@@ -99,10 +103,17 @@ codeunit 95102 "OneDrive Manager"
     end;
 
     procedure RefreshAccessToken()
+    var
+        DriveTokenManagement: Record "Drive Token Management";
     begin
-        CompanyInfo.CalcFields("OneDrive Access Token", "OneDrive Refresh Token");
-        if not CompanyInfo."OneDrive Access Token".HasValue Then
-            ObtenerToken(CompanyInfo."Code Ondrive");
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"OneDrive") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"OneDrive";
+            DriveTokenManagement.Insert();
+        end;
+        DriveTokenManagement.CalcFields("Access Token", "Refresh Token");
+        if not DriveTokenManagement."Access Token".HasValue Then
+            ObtenerToken(CompanyInfo."Code Ondrive", DriveTokenManagement);
 
         if not CompanyInfo."OneDrive Refresh Token".HasValue then
             Error(NoRefreshTokenMsg);
@@ -172,7 +183,7 @@ codeunit 95102 "OneDrive Manager"
         exit(AccessToken);
     end;
 
-    procedure ObtenerToken(CodeOneDrive: Text): Text
+    procedure ObtenerToken(CodeOneDrive: Text; var DriveTokenManagement: Record "Drive Token Management"): Text
     var
         Url: Text;
         BodyText: Text;
@@ -222,6 +233,7 @@ codeunit 95102 "OneDrive Manager"
         if StatusInfo.Get('refresh_token', JnodeEntryToken) then begin
             RefreshToken := JnodeEntryToken.AsValue().AsText();
             CompanyInfo."OneDrive Refresh Token".CreateOutStream(OutStr);
+            DriveTokenManagement.SetRefreshToken(RefreshToken);
             OutStr.WriteText(RefreshToken);
         end;
 
@@ -230,7 +242,7 @@ codeunit 95102 "OneDrive Manager"
             CompanyInfo."OneDrive Access Token".CreateOutStream(OutStr);
             OutStr.WriteText(AccessToken);
             Id := AccessToken;
-
+            DriveTokenManagement.SetAccessToken(AccessToken);
             if StatusInfo.Get('expires_in', JnodeEntryToken) then begin
                 CompanyInfo."OneDrive Token Expiration" := CurrentDateTime + (JnodeEntryToken.AsValue().AsInteger() * 1000);
             end else begin
@@ -238,7 +250,8 @@ codeunit 95102 "OneDrive Manager"
             end;
         end;
 
-        CompanyInfo.Modify(true);
+        if CompanyInfo.WritePermission() then
+            CompanyInfo.Modify();
         exit(Id);
     end;
 
@@ -260,8 +273,14 @@ codeunit 95102 "OneDrive Manager"
         OldRefreshToken: Text;
         OutStr: OutStream;
         InStr: InStream;
+        DriveTokenManagement: Record "Drive Token Management";
     begin
         CompanyInfo.Get();
+        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"OneDrive") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"OneDrive";
+            DriveTokenManagement.Insert();
+        end;
         Url := StrSubstNo(token_endpoint, CompanyInfo."OneDrive Tenant ID");
 
         CompanyInfo.CalcFields("OneDrive Refresh Token");
@@ -300,7 +319,7 @@ codeunit 95102 "OneDrive Manager"
             CompanyInfo."OneDrive Access Token".CreateOutStream(OutStr);
             OutStr.WriteText(AccessToken);
             Id := AccessToken;
-
+            DriveTokenManagement.SetAccessToken(AccessToken);
             if StatusInfo.Get('expires_in', JnodeEntryToken) then begin
                 CompanyInfo."OneDrive Token Expiration" := CurrentDateTime + (JnodeEntryToken.AsValue().AsInteger() * 1000);
             end else begin
@@ -311,9 +330,11 @@ codeunit 95102 "OneDrive Manager"
                 RefreshToken := JnodeEntryToken.AsValue().AsText();
                 CompanyInfo."OneDrive Refresh Token".CreateOutStream(OutStr);
                 OutStr.WriteText(RefreshToken);
+                DriveTokenManagement.SetRefreshToken(RefreshToken);
             end;
         end;
-        CompanyInfo.Modify(true);
+        if CompanyInfo.WritePermission() then
+            CompanyInfo.Modify();
         exit(Id);
     end;
 

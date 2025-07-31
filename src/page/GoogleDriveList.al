@@ -26,9 +26,10 @@ page 95105 "Google Drive List"
                         StrapiManager: Codeunit "Strapi Manager";
                         SharePointManager: Codeunit "SharePoint Manager";
                         a: Integer;
-                        Inf: Record "Company Information";
+                        DataStorageProvider: Enum "Data Storage Provider";
+                        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                     begin
-                        Inf.Get();
+                        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
                         Nombre := Rec.Name;
                         If Nombre = '..' Then begin
                             // Subir al nivel anterior
@@ -56,16 +57,16 @@ page 95105 "Google Drive List"
                                 // Descargar archivo
                                 Accion := Accion::"Descargar Archivo";
                                 //Base64Txt := GoogleDrive.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true);
-                                case Inf."Data Storage Provider" of
-                                    Inf."Data Storage Provider"::"Google Drive":
+                                case DataStorageProvider of
+                                    DataStorageProvider::"Google Drive":
                                         GoogleDriveManager.OpenFileInBrowser(Rec."Google Drive ID");
-                                    Inf."Data Storage Provider"::OneDrive:
+                                    DataStorageProvider::OneDrive:
                                         OneDriveManager.OpenFileInBrowser(Rec."Google Drive ID", false);
-                                    Inf."Data Storage Provider"::DropBox:
+                                    DataStorageProvider::DropBox:
                                         DropBoxManager.OpenFileInBrowser(Rec."Google Drive ID");
-                                    Inf."Data Storage Provider"::Strapi:
+                                    DataStorageProvider::Strapi:
                                         StrapiManager.OpenFileInBrowser(Rec."Google Drive ID");
-                                    Inf."Data Storage Provider"::SharePoint:
+                                    DataStorageProvider::SharePoint:
                                         SharePointManager.OpenFileInBrowser(Rec."Google Drive ID", false);
                                 end;
                                 Recargar(root, CarpetaAnterior[Indice], Indice);
@@ -125,30 +126,31 @@ page 95105 "Google Drive List"
                     DropBoxManager: Codeunit "DropBox Manager";
                     StrapiManager: Codeunit "Strapi Manager";
                     SharePointManager: Codeunit "SharePoint Manager";
-                    CompanyInfo: Record "Company Information";
+                    DataStorageProvider: Enum "Data Storage Provider";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                 begin
                     Nombre := Rec.Name;
                     Accion := Accion::"Descargar Archivo";
-                    CompanyInfo.Get();
-                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::"Google Drive" then begin
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+                    if DataStorageProvider = DataStorageProvider::"Google Drive" then begin
                         If Not GoogleDriveManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true, Base64Data) then
                             exit;
 
                     end;
-                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::OneDrive then begin
+                    if DataStorageProvider = DataStorageProvider::OneDrive then begin
                         If Not OneDriveManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true, Base64Data) then
                             exit;
 
                     end;
-                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::DropBox then begin
+                    if DataStorageProvider = DataStorageProvider::DropBox then begin
                         If Not DropBoxManager.DownloadFileB64('', Rec.Name, true, Base64Data) then
                             exit;
 
                     end;
-                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Strapi then begin
+                    if DataStorageProvider = DataStorageProvider::Strapi then begin
                         Base64Data := StrapiManager.DownloadFileB64('', Rec."Google Drive ID", Rec.Name, true);
                     end;
-                    if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::SharePoint then begin
+                    if DataStorageProvider = DataStorageProvider::SharePoint then begin
                         If Not SharePointManager.DownloadFileB64(Rec."Google Drive ID", Rec.Name, true, Base64Data) then
                             exit;
 
@@ -233,24 +235,25 @@ page 95105 "Google Drive List"
                     DorpBox: Codeunit "Google Drive Manager";
                     Ventana: Page "Dialogo Google Drive";
                     Carpeta: Text;
-                    Inf: Record "Company Information";
+                    DataStorageProvider: Enum "Data Storage Provider";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                 begin
                     Ventana.SetTexto('Nombre Carpeta');
                     Ventana.RunModal();
                     Ventana.GetTexto(Carpeta);
                     Nombre := Carpeta;
                     Accion := Accion::"Crear Carpeta";
-                    Inf.Get();
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
                     if Carpeta <> '' then begin
-                        case Inf."Data Storage Provider" of
-                            Inf."Data Storage Provider"::"Google Drive":
+                        case DataStorageProvider of
+                            DataStorageProvider::"Google Drive":
                                 begin
                                     If CarpetaAnterior[Indice] = '' then
                                         GoogleDrive.CreateFolder(Carpeta, CarpetaPrincipal, false)
                                     else
                                         GoogleDrive.CreateFolder(Carpeta, root, false);
                                 end;
-                            Inf."Data Storage Provider"::OneDrive:
+                            DataStorageProvider::OneDrive:
                                 begin
                                     If CarpetaAnterior[Indice] = '' then
                                         OneDrive.CreateOneDriveFolder(Carpeta, CarpetaPrincipal, false)
@@ -258,21 +261,21 @@ page 95105 "Google Drive List"
                                         OneDrive.CreateOneDriveFolder(Carpeta, root, false);
 
                                 end;
-                            Inf."Data Storage Provider"::DropBox:
+                            DataStorageProvider::DropBox:
                                 begin
                                     If CarpetaAnterior[Indice] = '' then
                                         DropBox.CreateFolder(Carpeta, CarpetaPrincipal, false)
                                     else
                                         DropBox.CreateFolder(Carpeta, root, false);
                                 end;
-                            Inf."Data Storage Provider"::Strapi:
+                            DataStorageProvider::Strapi:
                                 begin
                                     If CarpetaAnterior[Indice] = '' then
                                         Strapi.CreateFolder(Carpeta, CarpetaPrincipal, false)
                                     else
                                         Strapi.CreateFolder(Carpeta, root, false);
                                 end;
-                            Inf."Data Storage Provider"::SharePoint:
+                            DataStorageProvider::SharePoint:
                                 begin
                                     If CarpetaAnterior[Indice] = '' then
                                         SharePoint.CreateSharePointFolder(Carpeta, CarpetaPrincipal, false)
@@ -317,7 +320,8 @@ page 95105 "Google Drive List"
                     Filename: Text;
                     FileExtension: Text;
                     FileMgt: Codeunit "File Management";
-                    CompanyInfo: Record "Company Information";
+                    DataStorageProvider: Enum "Data Storage Provider";
+                    DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                     Id: Text;
                     Path: Text;
                     OneDriveManager: Codeunit "OneDrive Manager";
@@ -330,27 +334,27 @@ page 95105 "Google Drive List"
                     Rec.Value := 'Carpeta';
                     UPLOADINTOSTREAM('Import', '', ' All Files (*.*)|*.*', Filename, NVInStream);
                     FileExtension := FileMgt.GetExtension(FileName);
-                    case CompanyInfo."Data Storage Provider" of
-                        CompanyInfo."Data Storage Provider"::"Google Drive":
+                    DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+                    case DataStorageProvider of
+                        DataStorageProvider::"Google Drive":
                             begin
                                 Id := GoogleDrive.UploadFileB64(root, NVInStream, Filename, FileExtension);
                             end;
-                        CompanyInfo.
-                        "Data Storage Provider"::OneDrive:
+                        DataStorageProvider::OneDrive:
                             begin
                                 Path := OneDriveManager.OptenerPath(Rec."Google Drive ID");
                                 Id := OneDriveManager.UploadFileB64(Path, NVInStream, FileName, FileExtension);
                             end;
-                        CompanyInfo."Data Storage Provider"::DropBox:
+                        DataStorageProvider::DropBox:
                             begin
                                 Path := DropBoxManager.OptenerPath(Rec."Google Drive ID");
                                 Id := DropBoxManager.UploadFileB64(Path, NVInStream, FileName + FileExtension);
                             end;
-                        CompanyInfo."Data Storage Provider"::Strapi:
+                        DataStorageProvider::Strapi:
                             begin
                                 Id := StrapiManager.UploadFileB64(Path, NVInStream, FileName + FileExtension);
                             end;
-                        CompanyInfo."Data Storage Provider"::SharePoint:
+                        DataStorageProvider::SharePoint:
                             begin
                                 Id := SharePointManager.UploadFileB64(Path, NVInStream, FileName, FileExtension);
                             end;
@@ -411,7 +415,8 @@ page 95105 "Google Drive List"
     procedure Recargar(FolderId: Text; ParentId: Text; IndiceActual: Integer)
     var
         Files: Record "Name/Value Buffer" temporary;
-        Inf: Record "Company Information";
+        DataStorageProvider: Enum "Data Storage Provider";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
         RootFolder: Text;
         i: Integer;
         GoogleDriveManager: Codeunit "Google Drive Manager";
@@ -420,23 +425,22 @@ page 95105 "Google Drive List"
         StrapiManager: Codeunit "Strapi Manager";
         SharePointManager: Codeunit "SharePoint Manager";
     begin
-        Inf.Get();
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
         if FolderId = '' then FolderId := CarpetaPrincipal;
-        case Inf."Data Storage Provider" of
-            Inf."Data Storage Provider"::"Google Drive":
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
                 GoogleDrive.Carpetas(FolderId, Files);
-            Inf."Data Storage Provider"::OneDrive:
+            DataStorageProvider::OneDrive:
                 OneDriveManager.ListFolder(FolderId, Files, true);
-            Inf."Data Storage Provider"::DropBox:
+            DataStorageProvider::DropBox:
                 DropBoxManager.ListFolder(FolderId, Files, true);
-            Inf."Data Storage Provider"::Strapi:
+            DataStorageProvider::Strapi:
                 StrapiManager.ListFolder(FolderId, Files, true);
-            Inf."Data Storage Provider"::SharePoint:
+            DataStorageProvider::SharePoint:
                 SharePointManager.ListFolder(FolderId, Files, true);
         end;
         Rec.DeleteAll();
-        Inf.Get();
-        RootFolder := Inf."Root Folder";
+        RootFolder := DocAttachmentMgmtGDrive.GetRootFolderId();
         // Agregar la carpeta ".." al inicio
         Rec.Init();
         Rec.ID := -99;
@@ -474,23 +478,24 @@ page 95105 "Google Drive List"
     procedure DeleteFile(Id: Text)
     var
         GoogleDrive: Codeunit "Google Drive Manager";
-        Inf: Record "Company Information";
+        DataStorageProvider: Enum "Data Storage Provider";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
         SharePointManager: Codeunit "SharePoint Manager";
     begin
-        Inf.Get();
-        case Inf."Data Storage Provider" of
-            Inf."Data Storage Provider"::"Google Drive":
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
                 GoogleDrive.DeleteFile(Id);
-            Inf."Data Storage Provider"::OneDrive:
+            DataStorageProvider::OneDrive:
                 OneDriveManager.DeleteFile(Id);
-            Inf."Data Storage Provider"::DropBox:
+            DataStorageProvider::DropBox:
                 DropBoxManager.DeleteFile(Id);
-            Inf."Data Storage Provider"::Strapi:
+            DataStorageProvider::Strapi:
                 StrapiManager.DeleteFile(Id);
-            Inf."Data Storage Provider"::SharePoint:
+            DataStorageProvider::SharePoint:
                 SharePointManager.DeleteFile(Id);
         end;
     end;
@@ -498,23 +503,24 @@ page 95105 "Google Drive List"
     procedure DeleteFolder(Id: Text; HideDialog: Boolean)
     var
         GoogleDrive: Codeunit "Google Drive Manager";
-        Inf: Record "Company Information";
+        DataStorageProvider: Enum "Data Storage Provider";
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
         SharePointManager: Codeunit "SharePoint Manager";
     begin
-        Inf.Get();
-        case Inf."Data Storage Provider" of
-            Inf."Data Storage Provider"::"Google Drive":
+        DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
+        case DataStorageProvider of
+            DataStorageProvider::"Google Drive":
                 GoogleDrive.DeleteFolder(Id, HideDialog);
-            Inf."Data Storage Provider"::OneDrive:
+            DataStorageProvider::OneDrive:
                 OneDriveManager.DeleteFolder(Id, HideDialog);
-            Inf."Data Storage Provider"::DropBox:
+            DataStorageProvider::DropBox:
                 DropBoxManager.DeleteFolder(Id, HideDialog);
-            Inf."Data Storage Provider"::Strapi:
+            DataStorageProvider::Strapi:
                 StrapiManager.DeleteFolder(Id, HideDialog);
-            Inf."Data Storage Provider"::SharePoint:
+            DataStorageProvider::SharePoint:
                 SharePointManager.DeleteFolder(Id, HideDialog);
         end;
     end;

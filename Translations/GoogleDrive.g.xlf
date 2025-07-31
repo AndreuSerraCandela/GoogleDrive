@@ -3,6 +3,41 @@
   <file datatype="xml" source-language="en-US" target-language="en-US" original="GoogleDrive">
     <body>
       <group id="body">
+        <trans-unit id="Table 2957800336 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Drive Token Management</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 3174535945 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Access Token</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Access Token - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 3451032384 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Last Token Refresh</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Last Token Refresh - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 1513319962 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Refresh Token</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Refresh Token - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 745197316 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Storage Provider</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Storage Provider - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 313132060 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token Expiration</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Token Expiration - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 3704028465 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token Status</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Token Status - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Table 1163388225 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Folder Mapping</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -92,6 +127,11 @@
           <source>Table Name</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - Field Table Name - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3098052707 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error: Permission to modify the Document Attachment record is missing</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Doc. Attachment Mgmt. GDrive - NamedType MisisinDocActchPermision</note>
         </trans-unit>
         <trans-unit id="Codeunit 4285443769 - NamedType 3967029355" size-unit="char" translate="yes" xml:space="preserve">
           <source>❌ Could not authenticate with DropBox. Please check your credentials.</source>
@@ -467,6 +507,11 @@
           <source>files</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType list_folder</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3881318298 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error: Permission to modify the Document Attachment record is missing</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - NamedType MisisinDocActchPermision</note>
         </trans-unit>
         <trans-unit id="Codeunit 3881318298 - NamedType 2646310046" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error moving file</source>
@@ -2258,6 +2303,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page PDF Viewer Part Google Drive - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 3811955462 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error: Permission to modify the Document Attachment record is missing</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page PDF Viewer Part Google Drive - NamedType MisisinDocActchPermision</note>
+        </trans-unit>
         <trans-unit id="PageExtension 2049204610 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2292249509">
           <source>Documents</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -2322,6 +2372,11 @@
           <source>Folder "%1" created successfully.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType FolderCreatedSuccessfullyLbl</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 705205957 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
+          <source>Error: Permission to modify the Document Attachment record is missing</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Doc. Attachment Factbox Ext - NamedType MisisinDocActchPermision</note>
         </trans-unit>
         <trans-unit id="PageExtension 705205957 - NamedType 2683350415" size-unit="char" translate="yes" xml:space="preserve" al-object-target="PageExtension 705205957">
           <source>Are you sure you want to move the selected documents to Drive? The documents will be removed from local storage.</source>
@@ -3107,6 +3162,31 @@
           <source>Strapi</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Data Storage Provider - EnumValue Strapi - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3704028465 - EnumValue 1481297009 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Expired</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Token Status - EnumValue Expired - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3704028465 - EnumValue 1990146883 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Invalid</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Token Status - EnumValue Invalid - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3704028465 - EnumValue 1516732151 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Refreshing</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Token Status - EnumValue Refreshing - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3704028465 - EnumValue 4294440508 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Unknown</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Token Status - EnumValue Unknown - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3704028465 - EnumValue 2035247194 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Valid</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Token Status - EnumValue Valid - Property Caption</note>
         </trans-unit>
       </group>
     </body>

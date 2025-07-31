@@ -44,11 +44,9 @@ pageextension 95122 SalesOrderExt extends "Sales Order"
     end;
 
     trigger OnAfterGetCurrRecord()
-    var
-        CompanyInfo: Record "Company Information";
     begin
-        CompanyInfo.Get();
-        if not CompanyInfo."Funcionalidad extendida" then
+        CheckExtendedFunctionality();
+        if not IsExtendedFunctionalityEnabled then
             exit;
         CurrPage.Visor.Page.Update(false);
         CurrPage.GoogleDriveFiles.Page.Update(false);
@@ -58,6 +56,13 @@ pageextension 95122 SalesOrderExt extends "Sales Order"
     begin
         Maestro := '';
         CheckExtendedFunctionality();
+    end;
+
+    local procedure CheckExtendedFunctionality()
+    var
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+    begin
+        IsExtendedFunctionalityEnabled := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
     end;
 
     var
@@ -72,15 +77,7 @@ pageextension 95122 SalesOrderExt extends "Sales Order"
         SubFolder: Text;
         IsExtendedFunctionalityEnabled: Boolean;
 
-    local procedure CheckExtendedFunctionality()
-    var
-        CompanyInfo: Record "Company Information";
-    begin
-        CompanyInfo.Get();
-        // Verificar si se ha seleccionado algún proveedor de almacenamiento
-        // Si el campo no está vacío, significa que se ha configurado un proveedor
-        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
-    end;
+
 }
 pageextension 95123 SalesInvoiceExt extends "Sales Invoice"
 {
@@ -128,11 +125,9 @@ pageextension 95123 SalesInvoiceExt extends "Sales Invoice"
     end;
 
     trigger OnAfterGetCurrRecord()
-    var
-        CompanyInfo: Record "Company Information";
     begin
-        CompanyInfo.Get();
-        if not CompanyInfo."Funcionalidad extendida" then
+        CheckExtendedFunctionality();
+        if not IsExtendedFunctionalityEnabled then
             exit;
         CurrPage.Visor.Page.Update(false);
         CurrPage.GoogleDriveFiles.Page.Update(false);
@@ -142,6 +137,13 @@ pageextension 95123 SalesInvoiceExt extends "Sales Invoice"
     begin
         Maestro := '';
         CheckExtendedFunctionality();
+    end;
+
+    local procedure CheckExtendedFunctionality()
+    var
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+    begin
+        IsExtendedFunctionalityEnabled := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
     end;
 
     var
@@ -156,15 +158,7 @@ pageextension 95123 SalesInvoiceExt extends "Sales Invoice"
         SubFolder: Text;
         IsExtendedFunctionalityEnabled: Boolean;
 
-    local procedure CheckExtendedFunctionality()
-    var
-        CompanyInfo: Record "Company Information";
-    begin
-        CompanyInfo.Get();
-        // Verificar si se ha seleccionado algún proveedor de almacenamiento
-        // Si el campo no está vacío, significa que se ha configurado un proveedor
-        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
-    end;
+
 }
 pageextension 95124 SalesCrMemoExt extends "Sales Credit Memo"
 {
@@ -212,11 +206,9 @@ pageextension 95124 SalesCrMemoExt extends "Sales Credit Memo"
     end;
 
     trigger OnAfterGetCurrRecord()
-    var
-        CompanyInfo: Record "Company Information";
     begin
-        CompanyInfo.Get();
-        if not CompanyInfo."Funcionalidad extendida" then
+        CheckExtendedFunctionality();
+        if not IsExtendedFunctionalityEnabled then
             exit;
         CurrPage.Visor.Page.Update(false);
         CurrPage.GoogleDriveFiles.Page.Update(false);
@@ -226,6 +218,13 @@ pageextension 95124 SalesCrMemoExt extends "Sales Credit Memo"
     begin
         Maestro := '';
         CheckExtendedFunctionality();
+    end;
+
+    local procedure CheckExtendedFunctionality()
+    var
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+    begin
+        IsExtendedFunctionalityEnabled := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
     end;
 
     var
@@ -240,15 +239,7 @@ pageextension 95124 SalesCrMemoExt extends "Sales Credit Memo"
         SubFolder: Text;
         IsExtendedFunctionalityEnabled: Boolean;
 
-    local procedure CheckExtendedFunctionality()
-    var
-        CompanyInfo: Record "Company Information";
-    begin
-        CompanyInfo.Get();
-        // Verificar si se ha seleccionado algún proveedor de almacenamiento
-        // Si el campo no está vacío, significa que se ha configurado un proveedor
-        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
-    end;
+
 }
 
 pageextension 95125 SalesPostInvoiceExt extends "Posted Sales Invoice"
@@ -297,11 +288,9 @@ pageextension 95125 SalesPostInvoiceExt extends "Posted Sales Invoice"
     end;
 
     trigger OnAfterGetCurrRecord()
-    var
-        CompanyInfo: Record "Company Information";
     begin
-        CompanyInfo.Get();
-        if not CompanyInfo."Funcionalidad extendida" then
+        CheckExtendedFunctionality();
+        if not IsExtendedFunctionalityEnabled then
             exit;
         CurrPage.Visor.Page.Update(false);
         CurrPage.GoogleDriveFiles.Page.Update(false);
@@ -311,6 +300,13 @@ pageextension 95125 SalesPostInvoiceExt extends "Posted Sales Invoice"
     begin
         Maestro := '';
         CheckExtendedFunctionality();
+    end;
+
+    local procedure CheckExtendedFunctionality()
+    var
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+    begin
+        IsExtendedFunctionalityEnabled := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
     end;
 
     var
@@ -325,15 +321,7 @@ pageextension 95125 SalesPostInvoiceExt extends "Posted Sales Invoice"
         SubFolder: Text;
         IsExtendedFunctionalityEnabled: Boolean;
 
-    local procedure CheckExtendedFunctionality()
-    var
-        CompanyInfo: Record "Company Information";
-    begin
-        CompanyInfo.Get();
-        // Verificar si se ha seleccionado algún proveedor de almacenamiento
-        // Si el campo no está vacío, significa que se ha configurado un proveedor
-        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
-    end;
+
 }
 pageextension 95126 SalesPostCrMemoExt extends "Posted Sales Credit Memo"
 {
@@ -382,11 +370,9 @@ pageextension 95126 SalesPostCrMemoExt extends "Posted Sales Credit Memo"
     end;
 
     trigger OnAfterGetCurrRecord()
-    var
-        CompanyInfo: Record "Company Information";
     begin
-        CompanyInfo.Get();
-        if not CompanyInfo."Funcionalidad extendida" then
+        CheckExtendedFunctionality();
+        if not IsExtendedFunctionalityEnabled then
             exit;
         CurrPage.Visor.Page.Update(false);
         CurrPage.GoogleDriveFiles.Page.Update(false);
@@ -396,6 +382,13 @@ pageextension 95126 SalesPostCrMemoExt extends "Posted Sales Credit Memo"
     begin
         Maestro := '';
         CheckExtendedFunctionality();
+    end;
+
+    local procedure CheckExtendedFunctionality()
+    var
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+    begin
+        IsExtendedFunctionalityEnabled := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
     end;
 
     var
@@ -410,15 +403,7 @@ pageextension 95126 SalesPostCrMemoExt extends "Posted Sales Credit Memo"
         SubFolder: Text;
         IsExtendedFunctionalityEnabled: Boolean;
 
-    local procedure CheckExtendedFunctionality()
-    var
-        CompanyInfo: Record "Company Information";
-    begin
-        CompanyInfo.Get();
-        // Verificar si se ha seleccionado algún proveedor de almacenamiento
-        // Si el campo no está vacío, significa que se ha configurado un proveedor
-        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
-    end;
+
 }
 pageextension 95127 SalesPostShipmentExt extends "Posted Sales Shipment"
 {
@@ -474,11 +459,9 @@ pageextension 95127 SalesPostShipmentExt extends "Posted Sales Shipment"
     end;
 
     trigger OnAfterGetCurrRecord()
-    var
-        CompanyInfo: Record "Company Information";
     begin
-        CompanyInfo.Get();
-        if not CompanyInfo."Funcionalidad extendida" then
+        CheckExtendedFunctionality();
+        if not IsExtendedFunctionalityEnabled then
             exit;
         CurrPage.Visor.Page.Update(false);
         CurrPage.GoogleDriveFiles.Page.Update(false);
@@ -488,6 +471,13 @@ pageextension 95127 SalesPostShipmentExt extends "Posted Sales Shipment"
     begin
         Maestro := '';
         CheckExtendedFunctionality();
+    end;
+
+    local procedure CheckExtendedFunctionality()
+    var
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+    begin
+        IsExtendedFunctionalityEnabled := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
     end;
 
     var
@@ -502,13 +492,5 @@ pageextension 95127 SalesPostShipmentExt extends "Posted Sales Shipment"
         SubFolder: Text;
         IsExtendedFunctionalityEnabled: Boolean;
 
-    local procedure CheckExtendedFunctionality()
-    var
-        CompanyInfo: Record "Company Information";
-    begin
-        CompanyInfo.Get();
-        // Verificar si se ha seleccionado algún proveedor de almacenamiento
-        // Si el campo no está vacío, significa que se ha configurado un proveedor
-        IsExtendedFunctionalityEnabled := CompanyInfo."Funcionalidad extendida";
-    end;
+
 }
