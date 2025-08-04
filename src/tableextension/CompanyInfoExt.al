@@ -63,26 +63,26 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
 
             Caption = 'Root Folder';
             DataClassification = CustomerContent;
-            trigger OnValidate()
-            var
-                GoogleMapping: Record "Google Drive Folder Mapping";
-            begin
-                If Rec."Root Folder" = '' Then begin
-                    If Confirm(DeleteRootFolderMsg, false) then
-                        "Root Folder ID" := ''
-                    else
-                        "Root Folder" := xRec."Root Folder";
-                    exit;
-                end;
+            // trigger OnValidate()
+            // var
+            //     GoogleMapping: Record "Google Drive Folder Mapping";
+            // begin
+            //     If Rec."Root Folder" = '' Then begin
+            //         If Confirm(DeleteRootFolderMsg, false) then
+            //             "Root Folder ID" := ''
+            //         else
+            //             "Root Folder" := xRec."Root Folder";
+            //         exit;
+            //     end;
 
-                If (xRec."Root Folder" <> "Root Folder") and
-                ("Root Folder ID" <> '') and (xRec."Root Folder" <> '') then begin
-                    If Confirm(RenameRootFolderMsg, false) Then
-                        GoogleMapping.RenameFolder("Root Folder ID", "Root Folder");
-                end;
-                if "Root Folder" <> '' then
-                    "Root Folder ID" := GoogleMapping.RecuperarIdFolder("Root Folder", true, true);
-            end;
+            //     If (xRec."Root Folder" <> "Root Folder") and
+            //     ("Root Folder ID" <> '') and (xRec."Root Folder" <> '') then begin
+            //         If Confirm(RenameRootFolderMsg, false) Then
+            //             GoogleMapping.RenameFolder("Root Folder ID", "Root Folder");
+            //     end;
+            //     if "Root Folder" <> '' then
+            //         "Root Folder ID" := GoogleMapping.RecuperarIdFolder("Root Folder", true, true);
+            // end;
         }
         field(95111; "Root Folder ID"; Text[250])
         {

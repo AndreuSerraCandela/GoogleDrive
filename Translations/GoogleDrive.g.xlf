@@ -1338,6 +1338,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType DefaultValuesConfiguredLbl</note>
         </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 1168643228" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Are you sure you want to delete root folder?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType DeleteRootFolderMsg</note>
+        </trans-unit>
         <trans-unit id="Page 778823480 - NamedType 336829252" size-unit="char" translate="yes" xml:space="preserve">
           <source>❌ Connection error. Check configuration.</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1372,6 +1377,11 @@
           <source>✅ OneDrive connection successful.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType OneDriveConnectionSuccessLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 3235761483" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Are you sure you want to rename root folder?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType RenameRootFolderMsg</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - NamedType 3292684920" size-unit="char" translate="yes" xml:space="preserve">
           <source>Are you sure you want to revoke Google Drive access?</source>

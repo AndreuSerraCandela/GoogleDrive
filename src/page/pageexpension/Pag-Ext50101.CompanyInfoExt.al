@@ -926,9 +926,29 @@ page 95112 "Drive Configuration"
                 trigger OnAction()
                 var
                     GoogleMapping: Record "Google Drive Folder Mapping";
+                    Id: Text;
+                    Info: Record "Company Information";
                 begin
+                    Info.Get();
+                    If Info."Root Folder" = '' Then begin
+                        If Confirm(DeleteRootFolderMsg, false) then
+                            Info."Root Folder ID" := '';
+                        Commit();
+                        Rec.Get();
+                        exit;
+                    end;
+
+                    If (xRec."Root Folder" <> Rec."Root Folder") and
+                    (Rec."Root Folder ID" <> '') and (Rec."Root Folder" <> '') then begin
+                        If Confirm(RenameRootFolderMsg, false) Then
+                            GoogleMapping.RenameFolder(Rec."Root Folder ID", Rec."Root Folder");
+                    end;
                     if Rec."Root Folder" <> '' then
-                        Rec."Root Folder ID" := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", false, true);
+                        ID := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", true, true);
+                    Info."Root Folder ID" := ID;
+                    Info.Modify();
+                    Commit();
+                    Rec.Get();
 
                 end;
             }
@@ -988,6 +1008,9 @@ page 95112 "Drive Configuration"
         TokenExpiredSinceLbl: Label '❌ Token expired since: %1. Use "Refresh Token" to renew it.';
         RevokeAccessConfirmLbl: Label 'Are you sure you want to revoke Google Drive access?';
         ChooseStorageTypeCaptionLbl: Label 'Choose storage type';
+        DeleteRootFolderMsg: Label 'Are you sure you want to delete root folder?';
+        RenameRootFolderMsg: Label 'Are you sure you want to rename root folder?';
+
 
 
     trigger OnOpenPage()
@@ -1113,4 +1136,6 @@ pageextension 95101 CompanyInfoExt extends "Company Information"
             actionref(DriveConfigurationAction; "Drive Configuration") { }
         }
     }
+
+
 }
