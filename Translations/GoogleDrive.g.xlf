@@ -1428,6 +1428,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox Root Folder - Property ToolTip</note>
         </trans-unit>
+        <trans-unit id="Page 778823480 - Control 427461355 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the ID of the root folder of DropBox.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox Root Folder ID - Property ToolTip</note>
+        </trans-unit>
         <trans-unit id="Page 778823480 - Control 211956657 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Specifies the base URL of the DropBox API.</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1482,6 +1487,11 @@
           <source>Specifies the root folder of Google Drive.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Google Drive Root Folder - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Control 4195215812 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the ID of the root folder of Google Drive.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Google Drive Root Folder ID - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 3826965379 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Specifies the Project ID from Google Cloud Console.</source>
@@ -1547,6 +1557,11 @@
           <source>Specifies the root folder of OneDrive.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDrive Root Folder - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Control 295789447 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the ID of the root folder of OneDrive.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDrive Root Folder ID - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 2549889954 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Specifies the ID of the OneDrive site.</source>

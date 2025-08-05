@@ -94,6 +94,11 @@ page 95112 "Drive Configuration"
                         ApplicationArea = All;
                         ToolTip = 'Specifies the root folder of Google Drive.';
                     }
+                    field("Google Drive Root Folder ID"; Rec."Root Folder ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the ID of the root folder of Google Drive.';
+                    }
                     field("Google Shared Drive Name"; Rec."Google Shared Drive Name")
                     {
                         ApplicationArea = All;
@@ -181,6 +186,11 @@ page 95112 "Drive Configuration"
                         ApplicationArea = All;
                         ToolTip = 'Specifies the root folder of OneDrive.';
                     }
+                    field("OneDrive Root Folder ID"; Rec."Root Folder ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the ID of the root folder of OneDrive.';
+                    }
                     field("OneDrive Site Url"; Rec."OneDrive Site Url")
                     {
                         ApplicationArea = All;
@@ -252,6 +262,11 @@ page 95112 "Drive Configuration"
                     {
                         ApplicationArea = All;
                         ToolTip = 'Specifies the root folder of DropBox.';
+                    }
+                    field("DropBox Root Folder ID"; Rec."Root Folder ID")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the ID of the root folder of DropBox.';
                     }
                     field("Code DropBox"; Rec."Code DropBox")
                     {
@@ -928,13 +943,14 @@ page 95112 "Drive Configuration"
                     GoogleMapping: Record "Google Drive Folder Mapping";
                     Id: Text;
                     Info: Record "Company Information";
+                    Folder: Text;
                 begin
-                    Info.Get();
-                    If Info."Root Folder" = '' Then begin
+
+                    If Rec."Root Folder" = '' Then begin
                         If Confirm(DeleteRootFolderMsg, false) then
-                            Info."Root Folder ID" := '';
+                            Rec."Root Folder ID" := '';
                         Commit();
-                        Rec.Get();
+
                         exit;
                     end;
 
@@ -943,12 +959,15 @@ page 95112 "Drive Configuration"
                         If Confirm(RenameRootFolderMsg, false) Then
                             GoogleMapping.RenameFolder(Rec."Root Folder ID", Rec."Root Folder");
                     end;
-                    if Rec."Root Folder" <> '' then
-                        ID := GoogleMapping.RecuperarIdFolder(Rec."Root Folder", true, true);
+                    Folder := Rec."Root Folder";
+                    if Folder <> '' then
+                        ID := GoogleMapping.RecuperarIdFolder(Folder, true, true);
+                    Commit();
+                    Info.Get();
                     Info."Root Folder ID" := ID;
                     Info.Modify();
                     Commit();
-                    Rec.Get();
+                    Message(Id);
 
                 end;
             }
