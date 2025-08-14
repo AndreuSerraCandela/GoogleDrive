@@ -121,7 +121,6 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                         Folder := FolderMapping."Default Folder Id";
                         Path += FolderMapping."Default Folder Name" + '/';
                     end;
-                    ;
                     SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then begin
                         Folder := OneDriveManager.CreateFolderStructure(Folder, SubFolder);
@@ -144,6 +143,23 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                     DocumentAttachment."Store in Strapi" := true;
                     DocumentAttachment."Strapi ID" := StrapiManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name");
                 end;
+            CompanyInfo."Data Storage Provider"::SharePoint:
+                begin
+                    DocumentAttachment."Store in SharePoint" := true;
+                    FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                    if FolderMapping.FindFirst() Then begin
+                        Folder := FolderMapping."Default Folder Id";
+                        Path += FolderMapping."Default Folder Name" + '/';
+                    end;
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                    IF SubFolder <> '' then begin
+                        Folder := SharePointManager.CreateFolderStructure(Folder, SubFolder);
+                        Path += SubFolder + '/'
+                    end;
+
+
+                    DocumentAttachment."SharePoint ID" := SharePointManager.UploadFileB64(Path, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                end;
         end;
         IsHandled := true;
 
@@ -160,6 +176,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         FolderMappingSalesShipment: Record "Google Drive Folder Mapping";
         RecRef: RecordRef;
     begin
+        if PreviewMode then exit;
         CompanyInfo.Get();
         RecRef.GetTable(SalesHeader);
         If not FolderMappingSH.Get(Database::"Sales Header") then
@@ -277,10 +294,14 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         FolderMappingSalesInv: Record "Google Drive Folder Mapping";
         FolderMappingSalesCrMemo: Record "Google Drive Folder Mapping";
         FolderMappingSalesShipment: Record "Google Drive Folder Mapping";
+        PostingPreviewNoTok: Label '***', Locked = true;
         RecRef: RecordRef;
     begin
         CompanyInfo.Get();
         RecRef.GetTable(PurchaseHeader);
+        if (PurchaseHeader."Receiving No." = PostingPreviewNoTok) or (PurchaseHeader."Posting No." = PostingPreviewNoTok)
+        or (PurchaseHeader."Return Shipment No." = PostingPreviewNoTok) then
+            exit;
         If not FolderMappingSH.Get(Database::"Purchase Header") then
             FolderMappingSH.init;
         if not FolderMappingSalesInv.Get(Database::"Purch. Inv. Header") then
