@@ -131,7 +131,22 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         StrapiManager: Codeunit "Strapi Manager";
                         Id: Integer;
                         DriveType: Text;
+                        Language: Text;
+                        WindowsLanguage: Record "Windows Language";
+                        IdLanguage: Integer;
                     begin
+                        IdLanguage := GlobalLanguage;
+                        If WindowsLanguage.Get(IdLanguage) then begin
+                            IdLanguage := WindowsLanguage."Primary Language ID";
+                        end;
+                        Case IdLanguage of
+                            1034:
+                                Language := 'es-ES';
+                            else
+                                Language := 'en-US';
+
+                        end;
+                        CurrPage.PDFViewer1.InitializeControl('controlAddIn', Language);
                         IsControlAddInReady := true;
                         If Rec."Store in Google Drive" then begin
                             URL := Rec."Google Drive ID";

@@ -48,5 +48,6 @@ controladdin "PDFV PDF Viewer"
     procedure Fichero(Numero: Integer)
     procedure Ficheros(NumerodeFicheros: Integer)
     procedure SetVisible(IsVisible: Boolean)
+    procedure InitializeControl(controlId: Text; language: Text);
 
 }

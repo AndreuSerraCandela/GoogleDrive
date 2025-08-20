@@ -50,8 +50,15 @@ page 95125 "JPG Viewer"
         GeneralSetup: Record "General Ledger Setup";
         UserSetup: Record "User Setup";
         Http: Text;
+        Language: Text;
     begin
         GeneralSetup.Get;
+        // Case GlobalLanguage of
+        //     1033:
+        //         Language := 'en-US';
+        //     else
+        //         Language := 'es-ES';
+        // end;
         If Not UserSetup.Get(UserId) Then UserSetup.Init;
         // Http := 'http://localhost:2064/';
         // if GeneralSetup."Url Api Ocr"OCR <> '' then Http := GeneralSetup."Url Api Ocr"OCR;
