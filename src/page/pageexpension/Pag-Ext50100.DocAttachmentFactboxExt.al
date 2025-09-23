@@ -605,10 +605,12 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                     DataStorageProvider: Enum "Data Storage Provider";
                     FileMgt: Codeunit "File Management";
+                    Date: Date;
                 begin
                     DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
 
                     IdTable := Rec."Table ID";
+                    Date := ObtenerDate(Rec);
                     if IdTable = 0 then
                         IdTableFilter := Rec.GetFilter("Table ID");
                     if IdTable = 0 then
@@ -619,7 +621,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     case DataStorageProvider of
                         DataStorageProvider::"Google Drive":
                             begin
-                                TargetFolderId := GoogleDriveManager.GetTargetFolderForDocument(IdTable, No, 0D, DataStorageProvider);
+                                TargetFolderId := GoogleDriveManager.GetTargetFolderForDocument(IdTable, No, Date, DataStorageProvider);
                                 GoogleDriveManager.Carpetas(TargetFolderId, Files);
                             end;
                         DataStorageProvider::OneDrive:
@@ -728,6 +730,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     FolderMapping: Record "Google Drive Folder Mapping";
                     Folder: Text;
                     AccessToken: Text;
+                    Date: Date;
                 begin
                     if not Confirm(ConfirmMsg) then
                         exit;
@@ -736,6 +739,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     CurrPage.SetSelectionFilter(DocumentAttachment);
                     if DocumentAttachment.FindSet() then
                         repeat
+                            Date := ObtenerDate(DocumentAttachment);
                             If DocumentAttachment."Document Reference ID".HasValue() then begin
                                 case DataStorageProvider of
                                     DataStorageProvider::"Google Drive":
@@ -746,7 +750,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                 Clear(DocumentStream);
                                                 TempBlob.CreateOutStream(DocumentStream);
                                                 GoogleDriveManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, DataStorageProvider);
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Date, DataStorageProvider);
                                                 IF SubFolder <> '' then
                                                     Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
                                                 DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
@@ -775,7 +779,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
                                                 ;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, DataStorageProvider);
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Date, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := OneDriveManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'
@@ -807,7 +811,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
                                                 ;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, DataStorageProvider);
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Date, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := DropBoxManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'
@@ -840,7 +844,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
                                                 ;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, DataStorageProvider);
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Date, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := StrapiManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'
@@ -864,7 +868,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Folder := FolderMapping."Default Folder Id";
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, DataStorageProvider);
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", DAte, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := SharePointManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'
@@ -1247,11 +1251,13 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
                     DataStorageProvider: Enum "Data Storage Provider";
                     FolderMapping: Record "Google Drive Folder Mapping";
+                    Date: Date;
                 begin
                     DialogPage.SetTexto('Nombre Carpeta');
                     DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
                     if DialogPage.RunModal() = Action::OK then begin
                         DialogPage.GetTexto(FolderName);
+                        Date := ObtenerDate(Rec);
                         if FolderName <> '' then begin
                             case DataStorageProvider of
                                 DataStorageProvider::"Google Drive":
@@ -1266,7 +1272,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 DataStorageProvider::OneDrive:
                                     begin
                                         OneDriveManager.GetFolderMapping(Rec."Table ID", Id);
-                                        SubFolder := FolderMapping.CreateSubfolderPath(Rec."Table ID", Rec."No.", 0D, DataStorageProvider);
+                                        SubFolder := FolderMapping.CreateSubfolderPath(Rec."Table ID", Rec."No.", Date, DataStorageProvider);
                                         SubFolder := OneDriveManager.FindOrCreateSubfolder(Id, SubFolder, true);
                                         OneDriveManager.CreateFolderStructure(SubFolder, FolderName);
                                     end;
@@ -1382,7 +1388,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
 
             //                     FolderMapping.SetRange("Table ID", Rec."Table ID");
             //                     if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
-            //                     SubFolder := FolderMapping.CreateSubfolderPath(Rec."Table ID",Rec."No.", 0D);
+            //                     SubFolder := FolderMapping.CreateSubfolderPath(Rec."Table ID",Rec."No.", Date);
             //                     IF SubFolder <> '' then
             //                         Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
             //                         TempBlob.CreateOutStream(DocumentStream);
@@ -1807,6 +1813,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         URL: Text;
         UrlProvider: Text;
         DriveType: Text;
+        Date: Date;
     begin
         DocumentAttachment.CopyFilters(Rec);
         DocumentAttachment.SetRange("File Type", DocumentAttachment."File Type"::PDF);
@@ -1836,8 +1843,9 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
             DataStorageProvider::SharePoint:
                 SharePointManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
         end;
+        Date := ObtenerDate(DocumentAttachment);
 
-        SubFolder := ObtenerSubfolder(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, SubFolder, Path);
+        SubFolder := ObtenerSubfolder(DocumentAttachment."Table ID", DocumentAttachment."No.", Date, SubFolder, Path);
         IF SubFolder <> '' then begin
             case DataStorageProvider of
                 DataStorageProvider::"Google Drive":
@@ -2094,6 +2102,62 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                 SubFolder := FolderMapping.CreateSubfolderPath(TableNo, Value, Date, DataStorageProvider);
         end;
         exit(SubFolder);
+    end;
+
+    local procedure ObtenerDate(DocumentAttachment: Record "Document Attachment"): Date
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        PurchaseCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        PurchRcptHeader: Record "Purch. Rcpt. Header";
+        SalesShipmentHeader: Record "Sales Shipment Header";
+    begin
+        case DocumentAttachment."Table ID" of
+            Database::"Sales Header":
+                begin
+                    if SalesHeader.Get(DocumentAttachment."Document Type", DocumentAttachment."No.") then
+                        exit(SalesHeader."Document Date");
+                end;
+            Database::"Sales Invoice Header":
+                begin
+                    if SalesInvoiceHeader.Get(DocumentAttachment."No.") then
+                        exit(SalesInvoiceHeader."Document Date");
+                end;
+            Database::"Sales Cr.Memo Header":
+                begin
+                    if SalesCrMemoHeader.Get(DocumentAttachment."No.") then
+                        exit(SalesCrMemoHeader."Document Date");
+                end;
+            Database::"Purchase Header":
+                begin
+                    if PurchaseHeader.Get(DocumentAttachment."Document Type", DocumentAttachment."No.") then
+                        exit(PurchaseHeader."Document Date");
+                end;
+            Database::"Purch. Inv. Header":
+                begin
+                    if PurchaseInvoiceHeader.Get(DocumentAttachment."No.") then
+                        exit(PurchaseInvoiceHeader."Document Date");
+                end;
+            Database::"Purch. Cr. Memo Hdr.":
+                begin
+                    if PurchaseCrMemoHeader.Get(DocumentAttachment."No.") then
+                        exit(PurchaseCrMemoHeader."Document Date");
+                end;
+            Database::"Purch. Rcpt. Header":
+                begin
+                    if PurchRcptHeader.Get(DocumentAttachment."No.") then
+                        exit(PurchRcptHeader."Document Date");
+                end;
+            Database::"Sales Shipment Header":
+                begin
+                    if SalesShipmentHeader.Get(DocumentAttachment."No.") then
+                        exit(SalesShipmentHeader."Document Date");
+                end;
+        end;
+        exit(0D);
     end;
 
     var

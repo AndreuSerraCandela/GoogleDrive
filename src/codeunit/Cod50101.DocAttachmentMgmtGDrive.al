@@ -184,7 +184,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             DocumentAttachment.SetRange("No.", SalesInvoiceHeader."No.");
             if DocumentAttachment.FindFirst() then
                 repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Invoice Header", RecRef, SalesHeader."Document Date", SalesInvoiceHeader."Document Date", SalesHeader."No.", SalesInvoiceHeader."No.");
+                // FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Invoice Header", RecRef, SalesHeader."Document Date", SalesInvoiceHeader."Document Date", SalesHeader."No.", SalesInvoiceHeader."No.");
+                //No mueve El documento
                 until DocumentAttachment.Next() = 0;
         end;
         if (SalesCrMemoHeader."No." <> '') then begin
@@ -193,7 +194,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             DocumentAttachment.SetRange("No.", SalesCrMemoHeader."No.");
             if DocumentAttachment.FindFirst() then
                 repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Cr.Memo Header", RecRef, SalesHeader."Document Date", SalesCrMemoHeader."Document Date", SalesHeader."No.", SalesCrMemoHeader."No.");
+                // FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Cr.Memo Header", RecRef, SalesHeader."Document Date", SalesCrMemoHeader."Document Date", SalesHeader."No.", SalesCrMemoHeader."No.");
+                //No mueve El documento
                 until DocumentAttachment.Next() = 0;
         end;
         if (SalesShipmentHeader."No." <> '') then begin
@@ -217,7 +219,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             end;
             if DocumentAttachment.FindFirst() then
                 repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Shipment Header", RecRef, SalesHeader."Document Date", SalesShipmentHeader."Document Date", SalesHeader."No.", SalesShipmentHeader."No.");
+                // FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Shipment Header", RecRef, SalesHeader."Document Date", SalesShipmentHeader."Document Date", SalesHeader."No.", SalesShipmentHeader."No.");
+                //No mueve El documento
                 until DocumentAttachment.Next() = 0;
         end;
     end;
@@ -254,7 +257,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             DocumentAttachment.SetRange("No.", SalesInvoiceHeader."No.");
             if DocumentAttachment.FindFirst() then
                 repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Invoice Header", RecRef, SalesHeader."Document Date", SalesInvoiceHeader."Document Date", SalesHeader."No.", SalesInvoiceHeader."No.");
+                // FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Invoice Header", RecRef, SalesHeader."Document Date", SalesInvoiceHeader."Document Date", SalesHeader."No.", SalesInvoiceHeader."No.");
+                //No mueve El documento
                 until DocumentAttachment.Next() = 0;
         end;
         if (SalesCrMemoHeader."No." <> '') then begin
@@ -263,7 +267,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             DocumentAttachment.SetRange("No.", SalesCrMemoHeader."No.");
             if DocumentAttachment.FindFirst() then
                 repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Cr.Memo Header", RecRef, SalesHeader."Document Date", SalesCrMemoHeader."Document Date", SalesHeader."No.", SalesCrMemoHeader."No.");
+                // FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Sales Header", Database::"Sales Cr.Memo Header", RecRef, SalesHeader."Document Date", SalesCrMemoHeader."Document Date", SalesHeader."No.", SalesCrMemoHeader."No.");
+                //No mueve El documento
                 until DocumentAttachment.Next() = 0;
         end;
     end;
@@ -303,7 +308,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             DocumentAttachment.SetRange("No.", PurchInvHeader."No.");
             if DocumentAttachment.FindFirst() then
                 repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Inv. Header", RecRef, PurchaseHeader."Document Date", PurchInvHeader."Document Date", PurchaseHeader."No.", PurchInvHeader."No.");
+                // FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Inv. Header", RecRef, PurchaseHeader."Document Date", PurchInvHeader."Document Date", PurchaseHeader."No.", PurchInvHeader."No.");
+                //No mueve El documento
                 until DocumentAttachment.Next() = 0;
         end;
         if (PurchCrMemoHdr."No." <> '') then begin
@@ -312,7 +318,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             DocumentAttachment.SetRange("No.", PurchCrMemoHdr."No.");
             if DocumentAttachment.FindFirst() then
                 repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Cr. Memo Hdr.", RecRef, PurchaseHeader."Document Date", PurchCrMemoHdr."Document Date", PurchaseHeader."No.", PurchCrMemoHdr."No.");
+                // FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Cr. Memo Hdr.", RecRef, PurchaseHeader."Document Date", PurchCrMemoHdr."Document Date", PurchaseHeader."No.", PurchCrMemoHdr."No.");
+                //No mueve El documento
                 until DocumentAttachment.Next() = 0;
         end;
         if (PurchRcptHeader."No." <> '') then begin
@@ -336,7 +343,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             end;
             if DocumentAttachment.FindFirst() then
                 repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Rcpt. Header", RecRef, PurchaseHeader."Document Date", PurchRcptHeader."Document Date", PurchaseHeader."No.", PurchRcptHeader."No.");
+                // FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Rcpt. Header", RecRef, PurchaseHeader."Document Date", PurchRcptHeader."Document Date", PurchaseHeader."No.", PurchRcptHeader."No.");
+                //No mueve El documento
                 until DocumentAttachment.Next() = 0;
         end;
     end;
@@ -373,7 +381,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             DocumentAttachment.SetRange("No.", PurchInvHeader."No.");
             if DocumentAttachment.FindFirst() then
                 repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Inv. Header", RecRef, PurchaseHeader."Document Date", PurchInvHeader."Document Date", PurchaseHeader."No.", PurchInvHeader."No.");
+                // FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Inv. Header", RecRef, PurchaseHeader."Document Date", PurchInvHeader."Document Date", PurchaseHeader."No.", PurchInvHeader."No.");
+                //No mueve El documento
                 until DocumentAttachment.Next() = 0;
         end;
         if (PurchCrMemoHdr."No." <> '') then begin
@@ -382,7 +391,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             DocumentAttachment.SetRange("No.", PurchCrMemoHdr."No.");
             if DocumentAttachment.FindFirst() then
                 repeat
-                    FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Cr. Memo Hdr.", RecRef, PurchaseHeader."Document Date", PurchCrMemoHdr."Document Date", PurchaseHeader."No.", PurchCrMemoHdr."No.");
+                // FolderMappingSH.MoveFileH(CompanyInfo."Data Storage Provider", DocumentAttachment, Database::"Purchase Header", Database::"Purch. Cr. Memo Hdr.", RecRef, PurchaseHeader."Document Date", PurchCrMemoHdr."Document Date", PurchaseHeader."No.", PurchCrMemoHdr."No.");
+                //No mueve El documento
                 until DocumentAttachment.Next() = 0;
         end;
     end;
@@ -391,6 +401,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
     local procedure OnAfterDeleteEvent(var Rec: Record "Document Attachment")
     var
         DeDonde: Text;
+        DocumentAttachment: Record "Document Attachment";
     begin
         if Rec.IsTemporary then exit;
         CompanyInfo.Get();
@@ -408,15 +419,58 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         if Rec."Posted Document" then
             exit;
         //If Confirm('¿Desea eliminar el archivo de %1?', false, DeDonde) then
+        //Si el Id Storage enta en otro documento sale sin borrar el archivo
         case CompanyInfo."Data Storage Provider" of
             CompanyInfo."Data Storage Provider"::"Google Drive":
-                GoogleDriveManager.DeleteFile(Rec."Google Drive ID");
+                begin
+                    DocumentAttachment.SetRange("Google Drive ID", Rec."Google Drive ID");
+                    DocumentAttachment.SetFilter(Id, '<>%1', Rec.Id);
+                    DocumentAttachment.SetFilter("Table ID", '<>%1', Rec."Table ID");
+                    if DocumentAttachment.FindFirst() then
+                        exit;
+                    GoogleDriveManager.DeleteFile(Rec."Google Drive ID");
+                end;
+
             CompanyInfo."Data Storage Provider"::OneDrive:
-                OneDriveManager.DeleteFile(Rec."OneDrive ID");
+                begin
+                    DocumentAttachment.SetRange("OneDrive ID", Rec."OneDrive ID");
+                    DocumentAttachment.SetFilter(Id, '<>%1', Rec.Id);
+                    DocumentAttachment.SetFilter("Table ID", '<>%1', Rec."Table ID");
+                    if DocumentAttachment.FindFirst() then
+                        exit;
+                    OneDriveManager.DeleteFile(Rec."OneDrive ID");
+                end;
             CompanyInfo."Data Storage Provider"::DropBox:
-                DropBoxManager.DeleteFile(Rec."DropBox ID");
+                begin
+                    DocumentAttachment.SetRange("DropBox ID", Rec."DropBox ID");
+                    DocumentAttachment.SetFilter(Id, '<>%1', Rec.Id);
+                    DocumentAttachment.SetFilter("Table ID", '<>%1', Rec."Table ID");
+                    if DocumentAttachment.FindFirst() then
+                        exit;
+                    DropBoxManager.DeleteFile(Rec."DropBox ID");
+                end;
             CompanyInfo."Data Storage Provider"::Strapi:
-                StrapiManager.DeleteFile(Rec."Strapi ID");
+                begin
+                    DocumentAttachment.SetRange("Strapi ID", Rec."Strapi ID");
+                    DocumentAttachment.SetFilter(Id, '<>%1', Rec.Id);
+                    DocumentAttachment.SetFilter("Table ID", '<>%1', Rec."Table ID");
+                    if DocumentAttachment.FindFirst() then
+                        exit;
+                    StrapiManager.DeleteFile(Rec."Strapi ID");
+                end;
+            CompanyInfo."Data Storage Provider"::SharePoint:
+                begin
+                    DocumentAttachment.SetRange("SharePoint ID", Rec."SharePoint ID");
+                    DocumentAttachment.SetFilter(Id, '<>%1', Rec.Id);
+                    DocumentAttachment.SetFilter("Table ID", '<>%1', Rec."Table ID");
+                    if DocumentAttachment.FindFirst() then
+                        exit;
+                    SharePointManager.DeleteFile(Rec."SharePoint ID");
+                end;
+            CompanyInfo."Data Storage Provider"::Local:
+                exit;
+            else
+                exit;
         end;
         //end;
     end;
@@ -538,7 +592,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                 begin
                     Maestro := No;
                     GoogleDriveManager.GetFolderMapping(RecRef.Number, Id);
-                    SubFolder := FolderMapping.CreateSubfolderPath(RecRef.Number, No, 0D, CompanyInfo."Data Storage Provider");
+                    SubFolder := FolderMapping.CreateSubfolderPath(RecRef.Number, No, Fecha, CompanyInfo."Data Storage Provider");
                     IF SubFolder <> '' then
                         Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
                     if CompanyInfo."Funcionalidad extendida" then
