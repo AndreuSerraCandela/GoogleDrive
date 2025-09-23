@@ -5,9 +5,37 @@ var pdfDoc = null,
     pageNumPending = null,
     IsFirstLoad = true,
     selectedFiles = [],
-    currentRotation = 0;
+    currentRotation = 0,
+    currentLanguage = 'en-US'; // Idioma por defecto
 
-function InitializeControl(controlId) {
+// Función para obtener traducciones
+function getTranslation(key) {
+    const translations = {
+        'en-US': {
+            'upload-title': 'Upload Files',
+            'show-button': 'Show',
+            'hide-button': 'Hide',
+            'drop-zone-text': 'Drop files here to upload or',
+            'click-to-browse': 'click here to browse',
+            'file-count-prefix': 'Files:'
+        },
+        'es-ES': {
+            'upload-title': 'Cargar Archivos',
+            'show-button': 'Mostrar',
+            'hide-button': 'Ocultar',
+            'drop-zone-text': 'Coloque los archivos aquí para cargar o',
+            'click-to-browse': 'haga clic aquí para examinar',
+            'file-count-prefix': 'Arch:'
+        }
+    };
+    
+    return translations[currentLanguage]?.[key] || translations['en-US'][key] || key;
+}
+
+function InitializeControl(controlId, language) {
+    // Configurar el idioma por defecto si no se proporciona
+    currentLanguage = language || 'en-US';
+    
     var controlAddIn = document.getElementById(controlId);
     controlAddIn.innerHTML =
         '<div id="pdf-contents">' +
@@ -31,17 +59,17 @@ function InitializeControl(controlId) {
             '<div id="upload-section" style="background: #f8f9fa; padding: 10px; border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">' +
                 '<div class="upload-container">' +
                     '<div class="upload-section-header">' +
-                        '<h3 class="upload-title">Cargar Archivos</h3>' +
+                        '<h3 class="upload-title">' + getTranslation('upload-title') + '</h3>' +
                         '<button class="toggle-upload-btn" onclick="toggleUploadSection()">' +
-                            '<i class="fas fa-chevron-down"></i> Mostrar' +
+                            '<i class="fas fa-chevron-down"></i> ' + getTranslation('show-button') +
                         '</button>' +
                     '</div>' +
                     '<div id="upload-content" style="display: none;">' +
                         '<div id="drop-zone" class="drop-zone">' +
                             '<i class="fas fa-cloud-upload-alt upload-icon"></i>' +
-                            '<p>Coloque los archivos aquí para cargar o</p>' +
+                            '<p>' + getTranslation('drop-zone-text') + '</p>' +
                             '<input type="file" id="fileInput" multiple class="file-input" accept=".jpg, .jpeg, .bmp, .png, .gif, .tiff, .tif, .pdf, .docx, .doc, .xlsx, .xls, .pptx, .ppt, .msg, .xml">' +
-                            '<label for="fileInput" class="upload-link">haga clic aquí para examinar</label>' +
+                            '<label for="fileInput" class="upload-link">' + getTranslation('click-to-browse') + '</label>' +
                         '</div>' +
                         '<div id="file-list-container" class="file-list-container">' +
                             '<div id="file-list" class="file-list"></div>' +
@@ -55,7 +83,7 @@ function InitializeControl(controlId) {
             '<canvas id="the-canvas"></canvas>' +
             '<div id="iframe-container"></div>' +
             '<div id="file-count-content">' +
-                '<span id="file-count-container">Arch: ' +
+                '<span id="file-count-container">' + getTranslation('file-count-prefix') + ' ' +
                     '<span id="file_num"></span> / ' +
                     '<span id="file_count"></span>' +
                 '</span>' +
@@ -256,11 +284,11 @@ function toggleUploadSection() {
     if (uploadContent.style.display === 'none') {
         uploadContent.style.display = 'block';
         uploadSection.style.minHeight = '120px';
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> Ocultar';
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> ' + getTranslation('hide-button');
     } else {
         uploadContent.style.display = 'none';
         uploadSection.style.minHeight = '40px';
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> Mostrar';
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> ' + getTranslation('show-button');
     }
 }
 
@@ -277,7 +305,7 @@ function expandUploadSection() {
     if (uploadContent && uploadSection && toggleBtn) {
         uploadContent.style.display = 'block';
         uploadSection.style.minHeight = '120px';
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> Ocultar';
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> ' + getTranslation('hide-button');
         console.log('Upload section expanded successfully');
     } else {
         console.error('Some elements not found for expandUploadSection');
@@ -291,7 +319,7 @@ function collapseUploadSection() {
     
     uploadContent.style.display = 'none';
     uploadSection.style.minHeight = '40px';
-    toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> Mostrar';
+    toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> ' + getTranslation('show-button');
 }
 
 function setupNavigationEventListeners() {

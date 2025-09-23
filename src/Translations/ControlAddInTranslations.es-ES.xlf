@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en-US" target-language="es-ES" original="ControlAddInTranslations.g.xlf" tool-id="NAV" product-name="NAV" product-version="1.0.0.0" build-num="1.0.0.0">
+    <header>
+      <tool tool-id="NAV" tool-name="NAV" tool-version="1.0.0.0" tool-company="Microsoft" />
+    </header>
+    <body>
+      <trans-unit id="upload-title">
+        <source>Upload Files</source>
+        <target>Cargar Archivos</target>
+      </trans-unit>
+      <trans-unit id="show-button">
+        <source>Show</source>
+        <target>Mostrar</target>
+      </trans-unit>
+      <trans-unit id="hide-button">
+        <source>Hide</source>
+        <target>Ocultar</target>
+      </trans-unit>
+      <trans-unit id="drop-zone-text">
+        <source>Drop files here to upload or</source>
+        <target>Coloque los archivos aquí para cargar o</target>
+      </trans-unit>
+      <trans-unit id="click-to-browse">
+        <source>click here to browse</source>
+        <target>haga clic aquí para examinar</target>
+      </trans-unit>
+      <trans-unit id="file-count-prefix">
+        <source>Files:</source>
+        <target>Arch:</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

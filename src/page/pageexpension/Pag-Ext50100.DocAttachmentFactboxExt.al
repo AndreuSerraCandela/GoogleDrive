@@ -131,7 +131,22 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         StrapiManager: Codeunit "Strapi Manager";
                         Id: Integer;
                         DriveType: Text;
+                        Language: Text;
+                        WindowsLanguage: Record "Windows Language";
+                        IdLanguage: Integer;
                     begin
+                        IdLanguage := GlobalLanguage;
+                        If WindowsLanguage.Get(IdLanguage) then begin
+                            IdLanguage := WindowsLanguage."Primary Language ID";
+                        end;
+                        Case IdLanguage of
+                            1034:
+                                Language := 'es-ES';
+                            else
+                                Language := 'en-US';
+
+                        end;
+                        CurrPage.PDFViewer1.InitializeControl('controlAddIn', Language);
                         IsControlAddInReady := true;
                         If Rec."Store in Google Drive" then begin
                             URL := Rec."Google Drive ID";
@@ -730,17 +745,22 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     FolderMapping: Record "Google Drive Folder Mapping";
                     Folder: Text;
                     AccessToken: Text;
-                    Date: Date;
+                    Fecha: Date;
                 begin
                     if not Confirm(ConfirmMsg) then
                         exit;
                     DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
 
+
                     CurrPage.SetSelectionFilter(DocumentAttachment);
                     if DocumentAttachment.FindSet() then
                         repeat
-                            Date := ObtenerDate(DocumentAttachment);
+
                             If DocumentAttachment."Document Reference ID".HasValue() then begin
+                                Fecha := ObtenerDate(DocumentAttachment);
+                                // Recupear Registro de Documento
+
+                                //
                                 case DataStorageProvider of
                                     DataStorageProvider::"Google Drive":
                                         begin
@@ -749,13 +769,14 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                 FullFileName := DocumentAttachment."File Name" + '.' + DocumentAttachment."File Extension";
                                                 Clear(DocumentStream);
                                                 TempBlob.CreateOutStream(DocumentStream);
-                                                GoogleDriveManager.GetFolderMapping(DocumentAttachment."Table ID", Id);
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Date, DataStorageProvider);
+                                                FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                                                if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, DataStorageProvider);
                                                 IF SubFolder <> '' then
-                                                    Id := GoogleDriveManager.CreateFolderStructure(Id, SubFolder);
+                                                    Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
                                                 DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
                                                 TempBlob.CreateInStream(InStream);
-                                                FileId := GoogleDriveManager.UploadFileB64(Id, InStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                                                FileId := GoogleDriveManager.UploadFileB64(Folder, InStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
                                                 if FileId = '' then
                                                     Message(ErrorMsg, DocumentAttachment."File Name")
                                                 else begin
@@ -778,8 +799,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Folder := FolderMapping."Default Folder Id";
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
-                                                ;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Date, DataStorageProvider);
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := OneDriveManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'
@@ -803,19 +823,11 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     DataStorageProvider::DropBox:
                                         begin
                                             if not DocumentAttachment."Store in DropBox" then begin
-                                                Path := DocAttachmentMgmtGDrive.GetRootFolder() + '/';
-                                                DocumentAttachment."Store in OneDrive" := true;
                                                 FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
-                                                if FolderMapping.FindFirst() Then begin
-                                                    Folder := FolderMapping."Default Folder Id";
-                                                    Path += FolderMapping."Default Folder Name" + '/';
-                                                end;
-                                                ;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Date, DataStorageProvider);
-                                                IF SubFolder <> '' then begin
+                                                if FolderMapping.FindFirst() Then Folder := FolderMapping."Default Folder ID";
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, DataStorageProvider);
+                                                IF SubFolder <> '' then
                                                     Folder := DropBoxManager.CreateFolderStructure(Folder, SubFolder);
-                                                    Path += SubFolder + '/'
-                                                end;
                                                 Clear(DocumentStream);
                                                 TempBlob.CreateOutStream(DocumentStream);
                                                 DocumentAttachment."Document Reference ID".ExportStream(DocumentStream);
@@ -844,7 +856,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
                                                 ;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Date, DataStorageProvider);
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := StrapiManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'
@@ -868,7 +880,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                                     Folder := FolderMapping."Default Folder Id";
                                                     Path += FolderMapping."Default Folder Name" + '/';
                                                 end;
-                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", DAte, DataStorageProvider);
+                                                SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, DataStorageProvider);
                                                 IF SubFolder <> '' then begin
                                                     Folder := SharePointManager.CreateFolderStructure(Folder, SubFolder);
                                                     Path += SubFolder + '/'

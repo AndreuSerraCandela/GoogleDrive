@@ -384,7 +384,31 @@ table 95100 "Google Drive Folder Mapping"
 
     internal procedure MoveFileH(DataStorageProvider: Enum "Data Storage Provider";
     var DocumentAttachment: Record "Document Attachment";
-    Origen: Integer; TableId: Integer; Var RecRef: RecordRef; FechaOrigen: Date; FechaDestino: Date; DocOrigenNo: Text; DocDestino: Text)
+    Origen: Integer; TableId: Integer;
+    Var RecRef: RecordRef;
+    FechaOrigen: Date; FechaDestino: Date; DocOrigenNo: Text; DocDestino: Text): boolean
+    var
+        IsDrive: Boolean;
+
+    begin
+        IsDrive := (DocumentAttachment."Google Drive ID" <> '') or
+        (DocumentAttachment."OneDrive ID" <> '') or
+        (DocumentAttachment."DropBox ID" <> '') or
+        (DocumentAttachment."Strapi ID" <> '') or
+        (DocumentAttachment."SharePoint ID" <> '');
+        if IsDrive then
+            If Not TryMoveFileH(DataStorageProvider, DocumentAttachment, Origen, TableId, RecRef, FechaOrigen, FechaDestino, DocOrigenNo, DocDestino)
+            then
+                exit(false);
+        exit(true);
+    end;
+
+    [TryFunction]
+    local procedure TryMoveFileH(DataStorageProvider: Enum "Data Storage Provider";
+    var DocumentAttachment: Record "Document Attachment";
+    Origen: Integer; TableId: Integer;
+    Var RecRef: RecordRef;
+    FechaOrigen: Date; FechaDestino: Date; DocOrigenNo: Text; DocDestino: Text)
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
         OnDriveManager: Codeunit "OneDrive Manager";
@@ -409,6 +433,7 @@ table 95100 "Google Drive Folder Mapping"
         //             DocDate := RecRef.Field(SalesHeader.FieldNo("Document Date")).Value;
         //         end;
         // end;
+
         case DataStorageProvider of
             DataStorageProvider::"Google Drive":
                 begin

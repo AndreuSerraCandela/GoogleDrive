@@ -18,5 +18,4 @@ controladdin OcrFirmas
     /// </summary>
     event OnControlAddInReady();
     procedure InitializeControl(url: Text);
-
 }
