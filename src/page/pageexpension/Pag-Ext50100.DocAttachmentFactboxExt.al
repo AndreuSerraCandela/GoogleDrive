@@ -1706,10 +1706,25 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         exit(Base64Convert.ToBase64(Int));
     end;
 
+    local procedure GetEmptyImageBase64(): Text
+    var
+        // Imagen PNG de 1x1 píxel transparente en base64
+        EmptyImageBase64: Text;
+    begin
+        // Imagen PNG de 1x1 píxel transparente
+        //EmptyImageBase64 := 'iVBORw0KGgoAAAANSUhEUgAAADIAAAAoCAYAAAC8cqlMAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFfSURBVGhD3dlBbsMwDETRHKTL3v9mPUMLLhwkL7JCybRj9wN/Y1DkzNq3n6/vX70C5r1Z4gplzBquFjljGfOli5ypkJn0lh38JGbR4F4k++BozKALT0UCB/UovKvyUmTBh7on3tIWq0UCF+geeEPX6BYJXKRVuLdlj7dFAhe23IK7NEOqyIIHdAZ3aJahIoGHNIvvWo4wXCTwYMsezuoMU0UWDKAtnNFZNhUJDKLZucfZGTYXCQw0agUlRRYMmLGK0iKBQXtWUl4kMLDuQXkRQ/espLSIQTNWUVLEcKNWsLmIoTQ79zg7w6YiBtEWzugsU0U83rKHszrDcBGPahbftRxhqIiHdAZ3aJZ0EQ/oFtylGd4WcalW4V59R7eIy3QPvKFrrBZxge6Jt7TFSxEftTwCb6o8FXFYj8b7LRfuRRzQT2IWDf7P/xE/nK3AI+ZLFTkzZl0tcgXM+1TkyvwBql799+N6PhQAAAAASUVORK5CYII=';
+        EmptyImageBase64 := 'iVBORw0KGgoAAAANSUhEUgAAADIAAAAoCAYAAAC8cqlMAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsEAAA7BAbiRa+0AAAGHaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49J++7vycgaWQ9J1c1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCc/Pg0KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyI+PHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj48cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0idXVpZDpmYWY1YmRkNS1iYTNkLTExZGEtYWQzMS1kMzNkNzUxODJmMWIiIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIj48dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCjw/eHBhY2tldCBlbmQ9J3cnPz4slJgLAAAAS0lEQVRoQ+3PsRHAIBDAsJD9d356JjCcVLrzmpn5HvCf4VZGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TGSI2RGiM1RmqM1Bip2SewBEzrHsQBAAAAAElFTkSuQmCC';
+        exit(EmptyImageBase64);
+    end;
+
+
+
     local procedure SetPDFDocument(PDFAsTxt: Text; i: Integer; Pdf: Boolean; Url: Text; driveType: Text);
     var
         IsVisible: Boolean;
     begin
+        //IsVisible := PDFAsTxt <> '';
+        If PDFAsTxt = '' Then PDFAsTxt := GetEmptyImageBase64();
         IsVisible := PDFAsTxt <> '';
         case i of
             1:
@@ -1724,7 +1739,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         case Rec."File Type" of
                             Rec."File Type"::PDF:
                                 CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'pdf', driveType, Url);
-                            Rec."File Type"::Image:
+                            Rec."File Type"::Image, Rec."File Type"::" ":
                                 CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'image', '', '');
                             Rec."File Type"::Word:
                                 CurrPage.PDFViewer1.LoadOtros(PDFAsTxt, true, 'word', driveType, Url);

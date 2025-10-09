@@ -30,15 +30,18 @@ pageextension 95112 PurchaseOrderExt extends "Purchase Order"
         CodeuniDocAtchManager: Codeunit "Doc. Attachment Mgmt. GDrive";
         RecRef: RecordRef;
         Recargar: Boolean;
+
     begin
         if Maestro = Rec."No." then
             exit;
         RecRef.GetTable(Rec);
+
+        CurrPage.Visor.Page.SetRecord(Rec.RecordId);
         If Not CodeuniDocAtchManager.OnAfterGetRecord(Maestro, Recargar, RecRef, Id, Rec."No.", Rec."Order Date") then
             exit;
         If Recargar Then
             CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
-        CurrPage.Visor.Page.SetRecord(Rec.RecordId);
+
 
 
     end;

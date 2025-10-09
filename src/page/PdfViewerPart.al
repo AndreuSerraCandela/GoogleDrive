@@ -131,7 +131,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
     begin
         a := 1;
         SetRecord();
-
+        CurrPage.Update(false);
     end;
 
     local procedure GetPDFAsTxt(PDFStorage: Record "Document Attachment"): Text
@@ -427,11 +427,12 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         VisibleControl1 := false;
         if PDFStorage.FindSet() then VisibleControl1 := true;
         PDFStorageT.DeleteAll();
-        repeat
-            PDFStorageT := PDFStorage;
-            if not PDFStorageT.WritePermission() then Error(MisisinDocActchPermision);
-            PDFStorageT.Insert();
-        until (PDFStorage.Next() = 0);
+        If PDFStorage.FindSet() then
+            repeat
+                PDFStorageT := PDFStorage;
+                if not PDFStorageT.WritePermission() then Error(MisisinDocActchPermision);
+                if PDFStorageT.Insert() Then;
+            until (PDFStorage.Next() = 0);
         a := 0;
         If PDFStorageT.FindLast() then a := PDFStorageT.id;
         Case gSourceRecordId.TableNo of
