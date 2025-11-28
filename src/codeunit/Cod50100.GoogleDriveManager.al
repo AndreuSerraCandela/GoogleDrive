@@ -853,6 +853,9 @@ codeunit 95100 "Google Drive Manager"
         Extension: Text;
     begin
         Extension := FileMgt.GetExtension(Name);
+        //Si filewxtension es > 30 caracteres, devolver vacio
+        if StrLen(Extension) > 30 then
+            exit('');
         case Extension of
             'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'ico', 'webp':
                 exit('jpeg');
@@ -2424,6 +2427,7 @@ codeunit 95100 "Google Drive Manager"
         ItemId: Text;
         FilesTemp: Record "Name/Value Buffer" temporary;
         FileMang: Codeunit "File Management";
+        Extension: Text;
     begin
         if not Authenticate() then
             Error(NotAuthenticatedErr);
@@ -2476,8 +2480,11 @@ codeunit 95100 "Google Drive Manager"
                     FilesTemp.Value := ItemType;
 
                     // Si es archivo, obtener la extensión
+                    Extension := FileMang.GetExtension(ItemName);
+                    if StrLen(Extension) > 30 then
+                        Extension := '';
                     if ItemType = '' then begin
-                        FilesTemp."File Extension" := FileMang.GetExtension(ItemName);
+                        FilesTemp."File Extension" := Extension;
                     end;
 
                     FilesTemp.Insert();
@@ -2520,12 +2527,16 @@ codeunit 95100 "Google Drive Manager"
             Extension := FileMang.GetExtension(DocumentAttach."File Name")
         else
             Extension := DocumentAttach."File Extension";
+
+        if StrLen(Extension) > 30 then
+            Extension := '';
+
         TempBlob.CreateInStream(Int);
 
         exit(UploadFileB64ToSharedDrive(SharedDriveId, Int, DocumentAttach."File Name", Extension));
     end;
 
-    procedure UploadFileB64ToSharedDrive(SharedDriveId: Text; Base64Data: InStream; Filename: Text; FileExtension: Text[30]): Text
+    procedure UploadFileB64ToSharedDrive(SharedDriveId: Text; Base64Data: InStream; Filename: Text; FileExtension: Text): Text
     var
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;

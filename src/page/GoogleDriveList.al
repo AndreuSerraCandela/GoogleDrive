@@ -334,6 +334,8 @@ page 95105 "Google Drive List"
                     Rec.Value := 'Carpeta';
                     UPLOADINTOSTREAM('Import', '', ' All Files (*.*)|*.*', Filename, NVInStream);
                     FileExtension := FileMgt.GetExtension(FileName);
+                    if StrLen(FileExtension) > 30 then
+                        FileExtension := '';
                     DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
                     case DataStorageProvider of
                         DataStorageProvider::"Google Drive":

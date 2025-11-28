@@ -621,6 +621,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                     DataStorageProvider: Enum "Data Storage Provider";
                     FileMgt: Codeunit "File Management";
                     Date: Date;
+                    FileExtension: Text;
                 begin
                     DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
 
@@ -703,7 +704,10 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                 end;
 
                                 Rec."File Name" := Files.Name;
-                                Rec.Validate("File Extension", FileMgt.GetExtension(Files.Name));
+                                FileExtension := FileMgt.GetExtension(Files.Name);
+                                if StrLen(FileExtension) > 30 then
+                                    FileExtension := '';
+                                Rec.Validate("File Extension", FileExtension);
                                 DocAttachmentGrDriveMgmt.SetDocumentAttachmentFileType(Rec, '');
                                 if not Rec.WritePermission() then Error(MisisinDocActchPermision);
                                 Rec.Insert(true);
