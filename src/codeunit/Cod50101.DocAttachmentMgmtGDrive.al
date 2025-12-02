@@ -555,9 +555,11 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             exit(false); // We can't call the original method directly
 
         FileExtension := FileMgt.GetExtension(FileName);
+        if StrLen(FileExtension) > 30 then
+            FileExtension := '';
 
         DocumentAttachment."File Name" := CopyStr(FileName, 1, MaxStrLen(DocumentAttachment."File Name"));
-        DocumentAttachment."File Extension" := CopyStr(FileExtension, 1, MaxStrLen(DocumentAttachment."File Extension"));
+        DocumentAttachment."File Extension" := FileExtension;
 
         // Set file type based on extension
         SetDocumentAttachmentFileType(DocumentAttachment, FileExtension);

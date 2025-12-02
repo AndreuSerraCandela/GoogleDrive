@@ -343,6 +343,8 @@ codeunit 95106 "SharePoint Manager"
         else
             Extension := DocumentAttach."File Extension";
         TempBlob.CreateInStream(Int);
+        if StrLen(Extension) > 30 then
+            Extension := '';
 
         exit(UploadFileB64(Carpeta, Int, DocumentAttach."File Name", Extension));
     end;

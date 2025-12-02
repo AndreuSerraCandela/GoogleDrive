@@ -353,12 +353,14 @@ codeunit 95102 "OneDrive Manager"
         else
             Extension := DocumentAttach."File Extension";
         TempBlob.CreateInStream(Int);
+        if StrLen(Extension) > 30 then
+            Extension := '';
 
         exit(UploadFileB64(Carpeta, Int, DocumentAttach."File Name", Extension));
     end;
 
 
-    procedure UploadFileB64(Carpeta: Text; Base64Data: InStream; Filename: Text; FileExtension: Text[30]): Text
+    procedure UploadFileB64(Carpeta: Text; Base64Data: InStream; Filename: Text; FileExtension: Text): Text
     var
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;
@@ -1376,8 +1378,12 @@ codeunit 95102 "OneDrive Manager"
     local procedure GetFileExtension(FileName: Text): Text
     var
         FileMgt: Codeunit "File Management";
+
     begin
-        exit(FileMgt.GetExtension(FileName));
+        If strlen(FileMgt.GetExtension(FileName)) > 30 then
+            exit('')
+        else
+            exit(FileMgt.GetExtension(FileName));
     end;
 
     local procedure UrlEncode(InputText: Text): Text
@@ -2111,6 +2117,8 @@ codeunit 95102 "OneDrive Manager"
         else
             Extension := DocumentAttach."File Extension";
         TempBlob.CreateInStream(Int);
+        if StrLen(Extension) > 30 then
+            Extension := '';
 
         exit(UploadFileB64ToSharedSite(SiteId, Carpeta, Int, DocumentAttach."File Name", Extension));
     end;
@@ -2158,6 +2166,8 @@ codeunit 95102 "OneDrive Manager"
         else
             Extension := DocumentAttach."File Extension";
         TempBlob.CreateInStream(Int);
+        if StrLen(Extension) > 30 then
+            Extension := '';
 
         exit(UploadFileB64ToSharedSiteFolder(SiteId, FolderId, Int, DocumentAttach."File Name", Extension));
     end;

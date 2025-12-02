@@ -538,6 +538,8 @@ page 95100 "Google Drive Factbox"
                     Rec.Value := 'Carpeta';
                     UPLOADINTOSTREAM('Import', '', ' All Files (*.*)|*.*', Filename, NVInStream);
                     FileExtension := FileMgt.GetExtension(FileName);
+                    if StrLen(FileExtension) > 30 then
+                        FileExtension := '';
                     Id := GoogleDrive.UploadFileB64(root, NVInStream, Filename, FileExtension);
                     DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
                     case DataStorageProvider of
