@@ -363,6 +363,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         Base64Convert: Codeunit "Base64 Convert";
                         RecRef: RecordRef;
                         Customer: Record Customer;
+                        Contact: Record Contact;
+                        Opportunity: Record Opportunity;
                         Vendor: Record Vendor;
                         Item: Record Item;
                         Employee: Record Employee;
@@ -534,7 +536,18 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                                     if ServiceContractHeader.Get(ServiceContractHeader."Contract Type", Rec."No.") then
                                         RecRef.GetTable(ServiceContractHeader);
                                 end;
-
+                            Database::Contact:
+                                begin
+                                    RecRef.Open(Database::Contact);
+                                    if Contact.Get(Rec."No.") then
+                                        RecRef.GetTable(Contact);
+                                end;
+                            Database::Opportunity:
+                                begin
+                                    RecRef.Open(Database::Opportunity);
+                                    if Opportunity.Get(Rec."No.") then
+                                        RecRef.GetTable(Opportunity);
+                                end;
                         end;
                         CurrPage.PDFViewer1.ClearFiles();
                         Ventana.Open('Cargando archivos...###1# de ###2#\####################################3#');

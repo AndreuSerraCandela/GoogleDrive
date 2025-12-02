@@ -20,7 +20,8 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
     begin
         Case TableNo of
             Database::"Bank Account",
-            Database::"G/L Account":
+            Database::"G/L Account",
+            Database::Contact:
                 begin
                     FieldNo := 1;
                     Result := true;
@@ -807,5 +808,6 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
             Base64Data := StrapiManager.DownloadFileB64('', DocumentAttachment."Strapi ID", DocumentAttachment."File Name", false);
         end;
     end;
+
 
 }

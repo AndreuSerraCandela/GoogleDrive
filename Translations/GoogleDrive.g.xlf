@@ -43,15 +43,180 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3162260755" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Contact documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType ContactDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1546463825" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Contacts</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType ContactsFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1460649351" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Customer documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType CustomerDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 558218333" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Customers</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType CustomersFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1261776117" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Employee documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType EmployeeDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1492570463" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Employees</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType EmployeesFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1827518393" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Fixed Asset documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType FixedAssetDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1013583323" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Fixed Assets</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType FixedAssetsFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3605290109" size-unit="char" translate="yes" xml:space="preserve">
+          <source>G/L Account documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType GLAccountDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 22788023" size-unit="char" translate="yes" xml:space="preserve">
+          <source>G/L Accounts</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType GLAccountsFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3948633544" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Item documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType ItemDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1956931190" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Items</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType ItemsFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 2642221610" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Job documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType JobDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3018557252" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Jobs</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType JobsFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1632421669" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Opportunities</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType OpportunitiesFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 839711300" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Opportunity documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType OpportunityDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 4158936110" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Credit Memo Header documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseCreditMemoHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 2798332421" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Credit Memos</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseCreditMemosFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 644354655" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Header documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3701056752" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Invoice Header documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseInvoiceHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3744011575" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Invoices</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseInvoicesFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 236747046" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Orders</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseOrdersFolderLbl</note>
+        </trans-unit>
         <trans-unit id="Table 1163388225 - NamedType 1902168033" size-unit="char" translate="yes" xml:space="preserve">
           <source>Are you sure you want to rename folder?</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType RenameFolderMsg</note>
         </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1084235019" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Credit Memo Header documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesCreditMemoHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 2160458540" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Credit Memos</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesCreditMemosFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3342745778" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Header documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 455476457" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Invoice Header documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesInvoiceHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1689225946" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Invoices</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesInvoicesFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 2841775971" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Orders</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesOrdersFolderLbl</note>
+        </trans-unit>
         <trans-unit id="Table 1163388225 - NamedType 3460270774" size-unit="char" translate="yes" xml:space="preserve">
           <source>Default mappings created successfully.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SetupDefaultMappingsMsg</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3381922651" size-unit="char" translate="yes" xml:space="preserve">
+          <source>{NO}</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SubfolderPatternNoLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 4202782241" size-unit="char" translate="yes" xml:space="preserve">
+          <source>{YEAR}</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SubfolderPatternYearLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 2369590649" size-unit="char" translate="yes" xml:space="preserve">
+          <source>{YEAR}/{MONTH}</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SubfolderPatternYearMonthLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3340022143" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Vendor documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType VendorDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 4254782597" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Vendors</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType VendorsFolderLbl</note>
         </trans-unit>
         <trans-unit id="Table 1163388225 - Field 1090351696 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Active</source>
@@ -2358,6 +2523,26 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Drive Configuration - Method OnAction - NamedType TiopoConfiguracion</note>
         </trans-unit>
+        <trans-unit id="PageExtension 3428460531 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3542408424">
+          <source>Documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension ContactExt - Control Attached Documents List - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3428460531 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3542408424">
+          <source>Drive Files</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension ContactExt - Control GoogleDriveFiles - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3428460531 - Control 822531619 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3542408424">
+          <source>PDF Viewer</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension ContactExt - Control Visor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 893067197 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1023993454">
+          <source>Documents</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension ContactListExt - Control Attached Documents List - Property Caption</note>
+        </trans-unit>
         <trans-unit id="PageExtension 1713901351 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 523354100">
           <source>Drive Files</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -2647,6 +2832,16 @@
           <source>PDF Viewer</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension JobExt - Control Visor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1090357124 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3021275367">
+          <source>Drive Files</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension OpportunityExt - Control GoogleDriveFiles - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1090357124 - Control 822531619 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3021275367">
+          <source>PDF Viewer</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension OpportunityExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 558215147 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 4042331808">
           <source>Archivos del Drive</source>

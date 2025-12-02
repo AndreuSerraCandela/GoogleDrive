@@ -1,0 +1,105 @@
+pageextension 95110 ContactExt extends "Contact Card"
+{
+    layout
+    {
+        addlast(factboxes)
+        {
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Documents';
+                UpdatePropagation = Both;
+                SubPageLink = "Table ID" = const(Database::Contact),
+                              "No." = field("No.");
+            }
+            part(Visor; "PDF Viewer Part Google Drive")
+            {
+                //SubPageLink = "Entry No." = field("Incoming Document Entry No.");
+                Caption = 'PDF Viewer';
+                ApplicationArea = All;
+                Visible = IsExtendedFunctionalityEnabled;
+                //Visible = Tienedatos;
+            }
+            part(GoogleDriveFiles; "Google Drive Factbox")
+            {
+                Caption = 'Drive Files';
+                ApplicationArea = All;
+                Visible = IsExtendedFunctionalityEnabled;
+            }
+        }
+    }
+    trigger OnAfterGetRecord()
+    var
+        CodeuniDocAtchManager: Codeunit "Doc. Attachment Mgmt. GDrive";
+        RecRef: RecordRef;
+        Recargar: Boolean;
+    begin
+        if Maestro = Rec."No." then
+            exit;
+        RecRef.GetTable(Rec);
+        If Not CodeuniDocAtchManager.OnAfterGetRecord(Maestro, Recargar, RecRef, Id, Rec."No.", 0D) then
+            exit;
+        If Recargar Then
+            CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
+        CurrPage.Visor.Page.SetRecord(Rec.RecordId);
+
+
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    var
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+    begin
+        CheckExtendedFunctionality();
+        if not IsExtendedFunctionalityEnabled then
+            exit;
+        CurrPage.Visor.Page.Update(false);
+        CurrPage.GoogleDriveFiles.Page.Update(false);
+    end;
+
+    trigger OnOpenPage()
+    begin
+        Maestro := '';
+        CheckExtendedFunctionality();
+    end;
+
+    local procedure CheckExtendedFunctionality()
+    var
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+    begin
+        IsExtendedFunctionalityEnabled := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
+    end;
+
+
+
+    var
+        Maestro: Text;
+        GoogleDriveManager: Codeunit "Google Drive Manager";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+        FolderMapping: Record "Google Drive Folder Mapping";
+        Id: Text;
+        AutoCreateSubFolder: Boolean;
+        SubFolder: Text;
+        IsExtendedFunctionalityEnabled: Boolean;
+}
+pageextension 95133 ContactListExt extends "Contact List"
+{
+    layout
+    {
+        addlast(factboxes)
+        {
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Documents';
+                UpdatePropagation = Both;
+                SubPageLink = "Table ID" = const(Database::Contact),
+                              "No." = field("No.");
+
+            }
+        }
+    }
+}
+

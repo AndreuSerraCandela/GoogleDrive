@@ -166,41 +166,41 @@ table 95100 "Google Drive Folder Mapping"
         SubfolderPath := FolderMapping."Subfolder Pattern";
 
         // Replace patterns
-        if StrPos(SubfolderPath, '{DOCNO}') > 0 then
+        if (StrPos(SubfolderPath, '{DOCNO}') > 0) or (StrPos(SubfolderPath, '{NODOC}') > 0) then
             SubfolderPath2 := DocumentNo;
-        if StrPos(SubfolderPath, '{NO}') > 0 then
+        if (StrPos(SubfolderPath, '{NO}') > 0) or (StrPos(SubfolderPath, '{CODIGO}') > 0) then
             SubfolderPath2 := DocumentNo;
         if DocumentDate = 0D then
             exit(SubfolderPath2);
-        if StrPos(SubfolderPath, '{YEAR}') > 0 then begin
+        if (StrPos(SubfolderPath, '{YEAR}') > 0) or (StrPos(SubfolderPath, '{AÑO}') > 0) then begin
             Year := Format(Date2DMY(DocumentDate, 3));
             SubfolderPath2 := Year;
         end;
 
-        if StrPos(SubfolderPath, '{MONTH}') > 0 then begin
+        if (StrPos(SubfolderPath, '{MONTH}') > 0) or (StrPos(SubfolderPath, '{MES}') > 0) then begin
             Month := Format(DocumentDate, 0, '<Month Text>');
             SubfolderPath2 := Month;
         end;
-        if StrPos(SubfolderPath, '{YEAR}/{MONTH}') > 0 then begin
+        if (StrPos(SubfolderPath, '{YEAR}/{MONTH}') > 0) or (StrPos(SubfolderPath, '{AÑO}/{MES}') > 0) then begin
             Year := Format(Date2DMY(DocumentDate, 3));
             Month := Format(DocumentDate, 0, '<Month Text>');
             SubfolderPath2 := Year + '-' + Month;
         end;
-        if FolderMapping."Subfolder Pattern" = '{YEAR}/{DOCNO}' then begin
+        if (FolderMapping."Subfolder Pattern" = '{YEAR}/{DOCNO}') or (FolderMapping."Subfolder Pattern" = '{AÑO}/{NODOC}') then begin
             Year := Format(Date2DMY(DocumentDate, 3));
             SubfolderPath2 := Year + '/' + DocumentNo;
         end;
-        if FolderMapping."Subfolder Pattern" = '{YEAR}/{MONTH}' then begin
+        if (FolderMapping."Subfolder Pattern" = '{YEAR}/{MONTH}') or (FolderMapping."Subfolder Pattern" = '{AÑO}/{MES}') then begin
             Year := Format(Date2DMY(DocumentDate, 3));
             Month := Format(DocumentDate, 0, '<Month Text>');
             SubfolderPath2 := Year + '/' + Month;
         end;
-        if FolderMapping."Subfolder Pattern" = '{YEAR}/{MONTH}/{NO}' then begin
+        if (FolderMapping."Subfolder Pattern" = '{YEAR}/{MONTH}/{NO}') or (FolderMapping."Subfolder Pattern" = '{AÑO}/{MES}/{CODIGO}') then begin
             Year := Format(Date2DMY(DocumentDate, 3));
             Month := Format(DocumentDate, 0, '<Month Text>');
             SubfolderPath2 := Year + '/' + Month + '/' + DocumentNo;
         end;
-        if FolderMapping."Subfolder Pattern" = '{YEAR}/{MONTH}/{DOCNO}' then begin
+        if (FolderMapping."Subfolder Pattern" = '{YEAR}/{MONTH}/{DOCNO}') or (FolderMapping."Subfolder Pattern" = '{AÑO}/{MES}/{NODOC}') then begin
             Year := Format(Date2DMY(DocumentDate, 3));
             Month := Format(DocumentDate, 0, '<Month Text>');
             SubfolderPath2 := Year + '/' + Month + '/' + DocumentNo;
@@ -221,40 +221,40 @@ table 95100 "Google Drive Folder Mapping"
         if not FolderMapping.Get(112) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 112;
-            FolderMapping."Default Folder Name" := 'Sales Invoices';
+            FolderMapping."Default Folder Name" := SalesInvoicesFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{YEAR}/{MONTH}';
-            FolderMapping.Description := 'Sales Invoice Header documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternYearMonthLbl;
+            FolderMapping.Description := SalesInvoiceHeaderDocsLbl;
             FolderMapping.Insert();
         end;
         //114
         if not FolderMapping.Get(114) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 114;
-            FolderMapping."Default Folder Name" := 'Sales Credit Memos';
+            FolderMapping."Default Folder Name" := SalesCreditMemosFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{YEAR}/{MONTH}';
-            FolderMapping.Description := 'Sales Credit Memo Header documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternYearMonthLbl;
+            FolderMapping.Description := SalesCreditMemoHeaderDocsLbl;
             FolderMapping.Insert();
         end;
         //122
         if not FolderMapping.Get(122) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 122;
-            FolderMapping."Default Folder Name" := 'Purchase Invoices';
+            FolderMapping."Default Folder Name" := PurchaseInvoicesFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{YEAR}/{MONTH}';
-            FolderMapping.Description := 'Purchase Invoice Header documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternYearMonthLbl;
+            FolderMapping.Description := PurchaseInvoiceHeaderDocsLbl;
             FolderMapping.Insert();
         end;
         //124
         if not FolderMapping.Get(124) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 124;
-            FolderMapping."Default Folder Name" := 'Purchase Credit Memos';
+            FolderMapping."Default Folder Name" := PurchaseCreditMemosFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{YEAR}/{MONTH}';
-            FolderMapping.Description := 'Purchase Credit Memo Header documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternYearMonthLbl;
+            FolderMapping.Description := PurchaseCreditMemoHeaderDocsLbl;
             FolderMapping.Insert();
         end;
 
@@ -262,10 +262,10 @@ table 95100 "Google Drive Folder Mapping"
         if not FolderMapping.Get(36) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 36;
-            FolderMapping."Default Folder Name" := 'Sales Orders';
+            FolderMapping."Default Folder Name" := SalesOrdersFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{YEAR}';
-            FolderMapping.Description := 'Sales Header documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternYearLbl;
+            FolderMapping.Description := SalesHeaderDocsLbl;
             FolderMapping.Insert();
         end;
 
@@ -273,10 +273,10 @@ table 95100 "Google Drive Folder Mapping"
         if not FolderMapping.Get(38) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 38;
-            FolderMapping."Default Folder Name" := 'Purchase Orders';
+            FolderMapping."Default Folder Name" := PurchaseOrdersFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{YEAR}';
-            FolderMapping.Description := 'Purchase Header documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternYearLbl;
+            FolderMapping.Description := PurchaseHeaderDocsLbl;
             FolderMapping.Insert();
         end;
 
@@ -284,10 +284,10 @@ table 95100 "Google Drive Folder Mapping"
         if not FolderMapping.Get(18) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 18;
-            FolderMapping."Default Folder Name" := 'Customers';
+            FolderMapping."Default Folder Name" := CustomersFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{NO}';
-            FolderMapping.Description := 'Customer documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternNoLbl;
+            FolderMapping.Description := CustomerDocsLbl;
             FolderMapping.Insert();
         end;
 
@@ -295,60 +295,82 @@ table 95100 "Google Drive Folder Mapping"
         if not FolderMapping.Get(23) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 23;
-            FolderMapping."Default Folder Name" := 'Vendors';
+            FolderMapping."Default Folder Name" := VendorsFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{NO}';
-            FolderMapping.Description := 'Vendor documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternNoLbl;
+            FolderMapping.Description := VendorDocsLbl;
+            FolderMapping.Insert();
+        end;
+
+        // Contact
+        if not FolderMapping.Get(5050) then begin
+            FolderMapping.Init();
+            FolderMapping."Table ID" := 5050;
+            FolderMapping."Default Folder Name" := ContactsFolderLbl;
+            FolderMapping."Auto Create Subfolders" := true;
+            FolderMapping."Subfolder Pattern" := SubfolderPatternNoLbl;
+            FolderMapping.Description := ContactDocsLbl;
+            FolderMapping.Insert();
+        end;
+
+        // Opportunity
+        if not FolderMapping.Get(5092) then begin
+            FolderMapping.Init();
+            FolderMapping."Table ID" := 5092;
+            FolderMapping."Default Folder Name" := OpportunitiesFolderLbl;
+            FolderMapping."Auto Create Subfolders" := true;
+            FolderMapping."Subfolder Pattern" := SubfolderPatternYearLbl;
+            FolderMapping.Description := OpportunityDocsLbl;
             FolderMapping.Insert();
         end;
         //27
         if not FolderMapping.Get(27) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 27;
-            FolderMapping."Default Folder Name" := 'Items';
+            FolderMapping."Default Folder Name" := ItemsFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{NO}';
-            FolderMapping.Description := 'Item documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternNoLbl;
+            FolderMapping.Description := ItemDocsLbl;
             FolderMapping.Insert();
         end;
         //167
         if not FolderMapping.Get(Database::Job) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := Database::Job;
-            FolderMapping."Default Folder Name" := 'Jobs';
+            FolderMapping."Default Folder Name" := JobsFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{NO}';
-            FolderMapping.Description := 'Job documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternNoLbl;
+            FolderMapping.Description := JobDocsLbl;
             FolderMapping.Insert();
         end;
         //15
         if not FolderMapping.Get(15) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 15;
-            FolderMapping."Default Folder Name" := 'G/L Accounts';
+            FolderMapping."Default Folder Name" := GLAccountsFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{NO}';
-            FolderMapping.Description := 'G/L Account documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternNoLbl;
+            FolderMapping.Description := GLAccountDocsLbl;
             FolderMapping.Insert();
         end;
         //5600
         if not FolderMapping.Get(5600) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := 5600;
-            FolderMapping."Default Folder Name" := 'Fixed Assets';
+            FolderMapping."Default Folder Name" := FixedAssetsFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{NO}';
-            FolderMapping.Description := 'Fixed Asset documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternNoLbl;
+            FolderMapping.Description := FixedAssetDocsLbl;
             FolderMapping.Insert();
         end;
         //Database::Employee
         if not FolderMapping.Get(Database::Employee) then begin
             FolderMapping.Init();
             FolderMapping."Table ID" := Database::Employee;
-            FolderMapping."Default Folder Name" := 'Employees';
+            FolderMapping."Default Folder Name" := EmployeesFolderLbl;
             FolderMapping."Auto Create Subfolders" := true;
-            FolderMapping."Subfolder Pattern" := '{NO}';
-            FolderMapping.Description := 'Employee documents';
+            FolderMapping."Subfolder Pattern" := SubfolderPatternNoLbl;
+            FolderMapping.Description := EmployeeDocsLbl;
             FolderMapping.Insert();
         end;
 
@@ -477,4 +499,37 @@ table 95100 "Google Drive Folder Mapping"
     var
         SetupDefaultMappingsMsg: Label 'Default mappings created successfully.';
         RenameFolderMsg: Label 'Are you sure you want to rename folder?';
+        SalesInvoicesFolderLbl: Label 'Sales Invoices';
+        SalesCreditMemosFolderLbl: Label 'Sales Credit Memos';
+        PurchaseInvoicesFolderLbl: Label 'Purchase Invoices';
+        PurchaseCreditMemosFolderLbl: Label 'Purchase Credit Memos';
+        SalesOrdersFolderLbl: Label 'Sales Orders';
+        PurchaseOrdersFolderLbl: Label 'Purchase Orders';
+        CustomersFolderLbl: Label 'Customers';
+        VendorsFolderLbl: Label 'Vendors';
+        ContactsFolderLbl: Label 'Contacts';
+        OpportunitiesFolderLbl: Label 'Opportunities';
+        ItemsFolderLbl: Label 'Items';
+        JobsFolderLbl: Label 'Jobs';
+        GLAccountsFolderLbl: Label 'G/L Accounts';
+        FixedAssetsFolderLbl: Label 'Fixed Assets';
+        EmployeesFolderLbl: Label 'Employees';
+        SalesInvoiceHeaderDocsLbl: Label 'Sales Invoice Header documents';
+        SalesCreditMemoHeaderDocsLbl: Label 'Sales Credit Memo Header documents';
+        PurchaseInvoiceHeaderDocsLbl: Label 'Purchase Invoice Header documents';
+        PurchaseCreditMemoHeaderDocsLbl: Label 'Purchase Credit Memo Header documents';
+        SalesHeaderDocsLbl: Label 'Sales Header documents';
+        PurchaseHeaderDocsLbl: Label 'Purchase Header documents';
+        CustomerDocsLbl: Label 'Customer documents';
+        VendorDocsLbl: Label 'Vendor documents';
+        ContactDocsLbl: Label 'Contact documents';
+        OpportunityDocsLbl: Label 'Opportunity documents';
+        ItemDocsLbl: Label 'Item documents';
+        JobDocsLbl: Label 'Job documents';
+        GLAccountDocsLbl: Label 'G/L Account documents';
+        FixedAssetDocsLbl: Label 'Fixed Asset documents';
+        EmployeeDocsLbl: Label 'Employee documents';
+        SubfolderPatternYearMonthLbl: Label '{YEAR}/{MONTH}';
+        SubfolderPatternYearLbl: Label '{YEAR}';
+        SubfolderPatternNoLbl: Label '{NO}';
 }
