@@ -343,13 +343,13 @@ codeunit 95102 "OneDrive Manager"
         DocumentStream: OutStream;
         TempBlob: Codeunit "Temp Blob";
         Int: Instream;
-        FileMang: Codeunit "File Management";
+
         Extension: Text;
     begin
         TempBlob.CreateOutStream(DocumentStream);
         DocumentAttach."Document Reference ID".ExportStream(DocumentStream);
         If DocumentAttach."File Extension" = '' then
-            Extension := FileMang.GetExtension(DocumentAttach."File Name")
+            Extension := FileExtension(DocumentAttach."File Name")
         else
             Extension := DocumentAttach."File Extension";
         TempBlob.CreateInStream(Int);
@@ -1346,7 +1346,7 @@ codeunit 95102 "OneDrive Manager"
 
                     // Si es archivo, obtener la extensión
                     if ItemType = '' then begin
-                        FilesTemp."File Extension" := GetFileExtension(ItemName);
+                        FilesTemp."File Extension" := FileExtension(ItemName);
                     end;
 
                     FilesTemp.Insert();
@@ -1375,16 +1375,7 @@ codeunit 95102 "OneDrive Manager"
             until FilesTemp.Next() = 0;
     end;
 
-    local procedure GetFileExtension(FileName: Text): Text
-    var
-        FileMgt: Codeunit "File Management";
 
-    begin
-        If strlen(FileMgt.GetExtension(FileName)) > 30 then
-            exit('')
-        else
-            exit(FileMgt.GetExtension(FileName));
-    end;
 
     local procedure UrlEncode(InputText: Text): Text
     var
@@ -1571,7 +1562,7 @@ codeunit 95102 "OneDrive Manager"
 
                     // Si es archivo, obtener la extensión
                     if ItemType = '' then begin
-                        FilesTemp."File Extension" := GetFileExtension(ItemName);
+                        FilesTemp."File Extension" := FileExtension(ItemName);
                     end;
 
                     FilesTemp.Insert();
@@ -1661,7 +1652,7 @@ codeunit 95102 "OneDrive Manager"
                     end else begin
                         Files.Value := '';
                         if JEntry.Get('file', JToken) then begin
-                            Extension := GetFileExtension(Files.Name);
+                            Extension := FileExtension(Files.Name);
                             if StrLen(Extension) < 30 then
                                 Files."File Extension" := Extension;
                         end;
@@ -1748,7 +1739,7 @@ codeunit 95102 "OneDrive Manager"
                     end else begin
                         Files.Value := '';
                         if JEntry.Get('file', JToken) then begin
-                            Extension := GetFileExtension(Files.Name);
+                            Extension := FileExtension(Files.Name);
                             if StrLen(Extension) < 30 then
                                 Files."File Extension" := Extension;
                         end;
@@ -2072,7 +2063,7 @@ codeunit 95102 "OneDrive Manager"
 
                     // Si es archivo, obtener la extensión
                     if ItemType = '' then begin
-                        FilesTemp."File Extension" := GetFileExtension(ItemName);
+                        FilesTemp."File Extension" := FileExtension(ItemName);
                     end;
 
                     FilesTemp.Insert();
@@ -2107,13 +2098,13 @@ codeunit 95102 "OneDrive Manager"
         DocumentStream: OutStream;
         TempBlob: Codeunit "Temp Blob";
         Int: Instream;
-        FileMang: Codeunit "File Management";
+
         Extension: Text;
     begin
         TempBlob.CreateOutStream(DocumentStream);
         DocumentAttach."Document Reference ID".ExportStream(DocumentStream);
         If DocumentAttach."File Extension" = '' then
-            Extension := FileMang.GetExtension(DocumentAttach."File Name")
+            Extension := FileExtension(DocumentAttach."File Name")
         else
             Extension := DocumentAttach."File Extension";
         TempBlob.CreateInStream(Int);
@@ -2156,13 +2147,13 @@ codeunit 95102 "OneDrive Manager"
         DocumentStream: OutStream;
         TempBlob: Codeunit "Temp Blob";
         Int: Instream;
-        FileMang: Codeunit "File Management";
+
         Extension: Text;
     begin
         TempBlob.CreateOutStream(DocumentStream);
         DocumentAttach."Document Reference ID".ExportStream(DocumentStream);
         If DocumentAttach."File Extension" = '' then
-            Extension := FileMang.GetExtension(DocumentAttach."File Name")
+            Extension := FileExtension(DocumentAttach."File Name")
         else
             Extension := DocumentAttach."File Extension";
         TempBlob.CreateInStream(Int);
@@ -2755,6 +2746,13 @@ codeunit 95102 "OneDrive Manager"
             exit(true)
         else
             exit(false);
+    end;
+
+    local procedure FileExtension(FileName: Text): Text
+    var
+        GoogleDriveManager: Codeunit "Google Drive Manager";
+    begin
+        exit(GoogleDriveManager.GetFileExtension(FileName));
     end;
 
     var

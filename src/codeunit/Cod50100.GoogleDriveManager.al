@@ -847,12 +847,22 @@ codeunit 95100 "Google Drive Manager"
         end;
     end;
 
-    local procedure FileExtension(Name: Text[250]): Text[30]
+    procedure GetFileExtension(FileName: Text): Text
     var
         FileMgt: Codeunit "File Management";
         Extension: Text;
     begin
-        Extension := FileMgt.GetExtension(Name);
+        Extension := FileMgt.GetExtension(FileName);
+        if StrLen(Extension) > 30 then
+            exit('');
+        exit(Extension);
+    end;
+
+    local procedure FileExtension(Name: Text[250]): Text[30]
+    var
+        Extension: Text;
+    begin
+        Extension := GetFileExtension(Name);
         //Si filewxtension es > 30 caracteres, devolver vacio
         if StrLen(Extension) > 30 then
             exit('');
@@ -2426,7 +2436,6 @@ codeunit 95100 "Google Drive Manager"
         ItemName: Text;
         ItemId: Text;
         FilesTemp: Record "Name/Value Buffer" temporary;
-        FileMang: Codeunit "File Management";
         Extension: Text;
     begin
         if not Authenticate() then
@@ -2480,7 +2489,7 @@ codeunit 95100 "Google Drive Manager"
                     FilesTemp.Value := ItemType;
 
                     // Si es archivo, obtener la extensión
-                    Extension := FileMang.GetExtension(ItemName);
+                    Extension := GetFileExtension(ItemName);
                     if StrLen(Extension) > 30 then
                         Extension := '';
                     if ItemType = '' then begin
@@ -2518,13 +2527,13 @@ codeunit 95100 "Google Drive Manager"
         DocumentStream: OutStream;
         TempBlob: Codeunit "Temp Blob";
         Int: Instream;
-        FileMang: Codeunit "File Management";
+
         Extension: Text;
     begin
         TempBlob.CreateOutStream(DocumentStream);
         DocumentAttach."Document Reference ID".ExportStream(DocumentStream);
         If DocumentAttach."File Extension" = '' then
-            Extension := FileMang.GetExtension(DocumentAttach."File Name")
+            Extension := GetFileExtension(DocumentAttach."File Name")
         else
             Extension := DocumentAttach."File Extension";
 
@@ -2700,7 +2709,7 @@ codeunit 95100 "Google Drive Manager"
         a: Integer;
         Extension: Text;
         Query: Text;
-        FileMang: Codeunit "File Management";
+
         CompanyInfo: Record "Company Information";
     begin
         Files.DeleteAll();
@@ -2747,7 +2756,7 @@ codeunit 95100 "Google Drive Manager"
                             end;
                         end else begin
                             Files.Value := '';
-                            Extension := FileMang.GetExtension(Files.Name);
+                            Extension := GetFileExtension(Files.Name);
                             if StrLen(Extension) < 30 then
                                 Files."File Extension" := Extension;
                         end;
@@ -2782,7 +2791,7 @@ codeunit 95100 "Google Drive Manager"
         a: Integer;
         Extension: Text;
         Query: Text;
-        FileMang: Codeunit "File Management";
+
     begin
         Files.DeleteAll();
         if not Authenticate() then
@@ -2820,7 +2829,7 @@ codeunit 95100 "Google Drive Manager"
                             Files.Value := 'Carpeta';
                         end else begin
                             Files.Value := '';
-                            Extension := FileMang.GetExtension(Files.Name);
+                            Extension := GetFileExtension(Files.Name);
                             if StrLen(Extension) < 30 then
                                 Files."File Extension" := Extension;
                         end;
@@ -3163,7 +3172,7 @@ codeunit 95100 "Google Drive Manager"
         ItemId: Text;
         FilesTemp: Record "Name/Value Buffer" temporary;
         Query: Text;
-        FileMang: Codeunit "File Management";
+
         Inf: Record "Company Information";
         C: Label '''';
     begin
@@ -3228,7 +3237,7 @@ codeunit 95100 "Google Drive Manager"
 
                     // Si es archivo, obtener la extensión
                     if ItemType = '' then begin
-                        FilesTemp."File Extension" := FileMang.GetExtension(ItemName);
+                        FilesTemp."File Extension" := GetFileExtension(ItemName);
                     end;
 
                     FilesTemp.Insert();

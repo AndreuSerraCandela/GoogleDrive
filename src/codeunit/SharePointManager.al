@@ -333,13 +333,13 @@ codeunit 95106 "SharePoint Manager"
         DocumentStream: OutStream;
         TempBlob: Codeunit "Temp Blob";
         Int: Instream;
-        FileMang: Codeunit "File Management";
+
         Extension: Text;
     begin
         TempBlob.CreateOutStream(DocumentStream);
         DocumentAttach."Document Reference ID".ExportStream(DocumentStream);
         If DocumentAttach."File Extension" = '' then
-            Extension := FileMang.GetExtension(DocumentAttach."File Name")
+            Extension := GetFileExtension(DocumentAttach."File Name")
         else
             Extension := DocumentAttach."File Extension";
         TempBlob.CreateInStream(Int);
@@ -940,9 +940,9 @@ codeunit 95106 "SharePoint Manager"
 
     local procedure GetFileExtension(FileName: Text): Text
     var
-        FileMgt: Codeunit "File Management";
+        GoogleDriveManager: Codeunit "Google Drive Manager";
     begin
-        exit(FileMgt.GetExtension(FileName));
+        exit(GoogleDriveManager.GetFileExtension(FileName));
     end;
 
     procedure RestApi(url: Text; RequestType: Option Get,patch,put,post,delete; payload: Text; User: Text; Pass: Text): Text
@@ -1265,4 +1265,6 @@ codeunit 95106 "SharePoint Manager"
         Respuesta := RestApiToken(Url, Token(), RequestType::patch, RootFolder);
         exit(Respuesta);
     end;
+
+
 }

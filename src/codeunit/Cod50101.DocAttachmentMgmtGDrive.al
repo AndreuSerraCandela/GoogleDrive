@@ -14,6 +14,9 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         SharePointManager: Codeunit "SharePoint Manager";
         CompanyInfo: Record "Company Information";
         MisisinDocActchPermision: Label 'Error: Permission to modify the Document Attachment record is missing';
+        ErrRecordNotFound: Label 'Record not found for Table ID %1, No. %2.', Comment = '%1=Table ID, %2=No.';
+        ErrTableNotSupported: Label 'Table ID %1 is not supported for attachments.', Comment = '%1=Table ID';
+        ErrFileNameEmpty: Label 'File name is required.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnAfterTableHasNumberFieldPrimaryKey, '', false, false)]
     local procedure OnAfterTableHasNumberFieldPrimaryKey(TableNo: Integer; var Result: Boolean; var FieldNo: Integer)
@@ -811,5 +814,150 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         end;
     end;
 
+    // Endpoint OData: publicar este codeunit como Web Service. POST .../ODataV4/DocAttachmentMgmtGDrive_UploadAttachment?company=...
+    // Body JSON: { "base64Content": "...", "tableId": 36, "no": "ORD-001", "fileName": "doc.pdf", "documentType": 0 }
+    [ServiceEnabled]
+    procedure UploadAttachment(base64Content: Text; tableId: Integer; no: Text; fileName: Text; documentType: Integer): Boolean
+    var
+        DocumentAttachment: Record "Document Attachment";
+        RecRef: RecordRef;
+        TempBlob: Codeunit "Temp Blob";
+        OutStream: OutStream;
+        Base64Convert: Codeunit "Base64 Convert";
+    begin
+        if fileName = '' then
+            Error(ErrFileNameEmpty);
+
+        if not GetRecordRefForUpload(tableId, no, documentType, RecRef) then
+            Error(ErrRecordNotFound, tableId, no);
+
+        TempBlob.CreateOutStream(OutStream);
+        Base64Convert.FromBase64(base64Content, OutStream);
+
+        Clear(DocumentAttachment);
+        DocumentAttachment.SaveAttachment(RecRef, fileName, TempBlob);
+        exit(true);
+    end;
+
+    local procedure GetRecordRefForUpload(tableId: Integer; no: Text; documentType: Integer; var RecRef: RecordRef): Boolean
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        PurchaseCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        Customer: Record Customer;
+        Vendor: Record Vendor;
+        Contact: Record Contact;
+        Item: Record Item;
+        Job: Record Job;
+        GLAccount: Record "G/L Account";
+        FixedAsset: Record "Fixed Asset";
+        Employee: Record Employee;
+        BankAccount: Record "Bank Account";
+        Opportunity: Record Opportunity;
+    begin
+        case tableId of
+            Database::"Sales Header":
+                begin
+                    if not SalesHeader.Get(documentType, no) then exit(false);
+                    RecRef.GetTable(SalesHeader);
+                    exit(true);
+                end;
+            Database::"Purchase Header":
+                begin
+                    if not PurchaseHeader.Get(documentType, no) then exit(false);
+                    RecRef.GetTable(PurchaseHeader);
+                    exit(true);
+                end;
+            Database::"Sales Invoice Header":
+                begin
+                    if not SalesInvoiceHeader.Get(no) then exit(false);
+                    RecRef.GetTable(SalesInvoiceHeader);
+                    exit(true);
+                end;
+            Database::"Sales Cr.Memo Header":
+                begin
+                    if not SalesCrMemoHeader.Get(no) then exit(false);
+                    RecRef.GetTable(SalesCrMemoHeader);
+                    exit(true);
+                end;
+            Database::"Purch. Inv. Header":
+                begin
+                    if not PurchaseInvoiceHeader.Get(no) then exit(false);
+                    RecRef.GetTable(PurchaseInvoiceHeader);
+                    exit(true);
+                end;
+            Database::"Purch. Cr. Memo Hdr.":
+                begin
+                    if not PurchaseCrMemoHeader.Get(no) then exit(false);
+                    RecRef.GetTable(PurchaseCrMemoHeader);
+                    exit(true);
+                end;
+            Database::Customer:
+                begin
+                    if not Customer.Get(no) then exit(false);
+                    RecRef.GetTable(Customer);
+                    exit(true);
+                end;
+            Database::Vendor:
+                begin
+                    if not Vendor.Get(no) then exit(false);
+                    RecRef.GetTable(Vendor);
+                    exit(true);
+                end;
+            Database::Contact:
+                begin
+                    if not Contact.Get(no) then exit(false);
+                    RecRef.GetTable(Contact);
+                    exit(true);
+                end;
+            Database::Item:
+                begin
+                    if not Item.Get(no) then exit(false);
+                    RecRef.GetTable(Item);
+                    exit(true);
+                end;
+            Database::Job:
+                begin
+                    if not Job.Get(no) then exit(false);
+                    RecRef.GetTable(Job);
+                    exit(true);
+                end;
+            Database::"G/L Account":
+                begin
+                    if not GLAccount.Get(no) then exit(false);
+                    RecRef.GetTable(GLAccount);
+                    exit(true);
+                end;
+            Database::"Fixed Asset":
+                begin
+                    if not FixedAsset.Get(no) then exit(false);
+                    RecRef.GetTable(FixedAsset);
+                    exit(true);
+                end;
+            Database::Employee:
+                begin
+                    if not Employee.Get(no) then exit(false);
+                    RecRef.GetTable(Employee);
+                    exit(true);
+                end;
+            Database::"Bank Account":
+                begin
+                    if not BankAccount.Get(no) then exit(false);
+                    RecRef.GetTable(BankAccount);
+                    exit(true);
+                end;
+            Database::Opportunity:
+                begin
+                    if not Opportunity.Get(no) then exit(false);
+                    RecRef.GetTable(Opportunity);
+                    exit(true);
+                end;
+            else
+                Error(ErrTableNotSupported, tableId);
+        end;
+    end;
 
 }

@@ -293,6 +293,21 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - Field Table Name - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3098052707 - NamedType 2627657995" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File name is required.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Doc. Attachment Mgmt. GDrive - NamedType ErrFileNameEmpty</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3098052707 - NamedType 3426805549" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Record not found for Table ID %1, No. %2.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Table ID, %2=No.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Doc. Attachment Mgmt. GDrive - NamedType ErrRecordNotFound</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3098052707 - NamedType 1471500804" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Table ID %1 is not supported for attachments.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Table ID</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Doc. Attachment Mgmt. GDrive - NamedType ErrTableNotSupported</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3098052707 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error: Permission to modify the Document Attachment record is missing</source>
           <note from="Developer" annotates="general" priority="2"></note>

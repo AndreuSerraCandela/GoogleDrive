@@ -1175,13 +1175,9 @@ codeunit 95103 "DropBox Manager"
 
     local procedure GetFileExtension(FileName: Text): Text
     var
-        DotPosition: Integer;
+        GoogleDriveManager: Codeunit "Google Drive Manager";
     begin
-        DotPosition := StrPos(FileName, '.');
-        if DotPosition > 0 then
-            exit(CopyStr(FileName, DotPosition + 1))
-        else
-            exit('');
+        Exit(GoogleDriveManager.GetFileExtension(FileName));
     end;
 
     procedure RecuperaIdFolder(IdCarpeta: Text; Carpeta: Text; var Files: Record "Name/Value Buffer" temporary; Crear: Boolean; RootFolder: Boolean): Text
