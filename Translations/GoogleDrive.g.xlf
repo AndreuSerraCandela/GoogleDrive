@@ -2983,11 +2983,6 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostInvoiceExt - Control Visor - Property Caption</note>
         </trans-unit>
-        <trans-unit id="PageExtension 4254993347 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3373253667">
-          <source>Documents</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostShipmentExt - Control Attached Documents List - Property Caption</note>
-        </trans-unit>
         <trans-unit id="PageExtension 4254993347 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3373253667">
           <source>Archivos del Drive</source>
           <note from="Developer" annotates="general" priority="2"></note>

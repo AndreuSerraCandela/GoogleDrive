@@ -54,6 +54,38 @@ Endpoint para adjuntar archivos a registros de Business Central (pedidos, factur
 
 ## Uso con Postman
 
+### Probar en Postman (paso a paso)
+
+1. **Obtener la URL del Web Service**  
+   En BC: **Web Services** → localiza el codeunit "Doc. Attachment Mgmt. GDrive" (95101) y copia la URL. Será algo como:  
+   `https://api.businesscentral.dynamics.com/v2.0/{tenant}/{environment}/ODataV4/...`  
+   Añade al final: `DocAttachmentMgmtGDrive_UploadAttachment?company=` + nombre de tu empresa (espacios como `%20`).
+
+2. **Obtener un token**  
+   Necesitas un access token de Azure AD / BC (OAuth2). Sin token obtendrás **401 Unauthorized**. Puedes usar la pestaña **Authorization** de Postman con tipo OAuth 2.0 configurado para tu tenant y cliente de BC, o pegar un token que obtengas por otro medio en el header.
+
+3. **Crear la petición en Postman**  
+   - **Método:** `POST`  
+   - **URL:** la del paso 1 (ej. `.../ODataV4/DocAttachmentMgmtGDrive_UploadAttachment?company=Mi%20Empresa`)  
+   - **Headers:**  
+     - `Content-Type` = `application/json`  
+     - `Authorization` = `Bearer {tu_token}`  
+   - **Body** → **raw** → **JSON** → pega el JSON de ejemplo del apartado "3. Body" más abajo.
+
+4. **Ajustar el JSON**  
+   Cambia `no` por un número de documento que **exista** en tu empresa (ej. un pedido de venta "ORD-001"). Si el pedido no existe, BC devolverá error.
+
+5. **Send**  
+   - **200 OK** y `"value": true` = adjunto creado y subido al drive.  
+   - **401** = token inválido o expirado.  
+   - **404** = URL incorrecta o company equivocado.  
+   - **400/500** = revisa el mensaje en el body (ej. "Record not found for Table ID...").
+
+6. **Comprobar en BC**  
+   Abre el registro (p. ej. el pedido) y revisa la sección de adjuntos; debe aparecer el archivo.
+
+---
+
 ### 1. Crear la petición
 
 - **Method:** `POST`

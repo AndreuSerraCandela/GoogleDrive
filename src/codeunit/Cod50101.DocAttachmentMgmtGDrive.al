@@ -814,16 +814,23 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         end;
     end;
 
+    [ServiceEnabled]
+    procedure ping(base64Content: Text; tableId: text): Boolean
+    begin
+        exit(true);
+    end;
+
     // Endpoint OData: publicar este codeunit como Web Service. POST .../ODataV4/DocAttachmentMgmtGDrive_UploadAttachment?company=...
     // Body JSON: { "base64Content": "...", "tableId": 36, "no": "ORD-001", "fileName": "doc.pdf", "documentType": 0 }
     [ServiceEnabled]
-    procedure UploadAttachment(base64Content: Text; tableId: Integer; no: Text; fileName: Text; documentType: Integer): Boolean
+    procedure Uploadattachmentweb(base64Content: Text; tableId: Integer; no: Text; fileName: Text; documentType: Integer): Boolean
     var
         DocumentAttachment: Record "Document Attachment";
         RecRef: RecordRef;
         TempBlob: Codeunit "Temp Blob";
         OutStream: OutStream;
         Base64Convert: Codeunit "Base64 Convert";
+
     begin
         if fileName = '' then
             Error(ErrFileNameEmpty);

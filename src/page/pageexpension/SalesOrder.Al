@@ -411,14 +411,14 @@ pageextension 95127 SalesPostShipmentExt extends "Posted Sales Shipment"
     {
         addafter("Control1900383207")
         {
-            part("Attached Documents List"; "Doc. Attachment List Factbox")
-            {
-                ApplicationArea = All;
-                Caption = 'Documents';
-                UpdatePropagation = Both;
-                SubPageLink = "Table ID" = const(Database::"Sales Shipment Header"),
-                              "No." = field("No.");
-            }
+            // part("Attached Documents List"; "Doc. Attachment List Factbox")
+            // {
+            //     ApplicationArea = All;
+            //     Caption = 'Documents';
+            //     UpdatePropagation = Both;
+            //     SubPageLink = "Table ID" = const(Database::"Sales Shipment Header"),
+            //                   "No." = field("No.");
+            // }
             part(Visor; "PDF Viewer Part Google Drive")
             {
                 UpdatePropagation = Both;
