@@ -1149,6 +1149,20 @@ pageextension 95101 CompanyInfoExt extends "Company Information"
                     Page.Run(Page::"Drive Configuration", Rec);
                 end;
             }
+            action("Doc. Attachments to Upload")
+            {
+                ApplicationArea = All;
+                Caption = 'Adjuntos a subir a almacenamiento';
+                ToolTip = 'Abre la lista de adjuntos para filtrar y subir al Drive los que tienen contenido en Document Reference ID.';
+                RunObject = page "Doc. Attachments to Upload";
+            }
+            action("Incoming Docs. to Doc. Attach.")
+            {
+                ApplicationArea = All;
+                Caption = 'Documentos entrantes a Document Attachment';
+                ToolTip = 'Crea Document Attachments desde los adjuntos de documentos entrantes y los sube al almacenamiento (sin duplicar por nombre).';
+                RunObject = page "Incoming Docs. to Doc. Attach.";
+            }
         }
         addlast(Promoted)
         {

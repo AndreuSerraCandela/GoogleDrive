@@ -1493,6 +1493,111 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Google Drive - Control Valor1 - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 2104566768 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Adjuntos a subir a almacenamiento</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - NamedType 2977197649" size-unit="char" translate="yes" xml:space="preserve">
+          <source>¿Subir los adjuntos seleccionados al almacenamiento configurado?</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - NamedType ConfirmUploadQst</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - NamedType 6119899" size-unit="char" translate="yes" xml:space="preserve">
+          <source>El adjunto "%1" no tiene contenido en Document Reference ID.</source>
+          <note from="Developer" annotates="general" priority="2">%1 = File Name</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - NamedType ErrorNoContentMsg</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - NamedType 1809648366" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error al subir el adjunto "%1".</source>
+          <note from="Developer" annotates="general" priority="2">%1 = File Name</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - NamedType ErrorUploadMsg</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - NamedType 4256693627" size-unit="char" translate="yes" xml:space="preserve">
+          <source>%1 adjunto(s) subido(s) correctamente.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - NamedType SuccessCountMsg</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 2363328873 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Tipo de documento cuando aplica.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control Document Type - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 3414364457 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Extensión del archivo.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control File Extension - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 804481195 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Nombre del archivo.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control File Name - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 3837936093 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>El adjunto tiene contenido en Document Reference ID (no ha pasado por la extensión).</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control HasContent - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 3837936093 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Tiene contenido local</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control HasContent - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 4200184881 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Número del documento.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control No. - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 1404833335 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Indica si ya está almacenado en Google Drive.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control Store in Google Drive - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 4060001340 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Indica si ya está almacenado en OneDrive.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control Store in OneDrive - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 3135334477 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Identificador de la tabla del documento.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control Table ID - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1553741435 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Quitar el filtro y mostrar todos los adjuntos.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action ClearFilter - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1553741435 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Quitar filtro</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action ClearFilter - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 2015861980 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Filtrar solo registros que tienen contenido local y aún no están en el almacenamiento configurado.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action ShowOnlyNotUploaded - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 2015861980 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Solo adjuntos no subidos</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action ShowOnlyNotUploaded - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1554067515 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Extrae el documento del campo Document Reference ID y lo sube al proveedor configurado (Google Drive, OneDrive, etc.).</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action UploadToStorage - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1554067515 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Subir a almacenamiento</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action UploadToStorage - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 3383493608 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Proceso</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action Category_Process - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 778823480 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Storage Configuration</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -2527,6 +2632,16 @@
           <source>PDF Viewer</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension BankAccountExt - Control Visor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1814822428 - Action 2104566768 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3469146285">
+          <source>Abre la lista de adjuntos para filtrar y subir al Drive los que tienen contenido en Document Reference ID.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Doc. Attachments to Upload - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1814822428 - Action 2104566768 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3469146285">
+          <source>Adjuntos a subir a almacenamiento</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Doc. Attachments to Upload - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 1814822428 - Action 778823480 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3469146285">
           <source>Storage Configuration</source>
