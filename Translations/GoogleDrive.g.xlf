@@ -1028,6 +1028,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - Method RecuperaIdFolder - NamedType C</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 3241442352" size-unit="char" translate="yes" xml:space="preserve">
+          <source>OneDrive authorization code is empty. Use "Start OAuth", copy the code from the URL and paste it in "Code Ondrive".</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType AuthCodeMissingErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 1053074267" size-unit="char" translate="yes" xml:space="preserve">
           <source>Could not authenticate with OneDrive. Please verify your credentials.</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1037,6 +1042,16 @@
           <source>https://login.microsoftonline.com/%1/oauth2/v2.0/authorize</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType auth_endpoint</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 434298465" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Graph connection failed. Status: %1. Response: %2</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType ConnectionFailedLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 2992855900" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Graph connection successful. Drive: %1</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType ConnectionOkLbl</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 2012072874" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error copying file: %1. Complete response: %2</source>
@@ -1188,6 +1203,31 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType graph_endpoint</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 3964790347" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Access token: missing. Use "Start OAuth" and then "Get Token".</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType MissingAccessTokenLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 72201246" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Missing: OneDrive Client ID.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType MissingClientIdLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1108786947" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Missing: OneDrive Client Secret.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType MissingClientSecretLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1802657468" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Refresh token: missing. Re-run OAuth to obtain offline_access.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType MissingRefreshTokenLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1097470913" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Missing: OneDrive Tenant ID.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType MissingTenantIdLbl</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 720600855" size-unit="char" translate="yes" xml:space="preserve">
           <source>/me/drive/items/%1/move</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1212,6 +1252,41 @@
           <source>Could not authenticate with OneDrive. Please verify your credentials.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType NotAuthenticatedErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1249673565" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token expiration: not set.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType NoTokenExpirationLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 61449295" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Cannot test connection: no access token. Complete OAuth first.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType NoTokenForConnectionLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 2381096843" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Access token: present.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType OkAccessTokenLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 2417090826" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Credentials: Client ID, Client Secret and Tenant ID are configured.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType OkCredentialsLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 3556723068" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Refresh token: present.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType OkRefreshTokenLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 421656139" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Site: URL and Site ID are configured.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType OkSiteConfiguredLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 3011097797" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token expiration: valid until %1.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType OkTokenValidLbl</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 2744667805" size-unit="char" translate="yes" xml:space="preserve">
           <source>Save</source>
@@ -1253,10 +1328,20 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType SiteIdNotConfiguredMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 4151113977" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Site: not configured (personal OneDrive /me/drive will be used).</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType SiteOptionalLbl</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 3240390688" size-unit="char" translate="yes" xml:space="preserve">
           <source>/sites</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType sites_endpoint</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1986066341" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Site: URL is set but Site ID is empty. Use "Id Site".</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType SiteUrlWithoutIdLbl</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 419542593" size-unit="char" translate="yes" xml:space="preserve">
           <source>/sites/%1</source>
@@ -1267,6 +1352,16 @@
           <source>The token endpoint returned an error. Status: %1, Body: %2</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType TokenEndpointErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 4172946170" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token expiration: expired since %1. Use "Refresh Token".</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType TokenExpiredLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 437420976" size-unit="char" translate="yes" xml:space="preserve">
+          <source>OneDrive access token obtained successfully.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType TokenObtainedMsg</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 1383990408" size-unit="char" translate="yes" xml:space="preserve">
           <source>The request to the token endpoint failed.</source>
@@ -1573,6 +1668,16 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action ClearFilter - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1551955912 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Abre la lista de documentos entrantes para crear Document Attachments desde sus adjuntos y subirlos al almacenamiento (sin duplicar por nombre).</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action FromIncomingDocuments - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1551955912 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Desde documentos entrantes</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action FromIncomingDocuments - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 2104566768 - Action 2015861980 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Filtrar solo registros que tienen contenido local y aún no están en el almacenamiento configurado.</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1862,6 +1967,16 @@
           <source>Specifies the Tenant ID from Microsoft Azure.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDrive Tenant ID - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Control 832820079 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Paste the full OAuth authorization code from the URL (the value after code= and before &amp;state=). Stored as Blob so long codes are not truncated.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDriveAuthCode - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Control 832820079 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>OneDrive Code</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDriveAuthCode - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 4002845373 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Specifies the base URL of the OneDrive API.</source>
@@ -2179,14 +2294,24 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 3825920327 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Update the access token using the refresh token.</source>
+          <source>Refreshes the access token using the stored refresh token.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action Actualizar OneDrive Token - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 3825920327 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Update Token</source>
+          <source>Refresh Token</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action Actualizar OneDrive Token - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Action 1558079711 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Exchanges the OneDrive authorization code (Code Ondrive) for access and refresh tokens. Do not use the Google Drive Get Token action.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Get Token - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Action 1558079711 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Get Token</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Get Token - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 150691378 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Gets the ID of the OneDrive site.</source>
@@ -2199,7 +2324,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Id Site - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 2053509897 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Starts the OAuth authentication process with OneDrive.</source>
+          <source>Starts the OAuth authentication process with OneDrive. Then paste the code from the URL into Code Ondrive and use Get Token.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Start OAuth - Property ToolTip</note>
         </trans-unit>
@@ -2209,7 +2334,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Start OAuth - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 310815148 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Tests the connection with OneDrive using the current configuration.</source>
+          <source>Tests the connection with Microsoft Graph using the current OneDrive token (personal drive or configured site).</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Test Connection - Property ToolTip</note>
         </trans-unit>
@@ -2218,8 +2343,18 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Test Connection - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 778823480 - Action 184079369 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Checks whether the stored OneDrive access token is still valid by expiration date.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Test Token Validity - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Action 184079369 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Test Token Validity</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Test Token Validity - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 778823480 - Action 1255083178 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Validates that all configuration fields are complete.</source>
+          <source>Validates credentials, tokens and site settings for OneDrive and shows a diagnostic summary.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Validate Configuration - Property ToolTip</note>
         </trans-unit>
@@ -2598,6 +2733,76 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Manual Viewer - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 1537329701 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Documentos entrantes a Document Attachment</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - NamedType 1000503204" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Creados: %1 adjunto(s). Omitidos (ya existían con el mismo nombre): %2.</source>
+          <note from="Developer" annotates="general" priority="2">%1=Created, %2=Skipped</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - NamedType ResultMsg</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 3461834954 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Descripción.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Description - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 486908828 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Número del documento creado.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Document No. - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 2363328873 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Tipo de documento.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Document Type - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 883711285 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Número de entrada del documento entrante.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Entry No. - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 745361209 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Registro del documento relacionado (factura, pedido, etc.).</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Related Record ID - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 513339096 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Estado.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Status - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 3003898253 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>URL del documento entrante.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control URL - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Action 1085286778 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Para cada documento entrante seleccionado, crea registros Document Attachment a partir de sus adjuntos, vinculados al documento relacionado, y los sube al almacenamiento. No crea duplicados por nombre de archivo.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Action CreateDocAttachments - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Action 1085286778 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Crear Document Attachments y subir</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Action CreateDocAttachments - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Action 2979643056 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Quitar el filtro.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Action QuitarFiltroInc - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Action 2979643056 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Quitar filtro</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Action QuitarFiltroInc - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Action 3383493608 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Proceso</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Action Category_Process - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 1218054561 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Visor Ocr JPG</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -2652,6 +2857,16 @@
           <source>Local,Google Drive, OneDrive, DropBox, Strapi, SharePoint</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Drive Configuration - Method OnAction - NamedType TiopoConfiguracion</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1814822428 - Action 1537329701 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3469146285">
+          <source>Crea Document Attachments desde los adjuntos de documentos entrantes y los sube al almacenamiento (sin duplicar por nombre).</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Incoming Docs. to Doc. Attach. - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1814822428 - Action 1537329701 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3469146285">
+          <source>Documentos entrantes a Document Attachment</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Incoming Docs. to Doc. Attach. - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3428460531 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3542408424">
           <source>Documents</source>
@@ -3139,7 +3354,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Company Info Ext - Field Code GoogleDrive - Property Caption</note>
         </trans-unit>
         <trans-unit id="TableExtension 3595798924 - Field 3096298988 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3469146285">
-          <source>Code Ondrive</source>
+          <source>OneDrive Code</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Company Info Ext - Field Code Ondrive - Property Caption</note>
         </trans-unit>

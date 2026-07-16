@@ -203,9 +203,10 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
             Caption = 'Strapi Collection Name';
             DataClassification = CustomerContent;
         }
-        field(95136; "Code Ondrive"; Text[1024])
+        field(95136; "Code Ondrive"; Blob)
         {
-
+            Caption = 'OneDrive Code';
+            DataClassification = CustomerContent;
         }
         field(95137; "Code DropBox"; Text[1024])
         {
@@ -319,6 +320,32 @@ tableextension 95101 "Company Info Ext" extends "Company Information"
     procedure GetTokenOndrive(): Text
     begin
 
+    end;
+
+    procedure SetCodeOndrive(NewCode: Text)
+    var
+        OutStream: OutStream;
+    begin
+        Clear("Code Ondrive");
+        if NewCode = '' then begin
+            Modify();
+            exit;
+        end;
+        "Code Ondrive".CreateOutStream(OutStream, TextEncoding::UTF8);
+        OutStream.WriteText(NewCode);
+        Modify();
+    end;
+
+    procedure GetCodeOndrive(): Text
+    var
+        TypeHelper: Codeunit "Type Helper";
+        InStream: InStream;
+    begin
+        CalcFields("Code Ondrive");
+        if not "Code Ondrive".HasValue then
+            exit('');
+        "Code Ondrive".CreateInStream(InStream, TextEncoding::UTF8);
+        exit(TypeHelper.TryReadAsTextWithSepAndFieldErrMsg(InStream, TypeHelper.LFSeparator(), FieldName("Code Ondrive")));
     end;
 
     procedure SetTokenDropbox(NewTokenDropbox: Text)

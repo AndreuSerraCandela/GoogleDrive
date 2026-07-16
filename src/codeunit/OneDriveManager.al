@@ -48,6 +48,26 @@ codeunit 95102 "OneDrive Manager"
         CreateFolderInSharedSiteErrorMsg: Label 'Error creating folder in shared site: %1 with this URL: %2 and this JSON: %3';
         // Confirmation Labels
         DeleteFolderConfirmMsg: Label 'Are you sure you want to delete the folder?';
+        // Validation / diagnostic Labels
+        OkCredentialsLbl: Label 'Credentials: Client ID, Client Secret and Tenant ID are configured.';
+        MissingClientIdLbl: Label 'Missing: OneDrive Client ID.';
+        MissingClientSecretLbl: Label 'Missing: OneDrive Client Secret.';
+        MissingTenantIdLbl: Label 'Missing: OneDrive Tenant ID.';
+        OkAccessTokenLbl: Label 'Access token: present.';
+        MissingAccessTokenLbl: Label 'Access token: missing. Use "Start OAuth" and then "Get Token".';
+        OkRefreshTokenLbl: Label 'Refresh token: present.';
+        MissingRefreshTokenLbl: Label 'Refresh token: missing. Re-run OAuth to obtain offline_access.';
+        OkTokenValidLbl: Label 'Token expiration: valid until %1.';
+        TokenExpiredLbl: Label 'Token expiration: expired since %1. Use "Refresh Token".';
+        NoTokenExpirationLbl: Label 'Token expiration: not set.';
+        OkSiteConfiguredLbl: Label 'Site: URL and Site ID are configured.';
+        SiteUrlWithoutIdLbl: Label 'Site: URL is set but Site ID is empty. Use "Id Site".';
+        SiteOptionalLbl: Label 'Site: not configured (personal OneDrive /me/drive will be used).';
+        ConnectionOkLbl: Label 'Graph connection successful. Drive: %1';
+        ConnectionFailedLbl: Label 'Graph connection failed. Status: %1. Response: %2';
+        NoTokenForConnectionLbl: Label 'Cannot test connection: no access token. Complete OAuth first.';
+        AuthCodeMissingErr: Label 'OneDrive authorization code is empty. Use "Start OAuth", copy the code from the URL and paste it in "Code Ondrive".';
+        TokenObtainedMsg: Label 'OneDrive access token obtained successfully.';
 
         // Error Labels
         TokenRequestFailedErr: Label 'The request to the token endpoint failed.';
@@ -106,15 +126,20 @@ codeunit 95102 "OneDrive Manager"
     var
         DriveTokenManagement: Record "Drive Token Management";
     begin
-        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"OneDrive") then begin
+        CompanyInfo.Get();
+        if not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"OneDrive") then begin
             DriveTokenManagement.Init();
             DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"OneDrive";
             DriveTokenManagement.Insert();
         end;
         DriveTokenManagement.CalcFields("Access Token", "Refresh Token");
-        if not DriveTokenManagement."Access Token".HasValue Then
-            ObtenerToken(CompanyInfo."Code Ondrive", DriveTokenManagement);
+        CompanyInfo.CalcFields("OneDrive Access Token", "OneDrive Refresh Token", "Code Ondrive");
+        if not DriveTokenManagement."Access Token".HasValue then
+            if CompanyInfo.GetCodeOndrive() <> '' then
+                ObtenerToken(CompanyInfo.GetCodeOndrive(), DriveTokenManagement);
 
+        CompanyInfo.Get();
+        CompanyInfo.CalcFields("OneDrive Refresh Token");
         if not CompanyInfo."OneDrive Refresh Token".HasValue then
             Error(NoRefreshTokenMsg);
 
@@ -122,17 +147,184 @@ codeunit 95102 "OneDrive Manager"
     end;
 
     procedure ValidateConfiguration(): Boolean
+    var
+        DiagnosticInfo: Text;
     begin
-        if CompanyInfo."OneDrive Client ID" = '' then
-            exit(false);
-        if CompanyInfo."OneDrive Client Secret" = '' then
-            exit(false);
-        if CompanyInfo."OneDrive Tenant ID" = '' then
-            exit(false);
+        exit(ValidateConfigurationDetailed(DiagnosticInfo));
+    end;
+
+    /// <summary>
+    /// Validates OneDrive setup in phases (credentials, tokens, site) and returns a diagnostic text.
+    /// </summary>
+    procedure ValidateConfigurationDetailed(var DiagnosticInfo: Text): Boolean
+    var
+        IsValid: Boolean;
+        CrLf: Text[2];
+    begin
+        CompanyInfo.Get();
+        CrLf := Format(13) + Format(10);
+        DiagnosticInfo := '';
+        IsValid := true;
+
+        if CompanyInfo."OneDrive Client ID" = '' then begin
+            DiagnosticInfo += MissingClientIdLbl + CrLf;
+            IsValid := false;
+        end;
+        if CompanyInfo."OneDrive Client Secret" = '' then begin
+            DiagnosticInfo += MissingClientSecretLbl + CrLf;
+            IsValid := false;
+        end;
+        if CompanyInfo."OneDrive Tenant ID" = '' then begin
+            DiagnosticInfo += MissingTenantIdLbl + CrLf;
+            IsValid := false;
+        end;
+        if IsValid then
+            DiagnosticInfo += OkCredentialsLbl + CrLf;
+
+        CompanyInfo.CalcFields("OneDrive Access Token", "OneDrive Refresh Token");
+        if CompanyInfo."OneDrive Access Token".HasValue then
+            DiagnosticInfo += OkAccessTokenLbl + CrLf
+        else begin
+            DiagnosticInfo += MissingAccessTokenLbl + CrLf;
+            IsValid := false;
+        end;
+
+        if CompanyInfo."OneDrive Refresh Token".HasValue then
+            DiagnosticInfo += OkRefreshTokenLbl + CrLf
+        else begin
+            DiagnosticInfo += MissingRefreshTokenLbl + CrLf;
+            IsValid := false;
+        end;
+
+        if CompanyInfo."OneDrive Token Expiration" = 0DT then
+            DiagnosticInfo += NoTokenExpirationLbl + CrLf
+        else
+            if CompanyInfo."OneDrive Token Expiration" > CurrentDateTime then
+                DiagnosticInfo += StrSubstNo(OkTokenValidLbl, Format(CompanyInfo."OneDrive Token Expiration")) + CrLf
+            else
+                DiagnosticInfo += StrSubstNo(TokenExpiredLbl, Format(CompanyInfo."OneDrive Token Expiration")) + CrLf;
+
+        if CompanyInfo."OneDrive Site Url" <> '' then
+            if CompanyInfo."OneDrive Site ID" <> '' then
+                DiagnosticInfo += OkSiteConfiguredLbl + CrLf
+            else
+                DiagnosticInfo += SiteUrlWithoutIdLbl + CrLf
+        else
+            DiagnosticInfo += SiteOptionalLbl + CrLf;
+
+        exit(IsValid);
+    end;
+
+    /// <summary>
+    /// Checks whether the stored access token is still within its expiration window.
+    /// </summary>
+    procedure TestTokenValidity(var MessageText: Text): Boolean
+    begin
+        CompanyInfo.Get();
         CompanyInfo.CalcFields("OneDrive Access Token");
-        if not CompanyInfo."OneDrive Access Token".HasValue then
+        if not CompanyInfo."OneDrive Access Token".HasValue then begin
+            MessageText := MissingAccessTokenLbl;
+            exit(false);
+        end;
+
+        if CompanyInfo."OneDrive Token Expiration" = 0DT then begin
+            MessageText := NoTokenExpirationLbl;
+            exit(false);
+        end;
+
+        if CompanyInfo."OneDrive Token Expiration" > CurrentDateTime then begin
+            MessageText := StrSubstNo(OkTokenValidLbl, Format(CompanyInfo."OneDrive Token Expiration"));
+            exit(true);
+        end;
+
+        MessageText := StrSubstNo(TokenExpiredLbl, Format(CompanyInfo."OneDrive Token Expiration"));
+        exit(false);
+    end;
+
+    /// <summary>
+    /// Tests connectivity against Microsoft Graph (/me/drive or site drive).
+    /// </summary>
+    procedure TestConnection(var MessageText: Text): Boolean
+    var
+        AccessToken: Text;
+        Url: Text;
+        ResponseText: Text;
+        ResponseMessage: HttpResponseMessage;
+        RequestType: Option Get,patch,put,post,delete;
+        JObject: JsonObject;
+        JToken: JsonToken;
+        DriveName: Text;
+        InStr: InStream;
+    begin
+        CompanyInfo.Get();
+        CompanyInfo.CalcFields("OneDrive Access Token");
+        if not CompanyInfo."OneDrive Access Token".HasValue then begin
+            MessageText := NoTokenForConnectionLbl;
+            exit(false);
+        end;
+
+        if CompanyInfo."OneDrive Token Expiration" < CurrentDateTime then
+            RefreshAccessToken();
+
+        CompanyInfo.Get();
+        CompanyInfo.CalcFields("OneDrive Access Token");
+        CompanyInfo."OneDrive Access Token".CreateInStream(InStr);
+        InStr.ReadText(AccessToken);
+
+        if CompanyInfo."OneDrive Site ID" <> '' then
+            Url := graph_endpoint + '/sites/' + CompanyInfo."OneDrive Site ID" + '/drive'
+        else
+            Url := graph_endpoint + '/me/drive';
+
+        ResponseMessage := RestApiTokenResponse(Url, AccessToken, RequestType::Get, '');
+        ResponseMessage.Content().ReadAs(ResponseText);
+
+        if not ResponseMessage.IsSuccessStatusCode() then begin
+            MessageText := StrSubstNo(ConnectionFailedLbl, ResponseMessage.HttpStatusCode(), CopyStr(ResponseText, 1, 500));
+            exit(false);
+        end;
+
+        DriveName := '';
+        if JObject.ReadFrom(ResponseText) then
+            if JObject.Get('name', JToken) then
+                DriveName := JToken.AsValue().AsText()
+            else
+                if JObject.Get('id', JToken) then
+                    DriveName := JToken.AsValue().AsText();
+
+        if DriveName = '' then
+            DriveName := 'OK';
+        MessageText := StrSubstNo(ConnectionOkLbl, DriveName);
+        exit(true);
+    end;
+
+    /// <summary>
+    /// Exchanges the authorization code in Code Ondrive for access and refresh tokens.
+    /// </summary>
+    procedure GetTokenFromAuthorizationCode(): Boolean
+    var
+        DriveTokenManagement: Record "Drive Token Management";
+        TokenResult: Text;
+        AuthCode: Text;
+    begin
+        CompanyInfo.Get();
+        AuthCode := CompanyInfo.GetCodeOndrive();
+        if AuthCode = '' then
+            Error(AuthCodeMissingErr);
+
+        if not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"OneDrive") then begin
+            DriveTokenManagement.Init();
+            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"OneDrive";
+            DriveTokenManagement.Insert();
+        end;
+
+        TokenResult := ObtenerToken(AuthCode, DriveTokenManagement);
+        if TokenResult = '' then
             exit(false);
 
+        CompanyInfo.Get();
+        CompanyInfo.SetCodeOndrive('');
+        Message(TokenObtainedMsg);
         exit(true);
     end;
 

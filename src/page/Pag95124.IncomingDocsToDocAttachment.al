@@ -44,6 +44,12 @@ page 95124 "Incoming Docs. to Doc. Attach."
                     ApplicationArea = All;
                     ToolTip = 'Estado.';
                 }
+                field("URL"; Rec.URL)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'URL del documento entrante.';
+                    Editable = false;
+                }
             }
         }
     }

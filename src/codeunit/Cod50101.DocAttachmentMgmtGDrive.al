@@ -6,7 +6,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                   tabledata "Document Attachment" = RIMD,
                   tabledata "Google Drive Folder Mapping" = RIMD,
                   tabledata "Incoming Document" = R,
-                  tabledata "Incoming Document Attachment" = R;
+                  tabledata "Incoming Document Attachment" = RIMD;
 
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
@@ -174,7 +174,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
     /// Sube un adjunto existente (con contenido en Document Reference ID) al proveedor configurado (Google Drive, OneDrive, etc.).
     /// Exportar el stream desde Document Reference ID antes de llamar. Tras subir, actualiza el registro y opcionalmente limpia el blob.
     /// </summary>
-    procedure UploadExistingAttachmentToCloud(var DocumentAttachment: Record "Document Attachment"; DocInStream: InStream): Boolean
+    procedure UploadExistingAttachmentToCloud(var DocumentAttachment: Record "Document Attachment"; DocInStream: InStream; var IdDrive: Text): Boolean
     var
         FolderMapping: Record "Google Drive Folder Mapping";
         Folder: Text;
@@ -197,6 +197,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                     if SubFolder <> '' then
                         Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
                     DocumentAttachment."Google Drive ID" := GoogleDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                    IdDrive := DocumentAttachment."Google Drive ID";
                 end;
             CompanyInfo."Data Storage Provider"::OneDrive:
                 begin
@@ -213,6 +214,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                         Path += SubFolder + '/'
                     end;
                     DocumentAttachment."OneDrive ID" := OneDriveManager.UploadFileB64(Path, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                    IdDrive := DocumentAttachment."OneDrive ID";
                 end;
             CompanyInfo."Data Storage Provider"::DropBox:
                 begin
@@ -224,11 +226,13 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                     if SubFolder <> '' then
                         Folder := DropBoxManager.CreateFolderStructure(Folder, SubFolder);
                     DocumentAttachment."DropBox ID" := DropBoxManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name");
+                    IdDrive := DocumentAttachment."DropBox ID";
                 end;
             CompanyInfo."Data Storage Provider"::Strapi:
                 begin
                     DocumentAttachment."Store in Strapi" := true;
                     DocumentAttachment."Strapi ID" := StrapiManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name");
+                    IdDrive := DocumentAttachment."Strapi ID";
                 end;
             CompanyInfo."Data Storage Provider"::SharePoint:
                 begin
@@ -244,6 +248,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                         Path += SubFolder + '/'
                     end;
                     DocumentAttachment."SharePoint ID" := SharePointManager.UploadFileB64(Path, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                    IdDrive := DocumentAttachment."SharePoint ID";
                 end;
             else
                 exit(false);
@@ -314,6 +319,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         LineNo: Integer;
         FileName: Text[250];
         FileExt: Text[30];
+        IdDrive: Text;
     begin
         CountCreated := 0;
         CountSkipped := 0;
@@ -356,9 +362,16 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                     TempBlob.CreateInStream(DocInStream);
                     if not DocumentAttachment.WritePermission() then
                         Error(MisisinDocActchPermision);
-                    DocumentAttachment.Insert(true);
-                    if UploadExistingAttachmentToCloud(DocumentAttachment, DocInStream) then
+                    DocumentAttachment.Insert;
+                    if UploadExistingAttachmentToCloud(DocumentAttachment, DocInStream, IdDrive) then begin
                         CountCreated += 1;
+                        //Borrar Contenido del Incoming Document Attachment
+                        Clear(IncomingDocAttachment.Content);
+                        If DocumentAttachment.Get(DocumentAttachment."Table ID", DocumentAttachment."No.", DocumentAttachment."Document Type", DocumentAttachment."Line No.", DocumentAttachment.Id) then
+                            IncomingDocument.URL := IdDrive;
+                        IncomingDocAttachment.Modify();
+                        IncomingDocument.Modify();
+                    end;
                 end;
             end;
         until IncomingDocAttachment.Next() = 0;

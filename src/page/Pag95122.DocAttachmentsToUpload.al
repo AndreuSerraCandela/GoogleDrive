@@ -58,6 +58,7 @@ page 95122 "Doc. Attachments to Upload"
                     ToolTip = 'El adjunto tiene contenido en Document Reference ID (no ha pasado por la extensión).';
                     Editable = false;
                 }
+
             }
         }
     }
@@ -158,6 +159,7 @@ page 95122 "Doc. Attachments to Upload"
         DocInStream: InStream;
         DocOutStream: OutStream;
         Count: Integer;
+        IdDrive: Text;
     begin
         if not Confirm(ConfirmUploadQst) then
             exit;
@@ -171,7 +173,7 @@ page 95122 "Doc. Attachments to Upload"
                 TempBlob.CreateOutStream(DocOutStream);
                 DocumentAttachment."Document Reference ID".ExportStream(DocOutStream);
                 TempBlob.CreateInStream(DocInStream);
-                if DocAttachmentMgmtGDrive.UploadExistingAttachmentToCloud(DocumentAttachment, DocInStream) then
+                if DocAttachmentMgmtGDrive.UploadExistingAttachmentToCloud(DocumentAttachment, DocInStream, IdDrive) then
                     Count += 1
                 else
                     Message(ErrorUploadMsg, DocumentAttachment."File Name");
