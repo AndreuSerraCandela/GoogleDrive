@@ -1,6 +1,6 @@
 page 95122 "Doc. Attachments to Upload"
 {
-    Caption = 'Adjuntos a subir a almacenamiento';
+    Caption = 'Attachments to upload to storage';
     PageType = List;
     SourceTable = "Document Attachment";
     SourceTableView = sorting("Table ID", "No.", "Document Type", "Line No.");
@@ -19,43 +19,43 @@ page 95122 "Doc. Attachments to Upload"
                 field("Table ID"; Rec."Table ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Identificador de la tabla del documento.';
+                    ToolTip = 'Identifier of the document table.';
                 }
                 field("No."; Rec."No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Número del documento.';
+                    ToolTip = 'Document number.';
                 }
                 field("Document Type"; Rec."Document Type")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Tipo de documento cuando aplica.';
+                    ToolTip = 'Document type when applicable.';
                 }
                 field("File Name"; Rec."File Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Nombre del archivo.';
+                    ToolTip = 'File name.';
                 }
                 field("File Extension"; Rec."File Extension")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Extensión del archivo.';
+                    ToolTip = 'File extension.';
                 }
                 field("Store in Google Drive"; Rec."Store in Google Drive")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Indica si ya está almacenado en Google Drive.';
+                    ToolTip = 'Indicates whether it is already stored in Google Drive.';
                 }
                 field("Store in OneDrive"; Rec."Store in OneDrive")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Indica si ya está almacenado en OneDrive.';
+                    ToolTip = 'Indicates whether it is already stored in OneDrive.';
                 }
                 field(HasContent; HasDocumentContent)
                 {
-                    Caption = 'Tiene contenido local';
+                    Caption = 'Has local content';
                     ApplicationArea = All;
-                    ToolTip = 'El adjunto tiene contenido en Document Reference ID (no ha pasado por la extensión).';
+                    ToolTip = 'The attachment has content in Document Reference ID (it has not gone through the extension).';
                     Editable = false;
                 }
 
@@ -69,10 +69,10 @@ page 95122 "Doc. Attachments to Upload"
         {
             action(UploadToStorage)
             {
-                Caption = 'Subir a almacenamiento';
+                Caption = 'Upload to storage';
                 Image = Export;
                 ApplicationArea = All;
-                ToolTip = 'Extrae el documento del campo Document Reference ID y lo sube al proveedor configurado (Google Drive, OneDrive, etc.).';
+                ToolTip = 'Extracts the document from the Document Reference ID field and uploads it to the configured provider (Google Drive, OneDrive, etc.).';
 
                 trigger OnAction()
                 begin
@@ -81,10 +81,10 @@ page 95122 "Doc. Attachments to Upload"
             }
             action(ShowOnlyNotUploaded)
             {
-                Caption = 'Solo adjuntos no subidos';
+                Caption = 'Not uploaded attachments only';
                 Image = Filter;
                 ApplicationArea = All;
-                ToolTip = 'Filtrar solo registros que tienen contenido local y aún no están en el almacenamiento configurado.';
+                ToolTip = 'Filter only records that have local content and are not yet in the configured storage.';
 
                 trigger OnAction()
                 begin
@@ -93,10 +93,10 @@ page 95122 "Doc. Attachments to Upload"
             }
             action(ClearFilter)
             {
-                Caption = 'Quitar filtro';
+                Caption = 'Clear filter';
                 Image = ClearFilter;
                 ApplicationArea = All;
-                ToolTip = 'Quitar el filtro y mostrar todos los adjuntos.';
+                ToolTip = 'Clear the filter and show all attachments.';
 
                 trigger OnAction()
                 begin
@@ -106,10 +106,10 @@ page 95122 "Doc. Attachments to Upload"
             }
             action(FromIncomingDocuments)
             {
-                Caption = 'Desde documentos entrantes';
+                Caption = 'From incoming documents';
                 Image = Document;
                 ApplicationArea = All;
-                ToolTip = 'Abre la lista de documentos entrantes para crear Document Attachments desde sus adjuntos y subirlos al almacenamiento (sin duplicar por nombre).';
+                ToolTip = 'Opens the incoming documents list to create Document Attachments from their attachments and upload them to storage (without duplicating by file name).';
 
                 trigger OnAction()
                 var
@@ -123,7 +123,7 @@ page 95122 "Doc. Attachments to Upload"
         {
             group(Category_Process)
             {
-                Caption = 'Proceso';
+                Caption = 'Process';
                 actionref(UploadToStorageRef; UploadToStorage)
                 {
                 }
@@ -142,10 +142,10 @@ page 95122 "Doc. Attachments to Upload"
 
     var
         DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
-        SuccessCountMsg: Label '%1 adjunto(s) subido(s) correctamente.';
-        ErrorNoContentMsg: Label 'El adjunto "%1" no tiene contenido en Document Reference ID.', Comment = '%1 = File Name';
-        ErrorUploadMsg: Label 'Error al subir el adjunto "%1".', Comment = '%1 = File Name';
-        ConfirmUploadQst: Label '¿Subir los adjuntos seleccionados al almacenamiento configurado?';
+        SuccessCountMsg: Label '%1 attachment(s) uploaded successfully.', Comment = '%1 = Number of uploaded attachments';
+        ErrorNoContentMsg: Label 'Attachment "%1" has no content in Document Reference ID.', Comment = '%1 = File Name';
+        ErrorUploadMsg: Label 'Error uploading attachment "%1".', Comment = '%1 = File Name';
+        ConfirmUploadQst: Label 'Upload the selected attachments to the configured storage?';
 
     local procedure HasDocumentContent(): Boolean
     begin

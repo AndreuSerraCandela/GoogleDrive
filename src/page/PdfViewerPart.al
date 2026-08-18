@@ -5,7 +5,7 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
 
 {
 
-    Caption = 'Visor Documents';
+    Caption = 'Document Viewer';
     PageType = CardPart;
     DeleteAllowed = false;
     InsertAllowed = false;

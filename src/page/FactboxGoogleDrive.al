@@ -139,8 +139,8 @@ page 95100 "Google Drive Factbox"
             action("Download File")
             {
                 ApplicationArea = All;
-                CaptionML = ENU = 'Download File',
-                            ESP = 'Descargar Archivo';
+                Caption = 'Download File';
+                //         ESP = 'Descargar Archivo';
                 Scope = Repeater;
                 Visible = (Archivo and Not Mueve);
                 Image = Download;
@@ -307,8 +307,8 @@ page 95100 "Google Drive Factbox"
             action("Copy File")
             {
                 ApplicationArea = All;
-                CaptionML = ENU = 'Copy File',
-                            ESP = 'Copiar Archivo';
+                Caption = 'Copy File';
+                //         ESP = 'Copiar Archivo';
                 Image = Copy;
                 Visible = not Mueve;
                 Scope = Repeater;
@@ -484,8 +484,8 @@ page 95100 "Google Drive Factbox"
             action(Delete)
             {
                 ApplicationArea = All;
-                CaptionML = ENU = 'Delete',
-                            ESP = 'Borrar';
+                Caption = 'Delete';
+                //         ESP = 'Borrar';
                 Image = Delete;
                 Visible = not Mueve;
                 Scope = Repeater;
@@ -509,8 +509,8 @@ page 95100 "Google Drive Factbox"
             action("Upload File")
             {
                 ApplicationArea = All;
-                CaptionML = ENU = 'Upload File',
-                            ESP = 'Subir Archivo';
+                Caption = 'Upload File';
+                //         ESP = 'Subir Archivo';
                 Image = Import;
                 Visible = (not Mueve);
                 trigger OnAction()

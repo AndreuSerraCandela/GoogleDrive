@@ -8,7 +8,7 @@ tableextension 95103 "Incoming Doc. Attachment Ext" extends "Incoming Document A
             
             Caption = 'Storage URL';
             DataClassification = CustomerContent;
-            ToolTip = 'URL del archivo en el almacenamiento (Google Drive, OneDrive, etc.) una vez creado el Document Attachment.';
+            ToolTip = 'URL of the file in storage (Google Drive, OneDrive, etc.) once the Document Attachment is created.';
         }
     }
 }

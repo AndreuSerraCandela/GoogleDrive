@@ -1,6 +1,6 @@
 page 95124 "Incoming Docs. to Doc. Attach."
 {
-    Caption = 'Documentos entrantes a Document Attachment';
+    Caption = 'Incoming documents to Document Attachment';
     PageType = List;
     SourceTable = "Incoming Document";
     SourceTableView = sorting("Entry No.");
@@ -17,37 +17,37 @@ page 95124 "Incoming Docs. to Doc. Attach."
                 field("Entry No."; Rec."Entry No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Número de entrada del documento entrante.';
+                    ToolTip = 'Entry number of the incoming document.';
                 }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Descripción.';
+                    ToolTip = 'Description.';
                 }
                 field("Document Type"; Rec."Document Type")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Tipo de documento.';
+                    ToolTip = 'Document type.';
                 }
                 field("Document No."; Rec."Document No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Número del documento creado.';
+                    ToolTip = 'Number of the created document.';
                 }
                 field("Related Record ID"; Rec."Related Record ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Registro del documento relacionado (factura, pedido, etc.).';
+                    ToolTip = 'Related document record (invoice, order, etc.).';
                 }
                 field(Status; Rec.Status)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Estado.';
+                    ToolTip = 'Status.';
                 }
                 field("URL"; Rec.URL)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'URL del documento entrante.';
+                    ToolTip = 'Incoming document URL.';
                     Editable = false;
                 }
             }
@@ -60,10 +60,10 @@ page 95124 "Incoming Docs. to Doc. Attach."
         {
             action(CreateDocAttachments)
             {
-                Caption = 'Crear Document Attachments y subir';
+                Caption = 'Create Document Attachments and upload';
                 Image = Export;
                 ApplicationArea = All;
-                ToolTip = 'Para cada documento entrante seleccionado, crea registros Document Attachment a partir de sus adjuntos, vinculados al documento relacionado, y los sube al almacenamiento. No crea duplicados por nombre de archivo.';
+                ToolTip = 'For each selected incoming document, creates Document Attachment records from its attachments, linked to the related document, and uploads them to storage. Does not create duplicates by file name.';
 
                 trigger OnAction()
                 var
@@ -89,10 +89,10 @@ page 95124 "Incoming Docs. to Doc. Attach."
             }
             action(QuitarFiltroInc)
             {
-                Caption = 'Quitar filtro';
+                Caption = 'Clear filter';
                 Image = ClearFilter;
                 ApplicationArea = All;
-                ToolTip = 'Quitar el filtro.';
+                ToolTip = 'Clear the filter.';
 
                 trigger OnAction()
                 begin
@@ -105,7 +105,7 @@ page 95124 "Incoming Docs. to Doc. Attach."
         {
             group(Category_Process)
             {
-                Caption = 'Proceso';
+                Caption = 'Process';
                 actionref(CreateDocAttachmentsRef; CreateDocAttachments) { }
                 actionref(QuitarFiltroIncRef; QuitarFiltroInc) { }
             }
@@ -113,5 +113,5 @@ page 95124 "Incoming Docs. to Doc. Attach."
     }
 
     var
-        ResultMsg: Label 'Creados: %1 adjunto(s). Omitidos (ya existían con el mismo nombre): %2.', Comment = '%1=Created, %2=Skipped';
+        ResultMsg: Label 'Created: %1 attachment(s). Skipped (already existed with the same name): %2.', Comment = '%1=Created, %2=Skipped';
 }

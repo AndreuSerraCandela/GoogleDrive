@@ -1198,15 +1198,15 @@ pageextension 95101 CompanyInfoExt extends "Company Information"
             action("Doc. Attachments to Upload")
             {
                 ApplicationArea = All;
-                Caption = 'Adjuntos a subir a almacenamiento';
-                ToolTip = 'Abre la lista de adjuntos para filtrar y subir al Drive los que tienen contenido en Document Reference ID.';
+                Caption = 'Attachments to upload to storage';
+                ToolTip = 'Opens the attachment list to filter and upload to Drive those that have content in Document Reference ID.';
                 RunObject = page "Doc. Attachments to Upload";
             }
             action("Incoming Docs. to Doc. Attach.")
             {
                 ApplicationArea = All;
-                Caption = 'Documentos entrantes a Document Attachment';
-                ToolTip = 'Crea Document Attachments desde los adjuntos de documentos entrantes y los sube al almacenamiento (sin duplicar por nombre).';
+                Caption = 'Incoming documents to Document Attachment';
+                ToolTip = 'Creates Document Attachments from incoming document attachments and uploads them to storage (without duplicating by name).';
                 RunObject = page "Incoming Docs. to Doc. Attach.";
             }
         }

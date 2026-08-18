@@ -515,7 +515,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                         DocumentAttachment2 := DocumentAttachment;
                         DocumentAttachment2."Table ID" := Database::"Sales Shipment Header";
                         DocumentAttachment2."No." := SalesShipmentHeader."No.";
-                        DocumentAttachment2."Document Type" := 0;
+                        DocumentAttachment2."Document Type" := DocumentAttachment."Document Type"::Quote;
                         if not DocumentAttachment2.WritePermission() then Error(MisisinDocActchPermision);
                         DocumentAttachment2.Insert();
 
@@ -643,7 +643,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                         DocumentAttachment2 := DocumentAttachment;
                         DocumentAttachment2."Table ID" := Database::"Purch. Rcpt. Header";
                         DocumentAttachment2."No." := PurchRcptHeader."No.";
-                        DocumentAttachment2."Document Type" := 0;
+                        DocumentAttachment2."Document Type" := DocumentAttachment."Document Type"::Quote;
                         if not DocumentAttachment2.WritePermission() then Error(MisisinDocActchPermision);
                         DocumentAttachment2.Insert();
 

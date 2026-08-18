@@ -16,7 +16,7 @@ pageextension 95112 PurchaseOrderExt extends "Purchase Order"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
@@ -104,7 +104,7 @@ pageextension 95113 PurchaseInvoiceExt extends "Purchase Invoice"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
@@ -189,7 +189,7 @@ pageextension 95114 PurchaseCrMemoExt extends "Purchase Credit Memo"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
@@ -275,7 +275,7 @@ pageextension 95115 PurchasePostInvoiceExt extends "Posted Purchase Invoice"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
@@ -360,7 +360,7 @@ pageextension 95116 PurchasePostCrMemoExt extends "Posted Purchase Credit Memo"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
@@ -452,7 +452,7 @@ pageextension 95117 PurchasePostReceiptExt extends "Posted Purchase Receipt"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
