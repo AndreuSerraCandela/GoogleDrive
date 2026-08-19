@@ -848,18 +848,8 @@ codeunit 95102 "OneDrive Manager"
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;
         Url: Text;
-        Respuesta: Text;
         Response: HttpResponseMessage;
-        StatusInfo: JsonObject;
-        JToken: JsonToken;
-        Link: JsonObject;
-        LinkToken: JsonToken;
-        WebUrl: Text;
-        ErrorMessage: Text;
-        Json: Text;
         Stream: InStream;
-        TempBlob: Codeunit "Temp Blob";
-        OutStream: OutStream;
         Base64: Text;
         Base64Convert: Codeunit "Base64 Convert";
         Inf: Record "Company Information";
@@ -873,17 +863,20 @@ codeunit 95102 "OneDrive Manager"
             Error(NotAuthenticatedErr);
 
         Ticket := Token();
-        // Obtener metadatos del archivo incluyendo el enlace web
-        //Url := StrSubstNo(graph_endpoint + '/me/drive/items/%1?select=id,name,webUrl,@microsoft.graph.downloadUrl', OneDriveID);
         Url := graph_endpoint + '/me/drive/items/' + OneDriveID + '/content?format=pdf';
-        Json := '{"type": "view","scope": "anonymous"}';
-        //if Istrue then
-        //Json := '{"type": "edit","scope": "anonymous"}';
-        Response := RestApiTokenResponse(Url, Ticket, RequestType::get, Json);
-        TempBlob.CreateInStream(Stream);
-        Response.Content().ReadAs(Stream);
-        exit(Base64Convert.ToBase64(Stream));
+        Response := RestApiTokenResponse(Url, Ticket, RequestType::get, '');
+        if Response.IsSuccessStatusCode() then begin
+            Response.Content().ReadAs(Stream);
+            Base64 := Base64Convert.ToBase64(Stream);
+            if CopyStr(Base64, 1, 5) = 'JVBER' then
+                exit(Base64);
+        end;
 
+        if DownloadFileB64(OneDriveID, '', false, Base64) then
+            if CopyStr(Base64, 1, 5) = 'JVBER' then
+                exit(Base64);
+
+        exit('');
     end;
 
     internal procedure GetUrlLink(OneDriveID: Text[250]): Text
@@ -2442,18 +2435,8 @@ codeunit 95102 "OneDrive Manager"
         Ticket: Text;
         RequestType: Option Get,patch,put,post,delete;
         Url: Text;
-        Respuesta: Text;
         Response: HttpResponseMessage;
-        StatusInfo: JsonObject;
-        JToken: JsonToken;
-        Link: JsonObject;
-        LinkToken: JsonToken;
-        WebUrl: Text;
-        ErrorMessage: Text;
-        Json: Text;
         Stream: InStream;
-        TempBlob: Codeunit "Temp Blob";
-        OutStream: OutStream;
         Base64: Text;
         Base64Convert: Codeunit "Base64 Convert";
     begin
@@ -2461,14 +2444,20 @@ codeunit 95102 "OneDrive Manager"
             Error(NotAuthenticatedErr);
 
         Ticket := Token();
-        // Obtener metadatos del archivo incluyendo el enlace web
         Url := graph_endpoint + '/sites/' + SiteId + '/drive/items/' + OneDriveID + '/content?format=pdf';
-        Json := '{"type": "view","scope": "anonymous"}';
+        Response := RestApiTokenResponse(Url, Ticket, RequestType::get, '');
+        if Response.IsSuccessStatusCode() then begin
+            Response.Content().ReadAs(Stream);
+            Base64 := Base64Convert.ToBase64(Stream);
+            if CopyStr(Base64, 1, 5) = 'JVBER' then
+                exit(Base64);
+        end;
 
-        Response := RestApiTokenResponse(Url, Ticket, RequestType::get, Json);
-        TempBlob.CreateInStream(Stream);
-        Response.Content().ReadAs(Stream);
-        exit(Base64Convert.ToBase64(Stream));
+        if DownloadFileB64Site(OneDriveID, '', false, Base64, SiteId) then
+            if CopyStr(Base64, 1, 5) = 'JVBER' then
+                exit(Base64);
+
+        exit('');
     end;
 
     procedure GetUrlLinkSite(OneDriveID: Text[250]; SiteId: Text): Text

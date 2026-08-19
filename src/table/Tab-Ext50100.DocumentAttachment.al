@@ -147,7 +147,7 @@ tableextension 95100 "Doc. Attachment GoogleDrive" extends "Document Attachment"
                 if RestapiC.DownloadFileB64(bUrl, base64, false, base64) then
                     exit(true);
             Origen::OneDrive:
-                if OneDriveManager.DownloadFileB64(bUrl, base64, false, base64) then
+                if OneDriveManager.DownloadFileB64(bUrl, Filename, false, Base64) then
                     exit(true);
             Origen::DropBox:
                 if DropBoxManager.DownloadFileB64(bUrl, base64, false, base64) then

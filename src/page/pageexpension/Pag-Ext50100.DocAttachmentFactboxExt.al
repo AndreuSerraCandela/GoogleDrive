@@ -156,8 +156,8 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
                         end;
                         if Rec."Store in OneDrive" then begin
                             URL := Rec."OneDrive ID";
-                            UrlProvider := OneDriveManager.GetPdfBase64(URL);
-                            URL := UrlProvider;
+                            UrlProvider := OneDriveManager.GetUrl(URL);
+                            StorageProvider := StorageProvider::OneDrive;
                             DriveType := 'onedrive';
                         end;
                         if Rec."Store in DropBox" then begin
@@ -1667,8 +1667,7 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         end;
         if Rec."Store in OneDrive" then begin
             URL := Rec."OneDrive ID";
-            UrlProvider := OneDriveManager.GetPdfBase64(URL);
-            URL := UrlProvider;
+            UrlProvider := OneDriveManager.GetUrl(URL);
             StorageProvider := StorageProvider::OneDrive;
             DriveType := 'onedrive';
         end;
@@ -1775,12 +1774,20 @@ pageextension 95100 "Doc. Attachment Factbox Ext" extends "Doc. Attachment List 
         StrapiManager: Codeunit "Strapi Manager";
         SharePointManager: Codeunit "SharePoint Manager";
     begin
-        if DriveType = 'onedrive' then begin
-            Base64 := PDFAsTxt;
-            Pdf := true;
-        end
-        else
-            If not Rec.ToBase64StringOcr(PDFAsTxt, Base64, Filename, Origen) then
+        // OneDrive: los Word/Excel/PowerPoint se convierten a PDF para el visor.
+        // Los PDF e imágenes se descargan tal cual; format=pdf de Graph no admite PDF nativo.
+        if (DriveType = 'onedrive') and (not Pdf) then
+            case Rec."File Type" of
+                Rec."File Type"::Word, Rec."File Type"::Excel, Rec."File Type"::PowerPoint:
+                    begin
+                        Base64 := OneDriveManager.GetPdfBase64(PDFAsTxt);
+                        if Base64 <> '' then
+                            Pdf := true;
+                    end;
+            end;
+
+        if Base64 = '' then
+            if not Rec.ToBase64StringOcr(PDFAsTxt, Base64, Filename, Origen) then
                 exit;
 
         IsVisible := Base64 <> '';

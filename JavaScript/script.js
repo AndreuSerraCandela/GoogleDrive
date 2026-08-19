@@ -562,6 +562,16 @@ function Ficheros(NumerodeFicheros) {
 function Fichero(Numero) {
     document.getElementById('file_num').textContent = Numero;
 }
+function base64ToUint8Array(base64) {
+    base64 = (base64 || '').replace(/\s/g, '').replace(/^data:[^;]+;base64,/, '');
+    var binary = atob(base64);
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+}
+
 function LoadPDF(PDFDocument, IsFactbox) {
     var canvas = document.getElementById('the-canvas'),
     pdfcontents = document.getElementById('pdf-contents'),
@@ -581,7 +591,13 @@ function LoadPDF(PDFDocument, IsFactbox) {
     currentRotation = 0;
 
     pdfDocPrint = PDFDocument;
-    PDFDocument = atob(PDFDocument);
+    var pdfData;
+    try {
+        pdfData = base64ToUint8Array(PDFDocument);
+    } catch (e) {
+        console.error('No se pudo decodificar el PDF:', e);
+        return;
+    }
 
     if (IsFactbox) {
         if (factboxarea.className = "ms-nav-layout-factbox-content-area ms-nav-scrollable") {
@@ -716,10 +732,12 @@ function LoadPDF(PDFDocument, IsFactbox) {
 
         IsFirstLoad = false;
 
-        pdfjsLib.getDocument({ data: PDFDocument }).promise.then(function (pdfDoc_) {
+        pdfjsLib.getDocument({ data: pdfData }).promise.then(function (pdfDoc_) {
             pdfDoc = pdfDoc_;
             document.getElementById('page_count').textContent = '/' + pdfDoc.numPages;
             renderPage(pageNum);
+        }).catch(function (err) {
+            console.error('Error al cargar el PDF:', err);
         });
     });
 }

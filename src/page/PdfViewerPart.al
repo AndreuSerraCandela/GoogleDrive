@@ -30,13 +30,13 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
                     trigger ControlAddinReady()
                     var
                         URL: Text;
-
+                        StorageProvider: Enum "Data Storage Provider";
+                        DriveType: Text;
                     begin
                         IsControlAddInReady := true;
-                        URL := PDFStorageT."Google Drive ID";
-                        if URL <> '' then begin
+                        GetStorageInfo(PDFStorageT, URL, StorageProvider, DriveType);
+                        if URL <> '' then
                             SetPDFDocumentUrl(URL, 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
-                        end
                         else
                             SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '', '');
                     end;
@@ -48,34 +48,38 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
 
                     trigger OnSiguiente()
                     var
-                        UrlProvider: Text;
-                        GoogleDriveManager: Codeunit "Google Drive Manager";
                         Url: Text;
+                        StorageProvider: Enum "Data Storage Provider";
+                        DriveType: Text;
                     begin
                         a += 1;
                         if pdfstoraget.next() = 0 then begin
                             If Not pdfstoraget.findlast() then exit;
                             a := PDFStoraget.Count;
                         end;
-                        if PDFStorageT."Google Drive ID" <> '' then
-                            SetPDFDocumentUrl(PDFStorageT."Google Drive ID", 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
+                        GetStorageInfo(PDFStorageT, Url, StorageProvider, DriveType);
+                        if Url <> '' then
+                            SetPDFDocumentUrl(Url, 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
                         else
                             SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '', '');
-
                     end;
 
                     trigger OnAnterior()
+                    var
+                        Url: Text;
+                        StorageProvider: Enum "Data Storage Provider";
+                        DriveType: Text;
                     begin
                         a -= 1;
                         if pdfstoraget.Next(-1) = 0 then begin
                             pdfstoraget.findfirst();
                             a := 1;
                         end;
-                        if PDFStorageT."Google Drive ID" <> '' then
-                            SetPDFDocumentUrl(PDFStorageT."Google Drive ID", 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
+                        GetStorageInfo(PDFStorageT, Url, StorageProvider, DriveType);
+                        if Url <> '' then
+                            SetPDFDocumentUrl(Url, 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
                         else
                             SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '', '');
-
                     end;
 
                     trigger OnDownload()
@@ -192,35 +196,27 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         StorageProvider: Enum "Data Storage Provider";
         UrlProvider: Text;
         URL: Text;
-        GoogleDriveManager: Codeunit "Google Drive Manager";
-        OneDriveManager: Codeunit "OneDrive Manager";
-        DropBoxManager: Codeunit "DropBox Manager";
-        StrapiManager: Codeunit "Strapi Manager";
         DriveType: Text;
+        OneDriveManager: Codeunit "OneDrive Manager";
     begin
-        if PDFStorageT."Store in Google Drive" then begin
-            StorageProvider := StorageProvider::"Google Drive";
-            UrlProvider := GoogleDriveManager.GetUrl(URL);
-            DriveType := 'google';
-        end;
-        if PDFStorageT."Store in OneDrive" then begin
-            StorageProvider := StorageProvider::OneDrive;
-            UrlProvider := OneDriveManager.GetUrl(URL);
-            DriveType := 'onedrive';
-        end;
-        if PDFStorageT."Store in DropBox" then begin
-            StorageProvider := StorageProvider::DropBox;
-            UrlProvider := DropBoxManager.GetUrl(URL);
-            DriveType := 'dropbox';
-        end;
-        if PDFStorageT."Store in Strapi" then begin
-            StorageProvider := StorageProvider::Strapi;
-            UrlProvider := StrapiManager.GetUrl(URL);
-            DriveType := 'strapi';
-        end;
+        GetStorageInfo(PDFStorageT, URL, StorageProvider, DriveType);
+        if PDFAsTxt = '' then
+            PDFAsTxt := URL;
         UrlProvider := URL;
-        If Not PDFStorageT.ToBase64StringOcr(PDFAsTxt, Base64, PDFStorageT."File Name", StorageProvider) then
-            exit;
+
+        if (DriveType = 'onedrive') and (not Pdf) then
+            case PDFStorageT."File Type" of
+                PDFStorageT."File Type"::Word, PDFStorageT."File Type"::Excel, PDFStorageT."File Type"::PowerPoint:
+                    begin
+                        Base64 := OneDriveManager.GetPdfBase64(PDFAsTxt);
+                        if Base64 <> '' then
+                            Pdf := true;
+                    end;
+            end;
+
+        if Base64 = '' then
+            if not PDFStorageT.ToBase64StringOcr(PDFAsTxt, Base64, PDFStorageT."File Name", StorageProvider) then
+                exit;
 
         IsVisible := Base64 <> '';
         case i of
@@ -277,6 +273,9 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         OneDriveManager: Codeunit "OneDrive Manager";
         DropBoxManager: Codeunit "DropBox Manager";
         StrapiManager: Codeunit "Strapi Manager";
+        URL: Text;
+        StorageProvider: Enum "Data Storage Provider";
+        DriveType: Text;
 
     begin
         DataStorageProvider := DocAttachmentMgmtGDrive.GetDataStorageProvider();
@@ -496,11 +495,13 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         commit;
         PDFStorageT.SetRange("File Type", PDFStorageT."File Type"::PDF);
         if PDFStorageT.FindFirst() then
-            if IsControlAddInReady then
-                if PDFStorageT.Url <> '' then
-                    SetPDFDocumentUrl(PDFStorageT.Url, 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
+            if IsControlAddInReady then begin
+                GetStorageInfo(PDFStorageT, URL, StorageProvider, DriveType);
+                if URL <> '' then
+                    SetPDFDocumentUrl(URL, 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF))
                 else
                     SetPDFDocument(GetPDFAsTxt(PDFStoraget), 1, (PDFStorageT."File Type" = PDFStorageT."File Type"::PDF), '', '');
+            end;
         // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[1]), 1);
         // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[2]), 2);
         // SetPDFDocument(GetPDFAsTxt(PDFStorageArray[3]), 3);
@@ -564,6 +565,37 @@ page 95123 "PDF Viewer Part Google Drive" //extends "PDF Viewer Part"
         end;
         PDFViewerCard.Run();
 
+    end;
+
+    local procedure GetStorageInfo(DocumentAttachment: Record "Document Attachment"; var URL: Text; var StorageProvider: Enum "Data Storage Provider"; var DriveType: Text)
+    begin
+        URL := '';
+        DriveType := '';
+        if DocumentAttachment."Store in Google Drive" then begin
+            URL := DocumentAttachment."Google Drive ID";
+            StorageProvider := StorageProvider::"Google Drive";
+            DriveType := 'google';
+        end;
+        if DocumentAttachment."Store in OneDrive" then begin
+            URL := DocumentAttachment."OneDrive ID";
+            StorageProvider := StorageProvider::OneDrive;
+            DriveType := 'onedrive';
+        end;
+        if DocumentAttachment."Store in DropBox" then begin
+            URL := DocumentAttachment."DropBox ID";
+            StorageProvider := StorageProvider::DropBox;
+            DriveType := 'dropbox';
+        end;
+        if DocumentAttachment."Store in Strapi" then begin
+            URL := DocumentAttachment."Strapi ID";
+            StorageProvider := StorageProvider::Strapi;
+            DriveType := 'strapi';
+        end;
+        if DocumentAttachment."Store in SharePoint" then begin
+            URL := DocumentAttachment."SharePoint ID";
+            StorageProvider := StorageProvider::SharePoint;
+            DriveType := 'sharepoint';
+        end;
     end;
 
     local procedure ObtenerSubfolder(TableNo: Integer; Value: Variant; Date: Date; var SubFolder: Text; var Path: Text): Text
