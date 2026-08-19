@@ -3,11 +3,185 @@
   <file datatype="xml" source-language="en-US" target-language="es-ES" original="GoogleDrive.g.xlf">
     <body>
       <group id="body">
+        <trans-unit id="Table 2957800336 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Drive Token Management</source>
+          <target>Gestión de tokens de Drive</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 3174535945 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Access Token</source>
+          <target>Token de acceso</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Access Token - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 3451032384 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Last Token Refresh</source>
+          <target>Último refresco de Token</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Last Token Refresh - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 1513319962 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Refresh Token</source>
+          <target>Actualizar token</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Refresh Token - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 745197316 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Storage Provider</source>
+          <target>Proveedor de almacenamiento</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Storage Provider - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 313132060 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token Expiration</source>
+          <target>Fecha de expiración Token</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Token Expiration - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2957800336 - Field 3704028465 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token Status</source>
+          <target>Estado del Token</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Drive Token Management - Field Token Status - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Table 1163388225 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Folder Mapping</source>
           <target>Mapeo de Carpetas</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3162260755" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Contact documents</source>
+          <target>Documentos de contactos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType ContactDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1546463825" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Contacts</source>
+          <target>Contactos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType ContactsFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1460649351" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Customer documents</source>
+          <target>Documentos de clientes</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType CustomerDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 558218333" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Customers</source>
+          <target>Clientes</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType CustomersFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1261776117" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Employee documents</source>
+          <target>Documentos de empleados</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType EmployeeDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1492570463" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Employees</source>
+          <target>Empleados</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType EmployeesFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1827518393" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Fixed Asset documents</source>
+          <target>Documentos de activos fijos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType FixedAssetDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1013583323" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Fixed Assets</source>
+          <target>Activos Fijos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType FixedAssetsFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3605290109" size-unit="char" translate="yes" xml:space="preserve">
+          <source>G/L Account documents</source>
+          <target>Documentos de cuentas contables</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType GLAccountDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 22788023" size-unit="char" translate="yes" xml:space="preserve">
+          <source>G/L Accounts</source>
+          <target>Cuentas Contables</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType GLAccountsFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3948633544" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Item documents</source>
+          <target>Documentos de productos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType ItemDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1956931190" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Items</source>
+          <target>Productos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType ItemsFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 2642221610" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Job documents</source>
+          <target>Documentos de proyectos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType JobDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3018557252" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Jobs</source>
+          <target>Proyectos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType JobsFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1632421669" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Opportunities</source>
+          <target>Oportunidades</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType OpportunitiesFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 839711300" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Opportunity documents</source>
+          <target>Documentos de oportunidades</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType OpportunityDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 4158936110" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Credit Memo Header documents</source>
+          <target>Documentos de notas de abono de compra</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseCreditMemoHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 2798332421" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Credit Memos</source>
+          <target>Notas de Abono de Compra</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseCreditMemosFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 644354655" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Header documents</source>
+          <target>Documentos de compras</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3701056752" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Invoice Header documents</source>
+          <target>Documentos de facturas de compra</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseInvoiceHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3744011575" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Invoices</source>
+          <target>Facturas de Compra</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseInvoicesFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 236747046" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Purchase Orders</source>
+          <target>Pedidos de Compra</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType PurchaseOrdersFolderLbl</note>
         </trans-unit>
         <trans-unit id="Table 1163388225 - NamedType 1902168033" size-unit="char" translate="yes" xml:space="preserve">
           <source>Are you sure you want to rename folder?</source>
@@ -15,11 +189,77 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType RenameFolderMsg</note>
         </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1084235019" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Credit Memo Header documents</source>
+          <target>Documentos de notas de abono de venta</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesCreditMemoHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 2160458540" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Credit Memos</source>
+          <target>Notas de Abono de Venta</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesCreditMemosFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3342745778" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Header documents</source>
+          <target>Documentos de ventas</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 455476457" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Invoice Header documents</source>
+          <target>Documentos de facturas de venta</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesInvoiceHeaderDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 1689225946" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Invoices</source>
+          <target>Facturas de Venta</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesInvoicesFolderLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 2841775971" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Orders</source>
+          <target>Pedidos de Venta</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SalesOrdersFolderLbl</note>
+        </trans-unit>
         <trans-unit id="Table 1163388225 - NamedType 3460270774" size-unit="char" translate="yes" xml:space="preserve">
           <source>Default mappings created successfully.</source>
           <target>Configuraciones por defecto creadas exitosamente.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SetupDefaultMappingsMsg</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3381922651" size-unit="char" translate="yes" xml:space="preserve">
+          <source>{NO}</source>
+          <target>{CODIGO}</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SubfolderPatternNoLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 4202782241" size-unit="char" translate="yes" xml:space="preserve">
+          <source>{YEAR}</source>
+          <target>{AÑO}</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SubfolderPatternYearLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 2369590649" size-unit="char" translate="yes" xml:space="preserve">
+          <source>{YEAR}/{MONTH}</source>
+          <target>{AÑO}/{MES}</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType SubfolderPatternYearMonthLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 3340022143" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Vendor documents</source>
+          <target>Documentos de proveedores</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType VendorDocsLbl</note>
+        </trans-unit>
+        <trans-unit id="Table 1163388225 - NamedType 4254782597" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Vendors</source>
+          <target>Proveedores</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - NamedType VendorsFolderLbl</note>
         </trans-unit>
         <trans-unit id="Table 1163388225 - Field 1090351696 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Active</source>
@@ -89,7 +329,7 @@
         </trans-unit>
         <trans-unit id="Table 1163388225 - Field 2782705678 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Pattern for creating subfolders. Use {DOCNO} for document number, {NO} for Code, {YEAR} for year, {MONTH} for month.</source>
-          <target>Patrón para crear subcarpetas. Use {DOCNO} para número de documento, {NO} para Código, {YEAR} para año, {MONTH} para mes.</target>
+          <target>Patrón para crear subcarpetas. Use {NODOC} para número de documento, {CODIGO} para Código, {AÑO} para año, {MES} para mes.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - Field Subfolder Pattern - Property ToolTip</note>
         </trans-unit>
@@ -110,6 +350,24 @@
           <target>Nombre de Tabla</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Google Drive Folder Mapping - Field Table Name - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3098052707 - NamedType 2627657995" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File name is required.</source>
+          <target>El nombre de archivo es obligatorio.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Doc. Attachment Mgmt. GDrive - NamedType ErrFileNameEmpty</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3098052707 - NamedType 3426805549" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Record not found for Table ID %1, No. %2.</source>
+          <target>No se encontró el registro para el ID de tabla %1, N.º %2.</target>
+          <note from="Developer" annotates="general" priority="2">%1=Table ID, %2=No.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Doc. Attachment Mgmt. GDrive - NamedType ErrRecordNotFound</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3098052707 - NamedType 1471500804" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Table ID %1 is not supported for attachments.</source>
+          <target>El ID de tabla %1 no es compatible con adjuntos.</target>
+          <note from="Developer" annotates="general" priority="2">%1=Table ID</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Doc. Attachment Mgmt. GDrive - NamedType ErrTableNotSupported</note>
         </trans-unit>
         <trans-unit id="Codeunit 3098052707 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error: Permission to modify the Document Attachment record is missing</source>
@@ -975,6 +1233,12 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Google Drive Manager - Method RecuperaIdFolder - NamedType C</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 3241442352" size-unit="char" translate="yes" xml:space="preserve">
+          <source>OneDrive authorization code is empty. Use "Start OAuth", copy the code from the URL and paste it in "Code Ondrive".</source>
+          <target>El código de autorización de OneDrive está vacío. Use "Start OAuth", copie el código de la URL y péguelo en "Code Ondrive".</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType AuthCodeMissingErr</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 1053074267" size-unit="char" translate="yes" xml:space="preserve">
           <source>Could not authenticate with OneDrive. Please verify your credentials.</source>
           <target>No se pudo autenticar con OneDrive. Por favor verifica tus credenciales.</target>
@@ -986,6 +1250,18 @@
           <target>https://login.microsoftonline.com/%1/oauth2/v2.0/authorize</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType auth_endpoint</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 434298465" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Graph connection failed. Status: %1. Response: %2</source>
+          <target>Error de conexión con Graph. Estado: %1. Respuesta: %2</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType ConnectionFailedLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 2992855900" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Graph connection successful. Drive: %1</source>
+          <target>Conexión con Graph correcta. Unidad: %1</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType ConnectionOkLbl</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 2012072874" size-unit="char" translate="yes" xml:space="preserve">
           <source>Error copying file: %1. Complete response: %2</source>
@@ -1167,6 +1443,36 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType graph_endpoint</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 3964790347" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Access token: missing. Use "Start OAuth" and then "Get Token".</source>
+          <target>Falta el token de acceso. Use "Start OAuth" y después "Get Token".</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType MissingAccessTokenLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 72201246" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Missing: OneDrive Client ID.</source>
+          <target>Falta: ID de cliente de OneDrive.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType MissingClientIdLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1108786947" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Missing: OneDrive Client Secret.</source>
+          <target>Falta: secreto de cliente de OneDrive.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType MissingClientSecretLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1802657468" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Refresh token: missing. Re-run OAuth to obtain offline_access.</source>
+          <target>Falta el token de renovación. Vuelva a ejecutar OAuth para obtener offline_access.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType MissingRefreshTokenLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1097470913" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Missing: OneDrive Tenant ID.</source>
+          <target>Falta: ID de inquilino de OneDrive.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType MissingTenantIdLbl</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 720600855" size-unit="char" translate="yes" xml:space="preserve">
           <source>/me/drive/items/%1/move</source>
           <target>/me/drive/items/%1/move</target>
@@ -1196,6 +1502,48 @@
           <target>No se pudo autenticar con OneDrive. Por favor verifica tus credenciales.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType NotAuthenticatedErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1249673565" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token expiration: not set.</source>
+          <target>Expiración del token: no definida.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType NoTokenExpirationLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 61449295" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Cannot test connection: no access token. Complete OAuth first.</source>
+          <target>No se puede probar la conexión: no hay token de acceso. Complete OAuth primero.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType NoTokenForConnectionLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 2381096843" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Access token: present.</source>
+          <target>Token de acceso: presente.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType OkAccessTokenLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 2417090826" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Credentials: Client ID, Client Secret and Tenant ID are configured.</source>
+          <target>Credenciales: ID de cliente, secreto de cliente e ID de inquilino están configurados.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType OkCredentialsLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 3556723068" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Refresh token: present.</source>
+          <target>Token de renovación: presente.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType OkRefreshTokenLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 421656139" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Site: URL and Site ID are configured.</source>
+          <target>Sitio: la URL y el ID de sitio están configurados.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType OkSiteConfiguredLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 3011097797" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token expiration: valid until %1.</source>
+          <target>Expiración del token: válido hasta %1.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType OkTokenValidLbl</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 2744667805" size-unit="char" translate="yes" xml:space="preserve">
           <source>Save</source>
@@ -1245,11 +1593,23 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType SiteIdNotConfiguredMsg</note>
         </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 4151113977" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Site: not configured (personal OneDrive /me/drive will be used).</source>
+          <target>Sitio: no configurado (se usará OneDrive personal /me/drive).</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType SiteOptionalLbl</note>
+        </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 3240390688" size-unit="char" translate="yes" xml:space="preserve">
           <source>/sites</source>
           <target>/sites</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType sites_endpoint</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 1986066341" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Site: URL is set but Site ID is empty. Use "Id Site".</source>
+          <target>Sitio: hay URL pero el ID de sitio está vacío. Use "Id Site".</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType SiteUrlWithoutIdLbl</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 419542593" size-unit="char" translate="yes" xml:space="preserve">
           <source>/sites/%1</source>
@@ -1262,6 +1622,18 @@
           <target>El endpoint de token devolvió un error. Estado: %1, Cuerpo: %2</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType TokenEndpointErrorErr</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 4172946170" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Token expiration: expired since %1. Use "Refresh Token".</source>
+          <target>Expiración del token: caducó desde %1. Use "Refresh Token".</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType TokenExpiredLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3181614269 - NamedType 437420976" size-unit="char" translate="yes" xml:space="preserve">
+          <source>OneDrive access token obtained successfully.</source>
+          <target>Token de acceso de OneDrive obtenido correctamente.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit OneDrive Manager - NamedType TokenObtainedMsg</note>
         </trans-unit>
         <trans-unit id="Codeunit 3181614269 - NamedType 1383990408" size-unit="char" translate="yes" xml:space="preserve">
           <source>The request to the token endpoint failed.</source>
@@ -1474,7 +1846,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Strapi Manager - NamedType UploadErrorMsg</note>
         </trans-unit>
         <trans-unit id="Page 2429493653 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Dialogo</source>
+          <source>Dialog</source>
           <target>Diálogo</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Dropbox - Property Caption</note>
@@ -1504,7 +1876,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Dropbox - Control Valor1 - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 119800846 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Dialogo</source>
+          <source>Dialog</source>
           <target>Diálogo</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Google Drive - Property Caption</note>
@@ -1532,6 +1904,144 @@
           <target>Introduzca valor</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Dialogo Google Drive - Control Valor1 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Attachments to upload to storage</source>
+          <target>Adjuntos a subir a almacenamiento</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - NamedType 2977197649" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Upload the selected attachments to the configured storage?</source>
+          <target>¿Subir los adjuntos seleccionados al almacenamiento configurado?</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - NamedType ConfirmUploadQst</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - NamedType 6119899" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Attachment "%1" has no content in Document Reference ID.</source>
+          <target>El adjunto "%1" no tiene contenido en Document Reference ID.</target>
+          <note from="Developer" annotates="general" priority="2">%1 = File Name</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - NamedType ErrorNoContentMsg</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - NamedType 1809648366" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Error uploading attachment "%1".</source>
+          <target>Error al subir el adjunto "%1".</target>
+          <note from="Developer" annotates="general" priority="2">%1 = File Name</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - NamedType ErrorUploadMsg</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - NamedType 4256693627" size-unit="char" translate="yes" xml:space="preserve">
+          <source>%1 attachment(s) uploaded successfully.</source>
+          <target>%1 adjunto(s) subido(s) correctamente.</target>
+          <note from="Developer" annotates="general" priority="2">%1 = Number of uploaded attachments</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - NamedType SuccessCountMsg</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 2363328873 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Document type when applicable.</source>
+          <target>Tipo de documento cuando aplica.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control Document Type - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 3414364457 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File extension.</source>
+          <target>Extensión del archivo.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control File Extension - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 804481195 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>File name.</source>
+          <target>Nombre del archivo.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control File Name - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 3837936093 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The attachment has content in Document Reference ID (it has not gone through the extension).</source>
+          <target>El adjunto tiene contenido en Document Reference ID (no ha pasado por la extensión).</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control HasContent - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 3837936093 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Has local content</source>
+          <target>Tiene contenido local</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control HasContent - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 4200184881 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Document number.</source>
+          <target>Número del documento.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control No. - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 1404833335 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Indicates whether it is already stored in Google Drive.</source>
+          <target>Indica si ya está almacenado en Google Drive.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control Store in Google Drive - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 4060001340 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Indicates whether it is already stored in OneDrive.</source>
+          <target>Indica si ya está almacenado en OneDrive.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control Store in OneDrive - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Control 3135334477 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Identifier of the document table.</source>
+          <target>Identificador de la tabla del documento.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Control Table ID - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1553741435 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Clear the filter and show all attachments.</source>
+          <target>Quitar el filtro y mostrar todos los adjuntos.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action ClearFilter - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1553741435 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Clear filter</source>
+          <target>Quitar filtro</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action ClearFilter - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1551955912 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Opens the incoming documents list to create Document Attachments from their attachments and upload them to storage (without duplicating by file name).</source>
+          <target>Abre la lista de documentos entrantes para crear Documenos adjuntos desde sus adjuntos y subirlos al almacenamiento (sin duplicar por nombre).</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action FromIncomingDocuments - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1551955912 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>From incoming documents</source>
+          <target>Desde documentos entrantes</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action FromIncomingDocuments - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 2015861980 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Filter only records that have local content and are not yet in the configured storage.</source>
+          <target>Filtrar solo registros que tienen contenido local y aún no están en el almacenamiento configurado.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action ShowOnlyNotUploaded - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 2015861980 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Not uploaded attachments only</source>
+          <target>Solo adjuntos no subidos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action ShowOnlyNotUploaded - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1554067515 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Extracts the document from the Document Reference ID field and uploads it to the configured provider (Google Drive, OneDrive, etc.).</source>
+          <target>Extrae el documento del campo Document Reference ID y lo sube al proveedor configurado (Google Drive, OneDrive, etc.).</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action UploadToStorage - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 1554067515 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Upload to storage</source>
+          <target>Subir a almacenamiento</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action UploadToStorage - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2104566768 - Action 3383493608 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Process</source>
+          <target>Proceso</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Doc. Attachments to Upload - Action Category_Process - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Storage Configuration</source>
@@ -1563,6 +2073,12 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType DefaultValuesConfiguredLbl</note>
         </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 1168643228" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Are you sure you want to delete root folder?</source>
+          <target>¿Está seguro de querer eliminar la carpeta raíz?</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType DeleteRootFolderMsg</note>
+        </trans-unit>
         <trans-unit id="Page 778823480 - NamedType 336829252" size-unit="char" translate="yes" xml:space="preserve">
           <source>❌ Connection error. Check configuration.</source>
           <target>❌ Error de conexión. Compruebe la configuración.</target>
@@ -1587,12 +2103,6 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType GoogleDriveConnectionSuccessLbl</note>
         </trans-unit>
-        <trans-unit id="Page 778823480 - NamedType 452344817" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Error: Permission to modify the Company Information record is missing</source>
-          <target>Error: Falta permiso para modificar el registro de Documento Adjunto</target>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType MisisinDocActchPermision</note>
-        </trans-unit>
         <trans-unit id="Page 778823480 - NamedType 2380359848" size-unit="char" translate="yes" xml:space="preserve">
           <source>❌ No token configured.</source>
           <target>❌ No se ha configurado ningún token.</target>
@@ -1610,6 +2120,12 @@
           <target>✅ Conexión a OneDrive exitosa.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType OneDriveConnectionSuccessLbl</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - NamedType 3235761483" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Are you sure you want to rename root folder?</source>
+          <target>¿Está seguro de querer renombrar la carpeta raíz?</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - NamedType RenameRootFolderMsg</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - NamedType 3292684920" size-unit="char" translate="yes" xml:space="preserve">
           <source>Are you sure you want to revoke Google Drive access?</source>
@@ -1664,6 +2180,12 @@
           <target>Especifica la carpeta raíz de DropBox.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox Root Folder - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Control 427461355 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the ID of the root folder of DropBox.</source>
+          <target>Especifica el ID de la carpeta raíz de DropBox.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control DropBox Root Folder ID - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 211956657 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Specifies the base URL of the DropBox API.</source>
@@ -1730,6 +2252,12 @@
           <target>Especifica la carpeta raíz de Google Drive.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Google Drive Root Folder - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Control 4195215812 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the ID of the root folder of Google Drive.</source>
+          <target>Especifica del ID de la carpeta raíz de Google Drive.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control Google Drive Root Folder ID - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 3826965379 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Specifies the Project ID from Google Cloud Console.</source>
@@ -1809,6 +2337,12 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDrive Root Folder - Property ToolTip</note>
         </trans-unit>
+        <trans-unit id="Page 778823480 - Control 295789447 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the ID of the root folder of OneDrive.</source>
+          <target>Especifica el ID de la carpeta raíz de OneDrive.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDrive Root Folder ID - Property ToolTip</note>
+        </trans-unit>
         <trans-unit id="Page 778823480 - Control 2549889954 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Specifies the ID of the OneDrive site.</source>
           <target>Especifica el ID del sitio de OneDrive.</target>
@@ -1826,6 +2360,18 @@
           <target>Especifica el ID de la Tenant de Microsoft Azure.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDrive Tenant ID - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Control 832820079 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Paste the full OAuth authorization code from the URL (the value after code= and before &amp;state=). Stored as Blob so long codes are not truncated.</source>
+          <target>Pegue el código de autorización OAuth completo de la URL (el valor después de code= y antes de &amp;state=). Se guarda como Blob para que los códigos largos no se trunquen.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDriveAuthCode - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Control 832820079 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>OneDrive Code</source>
+          <target>Código de OneDrive</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Control OneDriveAuthCode - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Control 4002845373 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Specifies the base URL of the OneDrive API.</source>
@@ -2206,16 +2752,28 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 3825920327 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Update the access token using the refresh token.</source>
+          <source>Refreshes the access token using the stored refresh token.</source>
           <target>Actualiza el token de acceso usando el refresh token.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action Actualizar OneDrive Token - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 3825920327 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Update Token</source>
+          <source>Refresh Token</source>
           <target>Actualizar Token</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action Actualizar OneDrive Token - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Action 1558079711 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Exchanges the OneDrive authorization code (Code Ondrive) for access and refresh tokens. Do not use the Google Drive Get Token action.</source>
+          <target>Canjea el código de autorización de OneDrive (Code Ondrive) por tokens de acceso y renovación. No use la acción Get Token de Google Drive.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Get Token - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Action 1558079711 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Get Token</source>
+          <target>Obtener token</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Get Token - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 150691378 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Gets the ID of the OneDrive site.</source>
@@ -2230,7 +2788,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Id Site - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 2053509897 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Starts the OAuth authentication process with OneDrive.</source>
+          <source>Starts the OAuth authentication process with OneDrive. Then paste the code from the URL into Code Ondrive and use Get Token.</source>
           <target>Inicia el proceso de autenticación OAuth con OneDrive.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Start OAuth - Property ToolTip</note>
@@ -2242,7 +2800,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Start OAuth - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 778823480 - Action 310815148 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Tests the connection with OneDrive using the current configuration.</source>
+          <source>Tests the connection with Microsoft Graph using the current OneDrive token (personal drive or configured site).</source>
           <target>Prueba la conexión con OneDrive usando la configuración actual.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Test Connection - Property ToolTip</note>
@@ -2253,8 +2811,20 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Test Connection - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 778823480 - Action 184079369 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Checks whether the stored OneDrive access token is still valid by expiration date.</source>
+          <target>Comprueba si el token de acceso de OneDrive almacenado sigue vigente según la fecha de expiración.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Test Token Validity - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 778823480 - Action 184079369 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Test Token Validity</source>
+          <target>Prueba de validez del token</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Test Token Validity - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 778823480 - Action 1255083178 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Validates that all configuration fields are complete.</source>
+          <source>Validates credentials, tokens and site settings for OneDrive and shows a diagnostic summary.</source>
           <target>Valida que todos los campos de configuración estén completos.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Drive Configuration - Action OneDrive Validate Configuration - Property ToolTip</note>
@@ -2427,6 +2997,12 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Factbox - Control Value - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 4176554980 - Action 2550573093 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Copy File</source>
+          <target>Copiar Archivo</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Factbox - Action Copy File - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 4176554980 - Action 2795442286 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Creates a folder in cloud storage.</source>
           <target>Crea una carpeta en el almacenamiento en la nube.</target>
@@ -2438,6 +3014,18 @@
           <target>Crear Carpeta</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Factbox - Action CreateFolder - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 4176554980 - Action 2477294019 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Delete</source>
+          <target>Eliminar</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Factbox - Action Delete - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 4176554980 - Action 1912613678 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Download File</source>
+          <target>Descargar Archivo</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Factbox - Action Download File - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 4176554980 - Action 2771780305 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Opens the file in the cloud storage for editing.</source>
@@ -2456,6 +3044,12 @@
           <target>Mover</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Factbox - Action M&amp;over - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 4176554980 - Action 4142070087 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Upload File</source>
+          <target>Cargar archivo</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Factbox - Action Upload File - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1163388225 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Drive Folder Mapping</source>
@@ -2555,7 +3149,7 @@
         </trans-unit>
         <trans-unit id="Page 1163388225 - Control 2782705678 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Pattern for creating subfolders. Use {DOCNO} for document number, {NO} for Code, {YEAR} for year, {MONTH} for month.</source>
-          <target>Patrón para crear subcarpetas. Use {DOCNO} para número de documento, {NO} para el Código, {YEAR} para año, {MONTH} para mes.</target>
+          <target>Patrón para crear subcarpetas. Use {NODOC} para número de documento, {CODIGO} para Código, {AÑO} para año, {MES} para mes.</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Folder Mapping - Control Subfolder Pattern - Property ToolTip</note>
         </trans-unit>
@@ -2703,26 +3297,134 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Action Create Folder - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 1387985265 - Action 2477294019 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Delete</source>
+          <target>Eliminar</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Action Delete - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1387985265 - Action 1912613678 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Download File</source>
+          <target>Descargar Archivo</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Action Download File - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1387985265 - Action 3117446396 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Select</source>
+          <target>Seleccionar</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Action Select - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1387985265 - Action 4142070087 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Upload File</source>
+          <target>Cargar archivo</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive List - Action Upload File - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 2199573959 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Manual del Drive</source>
+          <source>Drive Manual</source>
           <target>Manual del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Google Drive Manual Viewer - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 1537329701 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Incoming documents to Document Attachment</source>
+          <target>Documentos entrantes a Documentos Adjuntos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - NamedType 1000503204" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Created: %1 attachment(s). Skipped (already existed with the same name): %2.</source>
+          <target>Creados: %1 adjunto(s). Omitidos (ya existían con el mismo nombre): %2.</target>
+          <note from="Developer" annotates="general" priority="2">%1=Created, %2=Skipped</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - NamedType ResultMsg</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 3461834954 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Description.</source>
+          <target>Descripción.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Description - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 486908828 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Number of the created document.</source>
+          <target>Número del documento creado.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Document No. - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 2363328873 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Document type.</source>
+          <target>Tipo de documento.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Document Type - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 883711285 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Entry number of the incoming document.</source>
+          <target>Número de entrada del documento entrante.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Entry No. - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 745361209 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Related document record (invoice, order, etc.).</source>
+          <target>Registro del documento relacionado (factura, pedido, etc.).</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Related Record ID - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 513339096 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Status.</source>
+          <target>Estado.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control Status - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Control 3003898253 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Incoming document URL.</source>
+          <target>URL del documento entrante.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Control URL - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Action 1085286778 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>For each selected incoming document, creates Document Attachment records from its attachments, linked to the related document, and uploads them to storage. Does not create duplicates by file name.</source>
+          <target>Para cada documento entrante seleccionado, crea registros Document Attachment a partir de sus adjuntos, vinculados al documento relacionado, y los sube al almacenamiento. No crea duplicados por nombre de archivo.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Action CreateDocAttachments - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Action 1085286778 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Create Document Attachments and upload</source>
+          <target>Crear Documenttos Adjuntos y subir</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Action CreateDocAttachments - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Action 2979643056 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Clear the filter.</source>
+          <target>Quitar el filtro.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Action QuitarFiltroInc - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Action 2979643056 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Clear filter</source>
+          <target>Quitar filtro</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Action QuitarFiltroInc - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1537329701 - Action 3383493608 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Process</source>
+          <target>Proceso</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Incoming Docs. to Doc. Attach. - Action Category_Process - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 1218054561 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Visor Ocr JPG</source>
+          <source>OCR JPG Viewer</source>
           <target>Visor Ocr JPG</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page JPG Viewer - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 3125548572 - Action 892210059 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Ver</source>
+          <source>View</source>
           <target>Ver</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Pdf Viewer - Action Ver - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 3811955462 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Visor Documents</source>
+          <source>Document Viewer</source>
           <target>Visor Documents</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page PDF Viewer Part Google Drive - Property Caption</note>
@@ -2751,6 +3453,18 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension BankAccountExt - Control Visor - Property Caption</note>
         </trans-unit>
+        <trans-unit id="PageExtension 1814822428 - Action 2104566768 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3469146285">
+          <source>Opens the attachment list to filter and upload to Drive those that have content in Document Reference ID.</source>
+          <target>Abre la lista de adjuntos para filtrar y subir al Drive los que tienen contenido en Document Reference ID.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Doc. Attachments to Upload - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1814822428 - Action 2104566768 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3469146285">
+          <source>Attachments to upload to storage</source>
+          <target>Adjuntos a subir a almacenamiento</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Doc. Attachments to Upload - Property Caption</note>
+        </trans-unit>
         <trans-unit id="PageExtension 1814822428 - Action 778823480 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3469146285">
           <source>Storage Configuration</source>
           <target>Configuración de Almacenamiento</target>
@@ -2762,6 +3476,42 @@
           <target>Local, Google Drive, OneDrive, DropBox, Strapi, SharePoint</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Drive Configuration - Method OnAction - NamedType TiopoConfiguracion</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1814822428 - Action 1537329701 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3469146285">
+          <source>Creates Document Attachments from incoming document attachments and uploads them to storage (without duplicating by name).</source>
+          <target>Crea Documentos Adjuntos desde los adjuntos de documentos entrantes y los sube al almacenamiento (sin duplicar por nombre).</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Incoming Docs. to Doc. Attach. - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1814822428 - Action 1537329701 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3469146285">
+          <source>Incoming documents to Document Attachment</source>
+          <target>Documentos entrantes a Document Attachment</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension CompanyInfoExt - Action Incoming Docs. to Doc. Attach. - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3428460531 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3542408424">
+          <source>Documents</source>
+          <target>Documentos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension ContactExt - Control Attached Documents List - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3428460531 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3542408424">
+          <source>Drive Files</source>
+          <target>Archivos de Drive</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension ContactExt - Control GoogleDriveFiles - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3428460531 - Control 822531619 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3542408424">
+          <source>PDF Viewer</source>
+          <target>Visor PDF</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension ContactExt - Control Visor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 893067197 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1023993454">
+          <source>Documents</source>
+          <target>Documentos</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension ContactListExt - Control Attached Documents List - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 1713901351 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 523354100">
           <source>Drive Files</source>
@@ -3110,8 +3860,20 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension JobExt - Control Visor - Property Caption</note>
         </trans-unit>
+        <trans-unit id="PageExtension 1090357124 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3021275367">
+          <source>Drive Files</source>
+          <target>Archivos de Drive</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension OpportunityExt - Control GoogleDriveFiles - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1090357124 - Control 822531619 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3021275367">
+          <source>PDF Viewer</source>
+          <target>Visor PDF</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension OpportunityExt - Control Visor - Property Caption</note>
+        </trans-unit>
         <trans-unit id="PageExtension 558215147 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 4042331808">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchaseCrMemoExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3123,7 +3885,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchaseCrMemoExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 1959436157 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2437096118">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchaseInvoiceExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3135,7 +3897,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchaseInvoiceExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3032686328 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 387971303">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchaseOrderExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3147,7 +3909,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchaseOrderExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3983694059 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2854365759">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostCrMemoExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3159,7 +3921,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostCrMemoExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3450204285 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 4048657685">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostInvoiceExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3177,7 +3939,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostReceiptExt - Control Attached Documents List - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 4130058626 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2344297010">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PurchasePostReceiptExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3201,7 +3963,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension ResourceExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3083527838 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1708100201">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesCrMemoExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3213,7 +3975,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesCrMemoExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 1925512004 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 4034894651">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesInvoiceExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3225,7 +3987,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesInvoiceExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 1552137841 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1673401186">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesOrderExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3237,7 +3999,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesOrderExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3792668686 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2716593954">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostCrMemoExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3249,7 +4011,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostCrMemoExt - Control Visor - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3103464372 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2420212404">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostInvoiceExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3260,14 +4022,8 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostInvoiceExt - Control Visor - Property Caption</note>
         </trans-unit>
-        <trans-unit id="PageExtension 4254993347 - Control 2967437008 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3373253667">
-          <source>Documents</source>
-          <target>Documentos</target>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostShipmentExt - Control Attached Documents List - Property Caption</note>
-        </trans-unit>
         <trans-unit id="PageExtension 4254993347 - Control 4169497700 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3373253667">
-          <source>Archivos del Drive</source>
+          <source>Drive Files</source>
           <target>Archivos del Drive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension SalesPostShipmentExt - Control GoogleDriveFiles - Property Caption</note>
@@ -3315,7 +4071,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Company Info Ext - Field Code GoogleDrive - Property Caption</note>
         </trans-unit>
         <trans-unit id="TableExtension 3595798924 - Field 3096298988 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3469146285">
-          <source>Code Ondrive</source>
+          <source>OneDrive Code</source>
           <target>Código de OneDrive</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Company Info Ext - Field Code Ondrive - Property Caption</note>
@@ -3757,6 +4513,48 @@
           <target>Strapi</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Data Storage Provider - EnumValue Strapi - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3704028465 - EnumValue 1481297009 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Expired</source>
+          <target>Expirado</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Token Status - EnumValue Expired - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3704028465 - EnumValue 1990146883 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Invalid</source>
+          <target>No válido</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Token Status - EnumValue Invalid - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3704028465 - EnumValue 1516732151 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Refreshing</source>
+          <target>Refrescando</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Token Status - EnumValue Refreshing - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3704028465 - EnumValue 4294440508 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Unknown</source>
+          <target>Desconocido</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Token Status - EnumValue Unknown - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3704028465 - EnumValue 2035247194 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Valid</source>
+          <target>Válido</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Token Status - EnumValue Valid - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 2652414684 - Field 3003898253 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 375736668">
+          <source>Storage URL</source>
+          <target>URL de almacenamiento</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Incoming Doc. Attachment Ext - Field URL - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 2652414684 - Field 3003898253 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 375736668">
+          <source>URL of the file in storage (Google Drive, OneDrive, etc.) once the Document Attachment is created.</source>
+          <target>URL del archivo en el almacenamiento (Google Drive, OneDrive, etc.) una vez creado el Document Attachment.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Incoming Doc. Attachment Ext - Field URL - Property ToolTip</note>
         </trans-unit>
       </group>
     </body>

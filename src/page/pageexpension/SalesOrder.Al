@@ -16,7 +16,7 @@ pageextension 95122 SalesOrderExt extends "Sales Order"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
@@ -97,7 +97,7 @@ pageextension 95123 SalesInvoiceExt extends "Sales Invoice"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
@@ -178,7 +178,7 @@ pageextension 95124 SalesCrMemoExt extends "Sales Credit Memo"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
@@ -260,7 +260,7 @@ pageextension 95125 SalesPostInvoiceExt extends "Posted Sales Invoice"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
@@ -342,7 +342,7 @@ pageextension 95126 SalesPostCrMemoExt extends "Posted Sales Credit Memo"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 
@@ -411,14 +411,14 @@ pageextension 95127 SalesPostShipmentExt extends "Posted Sales Shipment"
     {
         addafter("Control1900383207")
         {
-            part("Attached Documents List"; "Doc. Attachment List Factbox")
-            {
-                ApplicationArea = All;
-                Caption = 'Documents';
-                UpdatePropagation = Both;
-                SubPageLink = "Table ID" = const(Database::"Sales Shipment Header"),
-                              "No." = field("No.");
-            }
+            // part("Attached Documents List"; "Doc. Attachment List Factbox")
+            // {
+            //     ApplicationArea = All;
+            //     Caption = 'Documents';
+            //     UpdatePropagation = Both;
+            //     SubPageLink = "Table ID" = const(Database::"Sales Shipment Header"),
+            //                   "No." = field("No.");
+            // }
             part(Visor; "PDF Viewer Part Google Drive")
             {
                 UpdatePropagation = Both;
@@ -431,7 +431,7 @@ pageextension 95127 SalesPostShipmentExt extends "Posted Sales Shipment"
             part(GoogleDriveFiles; "Google Drive Factbox")
             {
                 UpdatePropagation = Both;
-                Caption = 'Archivos del Drive';
+                Caption = 'Drive Files';
                 ApplicationArea = All;
                 Visible = IsExtendedFunctionalityEnabled;
 

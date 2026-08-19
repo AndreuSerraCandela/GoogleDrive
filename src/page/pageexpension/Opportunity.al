@@ -1,0 +1,82 @@
+pageextension 95111 OpportunityExt extends "Opportunity Card"
+{
+    layout
+    {
+        addafter("Attached Documents List")
+        {
+            part(Visor; "PDF Viewer Part Google Drive")
+            {
+                UpdatePropagation = Both;
+                //SubPageLink = "Entry No." = field("Incoming Document Entry No.");
+                Caption = 'PDF Viewer';
+                ApplicationArea = All;
+                Visible = IsExtendedFunctionalityEnabled;
+                //Visible = Tienedatos;
+            }
+            part(GoogleDriveFiles; "Google Drive Factbox")
+            {
+                UpdatePropagation = Both;
+                Caption = 'Drive Files';
+                ApplicationArea = All;
+                Visible = IsExtendedFunctionalityEnabled;
+
+                //SubPageLink = "Vendor No." = field("No.");
+            }
+
+        }
+    }
+    trigger OnAfterGetRecord()
+    var
+        CodeuniDocAtchManager: Codeunit "Doc. Attachment Mgmt. GDrive";
+        RecRef: RecordRef;
+        Recargar: Boolean;
+    begin
+        if Maestro = Rec."No." then
+            exit;
+        RecRef.GetTable(Rec);
+        If Not CodeuniDocAtchManager.OnAfterGetRecord(Maestro, Recargar, RecRef, Id, Rec."No.", 0D) then
+            exit;
+        If Recargar Then
+            CurrPage.GoogleDriveFiles.Page.Recargar(Id, '', 1, RecRef);
+        CurrPage.Visor.Page.SetRecord(Rec.RecordId);
+
+
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        CheckExtendedFunctionality();
+        if not IsExtendedFunctionalityEnabled then
+            exit;
+        CurrPage.Visor.Page.Update(false);
+        CurrPage.GoogleDriveFiles.Page.Update(false);
+    end;
+
+    trigger OnOpenPage()
+    begin
+        Maestro := '';
+        CheckExtendedFunctionality();
+    end;
+
+    local procedure CheckExtendedFunctionality()
+    var
+        DocAttachmentMgmtGDrive: Codeunit "Doc. Attachment Mgmt. GDrive";
+    begin
+        IsExtendedFunctionalityEnabled := DocAttachmentMgmtGDrive.FuncionalidadExtendida();
+    end;
+
+    var
+        Maestro: Text;
+        GoogleDriveManager: Codeunit "Google Drive Manager";
+        OneDriveManager: Codeunit "OneDrive Manager";
+        DropBoxManager: Codeunit "DropBox Manager";
+        StrapiManager: Codeunit "Strapi Manager";
+        FolderMapping: Record "Google Drive Folder Mapping";
+        Id: Text;
+        AutoCreateSubFolder: Boolean;
+        SubFolder: Text;
+        IsExtendedFunctionalityEnabled: Boolean;
+
+
+}
+

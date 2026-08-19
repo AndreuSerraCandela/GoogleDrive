@@ -4,7 +4,9 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
     // to use Google Drive instead of storing files in the tenant media
     permissions = tabledata "Company Information" = RIMD,
                   tabledata "Document Attachment" = RIMD,
-                  tabledata "Google Drive Folder Mapping" = RIMD;
+                  tabledata "Google Drive Folder Mapping" = RIMD,
+                  tabledata "Incoming Document" = R,
+                  tabledata "Incoming Document Attachment" = RIMD;
 
     var
         GoogleDriveManager: Codeunit "Google Drive Manager";
@@ -14,13 +16,17 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         SharePointManager: Codeunit "SharePoint Manager";
         CompanyInfo: Record "Company Information";
         MisisinDocActchPermision: Label 'Error: Permission to modify the Document Attachment record is missing';
+        ErrRecordNotFound: Label 'Record not found for Table ID %1, No. %2.', Comment = '%1=Table ID, %2=No.';
+        ErrTableNotSupported: Label 'Table ID %1 is not supported for attachments.', Comment = '%1=Table ID';
+        ErrFileNameEmpty: Label 'File name is required.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnAfterTableHasNumberFieldPrimaryKey, '', false, false)]
     local procedure OnAfterTableHasNumberFieldPrimaryKey(TableNo: Integer; var Result: Boolean; var FieldNo: Integer)
     begin
         Case TableNo of
             Database::"Bank Account",
-            Database::"G/L Account":
+            Database::"G/L Account",
+            Database::Contact:
                 begin
                     FieldNo := 1;
                     Result := true;
@@ -111,8 +117,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                         Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
                     DocumentAttachment."Google Drive ID" := GoogleDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
                 end;
-            CompanyInfo.
-            "Data Storage Provider"::OneDrive:
+            CompanyInfo."Data Storage Provider"::OneDrive:
                 begin
                     Path := CompanyInfo."Root Folder" + '/';
                     DocumentAttachment."Store in OneDrive" := true;
@@ -163,6 +168,288 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         end;
         IsHandled := true;
 
+    end;
+
+    /// <summary>
+    /// Sube un adjunto existente (con contenido en Document Reference ID) al proveedor configurado (Google Drive, OneDrive, etc.).
+    /// Exportar el stream desde Document Reference ID antes de llamar. Tras subir, actualiza el registro y opcionalmente limpia el blob.
+    /// </summary>
+    procedure UploadExistingAttachmentToCloud(var DocumentAttachment: Record "Document Attachment"; DocInStream: InStream; var IdDrive: Text): Boolean
+    var
+        FolderMapping: Record "Google Drive Folder Mapping";
+        Folder: Text;
+        SubFolder: Text;
+        Path: Text;
+        Fecha: Date;
+    begin
+        CompanyInfo.Get();
+        if CompanyInfo."Data Storage Provider" = CompanyInfo."Data Storage Provider"::Local then
+            exit(false);
+        Fecha := GetDocumentDate(DocumentAttachment);
+        case CompanyInfo."Data Storage Provider" of
+            CompanyInfo."Data Storage Provider"::"Google Drive":
+                begin
+                    DocumentAttachment."Store in Google Drive" := true;
+                    FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                    if FolderMapping.FindFirst() then
+                        Folder := FolderMapping."Default Folder ID";
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, CompanyInfo."Data Storage Provider");
+                    if SubFolder <> '' then
+                        Folder := GoogleDriveManager.CreateFolderStructure(Folder, SubFolder);
+                    DocumentAttachment."Google Drive ID" := GoogleDriveManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                    IdDrive := DocumentAttachment."Google Drive ID";
+                end;
+            CompanyInfo."Data Storage Provider"::OneDrive:
+                begin
+                    Path := CompanyInfo."Root Folder" + '/';
+                    DocumentAttachment."Store in OneDrive" := true;
+                    FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                    if FolderMapping.FindFirst() then begin
+                        Folder := FolderMapping."Default Folder Id";
+                        Path += FolderMapping."Default Folder Name" + '/';
+                    end;
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, CompanyInfo."Data Storage Provider");
+                    if SubFolder <> '' then begin
+                        Folder := OneDriveManager.CreateFolderStructure(Folder, SubFolder);
+                        Path += SubFolder + '/'
+                    end;
+                    DocumentAttachment."OneDrive ID" := OneDriveManager.UploadFileB64(Path, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                    IdDrive := DocumentAttachment."OneDrive ID";
+                end;
+            CompanyInfo."Data Storage Provider"::DropBox:
+                begin
+                    DocumentAttachment."Store in DropBox" := true;
+                    FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                    if FolderMapping.FindFirst() then
+                        Folder := FolderMapping."Default Folder ID";
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", Fecha, CompanyInfo."Data Storage Provider");
+                    if SubFolder <> '' then
+                        Folder := DropBoxManager.CreateFolderStructure(Folder, SubFolder);
+                    DocumentAttachment."DropBox ID" := DropBoxManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name");
+                    IdDrive := DocumentAttachment."DropBox ID";
+                end;
+            CompanyInfo."Data Storage Provider"::Strapi:
+                begin
+                    DocumentAttachment."Store in Strapi" := true;
+                    DocumentAttachment."Strapi ID" := StrapiManager.UploadFileB64(Folder, DocInStream, DocumentAttachment."File Name");
+                    IdDrive := DocumentAttachment."Strapi ID";
+                end;
+            CompanyInfo."Data Storage Provider"::SharePoint:
+                begin
+                    DocumentAttachment."Store in SharePoint" := true;
+                    FolderMapping.SetRange("Table ID", DocumentAttachment."Table ID");
+                    if FolderMapping.FindFirst() then begin
+                        Folder := FolderMapping."Default Folder Id";
+                        Path += FolderMapping."Default Folder Name" + '/';
+                    end;
+                    SubFolder := FolderMapping.CreateSubfolderPath(DocumentAttachment."Table ID", DocumentAttachment."No.", 0D, CompanyInfo."Data Storage Provider");
+                    if SubFolder <> '' then begin
+                        Folder := SharePointManager.CreateFolderStructure(Folder, SubFolder);
+                        Path += SubFolder + '/'
+                    end;
+                    DocumentAttachment."SharePoint ID" := SharePointManager.UploadFileB64(Path, DocInStream, DocumentAttachment."File Name", DocumentAttachment."File Extension");
+                    IdDrive := DocumentAttachment."SharePoint ID";
+                end;
+            else
+                exit(false);
+        end;
+        Clear(DocumentAttachment."Document Reference ID");
+        if not DocumentAttachment.WritePermission() then
+            Error(MisisinDocActchPermision);
+        DocumentAttachment.Modify(true);
+        exit(true);
+    end;
+
+    local procedure GetDocumentDate(DocumentAttachment: Record "Document Attachment"): Date
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        PurchaseCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        PurcchaseRcptHeader: Record "Purch. Rcpt. Header";
+        SalesShipmentHeader: Record "Sales Shipment Header";
+    begin
+        case DocumentAttachment."Table ID" of
+            Database::"Sales Header":
+                if SalesHeader.Get(DocumentAttachment."Document Type", DocumentAttachment."No.") then
+                    exit(SalesHeader."Document Date");
+            Database::"Sales Invoice Header":
+                if SalesInvoiceHeader.Get(DocumentAttachment."No.") then
+                    exit(SalesInvoiceHeader."Document Date");
+            Database::"Sales Cr.Memo Header":
+                if SalesCrMemoHeader.Get(DocumentAttachment."No.") then
+                    exit(SalesCrMemoHeader."Document Date");
+            Database::"Purchase Header":
+                if PurchaseHeader.Get(DocumentAttachment."Document Type", DocumentAttachment."No.") then
+                    exit(PurchaseHeader."Document Date");
+            Database::"Purch. Inv. Header":
+                if PurchaseInvoiceHeader.Get(DocumentAttachment."No.") then
+                    exit(PurchaseInvoiceHeader."Document Date");
+            Database::"Purch. Cr. Memo Hdr.":
+                if PurchaseCrMemoHeader.Get(DocumentAttachment."No.") then
+                    exit(PurchaseCrMemoHeader."Document Date");
+            Database::"Purch. Rcpt. Header":
+                if PurcchaseRcptHeader.Get(DocumentAttachment."No.") then
+                    exit(PurcchaseRcptHeader."Document Date");
+            Database::"Sales Shipment Header":
+                if SalesShipmentHeader.Get(DocumentAttachment."No.") then
+                    exit(SalesShipmentHeader."Document Date");
+        end;
+        exit(0D);
+    end;
+
+    /// <summary>
+    /// Crea registros Document Attachment desde los adjuntos de un Incoming Document,
+    /// vinculados al documento relacionado (Related Record ID). Solo crea si no existe ya un
+    /// Document Attachment con el mismo nombre de archivo para ese documento. Sube el contenido al almacenamiento configurado.
+    /// </summary>
+    procedure CreateDocumentAttachmentsFromIncomingDocument(var IncomingDocument: Record "Incoming Document"; var CountCreated: Integer; var CountSkipped: Integer): Boolean
+    var
+        IncomingDocAttachment: Record "Incoming Document Attachment";
+        DocumentAttachment: Record "Document Attachment";
+        RecRef: RecordRef;
+        TempBlob: Codeunit "Temp Blob";
+        DocInStream: InStream;
+        DocOutStream: OutStream;
+        TableId: Integer;
+        No: Code[20];
+        DocType: Integer;
+        LineNo: Integer;
+        FileName: Text[250];
+        FileExt: Text[30];
+        IdDrive: Text;
+    begin
+        CountCreated := 0;
+        CountSkipped := 0;
+        if not RecRef.Get(IncomingDocument."Related Record ID") then
+            exit(false);
+        if not GetTableIdNoDocTypeFromRecRef(RecRef, TableId, No, DocType) then
+            exit(false);
+
+        IncomingDocAttachment.SetRange("Incoming Document Entry No.", IncomingDocument."Entry No.");
+        if not IncomingDocAttachment.FindSet() then
+            exit(true);
+
+        repeat
+            IncomingDocAttachment.CalcFields(Content);
+            if IncomingDocAttachment.Content.HasValue then begin
+                FileExt := CopyStr(IncomingDocAttachment."File Extension", 1, MaxStrLen(FileExt));
+                FileName := GetFileNameWithoutExtension(IncomingDocAttachment.Name, FileExt);
+                if FileName = '' then
+                    FileName := CopyStr(StrSubstNo('Attachment_%1', IncomingDocAttachment."Line No."), 1, MaxStrLen(FileName));
+
+                DocumentAttachment.Reset();
+                DocumentAttachment.SetRange("Table ID", TableId);
+                DocumentAttachment.SetRange("No.", No);
+                DocumentAttachment.SetRange("Document Type", DocType);
+                DocumentAttachment.SetRange("File Name", FileName);
+                if DocumentAttachment.FindFirst() then
+                    CountSkipped += 1
+                else begin
+                    LineNo := GetNextLineNoForDocument(TableId, No, DocType);
+                    DocumentAttachment.Init();
+                    DocumentAttachment."Table ID" := TableId;
+                    DocumentAttachment."No." := No;
+                    DocumentAttachment."Document Type" := "Attachment Document Type".FromInteger(DocType);
+                    DocumentAttachment."Line No." := LineNo;
+                    DocumentAttachment."File Name" := FileName;
+                    DocumentAttachment."File Extension" := FileExt;
+                    IncomingDocAttachment.Content.CreateInStream(DocInStream);
+                    TempBlob.CreateOutStream(DocOutStream);
+                    CopyStream(DocOutStream, DocInStream);
+                    TempBlob.CreateInStream(DocInStream);
+                    if not DocumentAttachment.WritePermission() then
+                        Error(MisisinDocActchPermision);
+                    DocumentAttachment.Insert;
+                    if UploadExistingAttachmentToCloud(DocumentAttachment, DocInStream, IdDrive) then begin
+                        CountCreated += 1;
+                        //Borrar Contenido del Incoming Document Attachment
+                        Clear(IncomingDocAttachment.Content);
+                        If DocumentAttachment.Get(DocumentAttachment."Table ID", DocumentAttachment."No.", DocumentAttachment."Document Type", DocumentAttachment."Line No.", DocumentAttachment.Id) then
+                            IncomingDocument.URL := IdDrive;
+                        IncomingDocAttachment.Modify();
+                        IncomingDocument.Modify();
+                    end;
+                end;
+            end;
+        until IncomingDocAttachment.Next() = 0;
+        exit(true);
+    end;
+
+    local procedure GetTableIdNoDocTypeFromRecRef(RecRef: RecordRef; var TableId: Integer; var No: Code[20]; var DocType: Integer): Boolean
+    var
+        F: FieldRef;
+    begin
+        TableId := RecRef.Number;
+        DocType := 0;
+        case TableId of
+            Database::"Sales Header",
+            Database::"Purchase Header":
+                begin
+                    F := RecRef.Field(1);  // Document Type
+                    DocType := F.Value;
+                    F := RecRef.Field(3);  // No.
+                    No := F.Value;
+                end;
+            Database::"Sales Invoice Header",
+            Database::"Sales Cr.Memo Header",
+            Database::"Purch. Inv. Header",
+            Database::"Purch. Cr. Memo Hdr.",
+            Database::"Purch. Rcpt. Header",
+            Database::"Sales Shipment Header":
+                begin
+                    F := RecRef.Field(3);  // No.
+                    No := F.Value;
+                end;
+            Database::Customer,
+            Database::Vendor,
+            Database::Contact,
+            Database::Item,
+            Database::Job,
+            Database::"G/L Account",
+            Database::"Fixed Asset",
+            Database::Employee,
+            Database::"Bank Account",
+            Database::Opportunity:
+                begin
+                    F := RecRef.Field(1);  // No.
+                    No := F.Value;
+                end;
+            else
+                exit(false);
+        end;
+        exit(true);
+    end;
+
+    local procedure GetNextLineNoForDocument(TableId: Integer; No: Code[20]; DocType: Integer): Integer
+    var
+        DocumentAttachment: Record "Document Attachment";
+    begin
+        DocumentAttachment.SetRange("Table ID", TableId);
+        DocumentAttachment.SetRange("No.", No);
+        DocumentAttachment.SetRange("Document Type", DocType);
+        if DocumentAttachment.FindLast() then
+            exit(DocumentAttachment."Line No." + 10000);
+        exit(10000);
+    end;
+
+    local procedure GetFileNameWithoutExtension(Name: Text; FileExtension: Text) Result: Text[250]
+    var
+        LenExt: Integer;
+        LenName: Integer;
+    begin
+        Result := CopyStr(Name, 1, MaxStrLen(Result));
+        if Result = '' then exit;
+        LenName := StrLen(Result);
+        if FileExtension = '' then exit;
+        if FileExtension[1] <> '.' then
+            FileExtension := '.' + FileExtension;
+        LenExt := StrLen(FileExtension);
+        if LenName > LenExt then
+            if LowerCase(CopyStr(Result, LenName - LenExt + 1, LenExt)) = LowerCase(FileExtension) then
+                Result := CopyStr(CopyStr(Result, 1, LenName - LenExt), 1, MaxStrLen(Result));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, 80, OnRunOnBeforeFinalizePosting, '', false, false)]
@@ -228,7 +515,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                         DocumentAttachment2 := DocumentAttachment;
                         DocumentAttachment2."Table ID" := Database::"Sales Shipment Header";
                         DocumentAttachment2."No." := SalesShipmentHeader."No.";
-                        DocumentAttachment2."Document Type" := 0;
+                        DocumentAttachment2."Document Type" := DocumentAttachment."Document Type"::Quote;
                         if not DocumentAttachment2.WritePermission() then Error(MisisinDocActchPermision);
                         DocumentAttachment2.Insert();
 
@@ -356,7 +643,7 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
                         DocumentAttachment2 := DocumentAttachment;
                         DocumentAttachment2."Table ID" := Database::"Purch. Rcpt. Header";
                         DocumentAttachment2."No." := PurchRcptHeader."No.";
-                        DocumentAttachment2."Document Type" := 0;
+                        DocumentAttachment2."Document Type" := DocumentAttachment."Document Type"::Quote;
                         if not DocumentAttachment2.WritePermission() then Error(MisisinDocActchPermision);
                         DocumentAttachment2.Insert();
 
@@ -807,6 +1094,159 @@ codeunit 95101 "Doc. Attachment Mgmt. GDrive"
         end;
         if DocumentAttachment."Store in Strapi" then begin
             Base64Data := StrapiManager.DownloadFileB64('', DocumentAttachment."Strapi ID", DocumentAttachment."File Name", false);
+        end;
+    end;
+
+    [ServiceEnabled]
+    procedure ping(base64Content: Text; tableId: text): Boolean
+    begin
+        exit(true);
+    end;
+
+    // Endpoint OData: publicar este codeunit como Web Service. POST .../ODataV4/DocAttachmentMgmtGDrive_UploadAttachment?company=...
+    // Body JSON: { "base64Content": "...", "tableId": 36, "no": "ORD-001", "fileName": "doc.pdf", "documentType": 0 }
+    [ServiceEnabled]
+    procedure Uploadattachmentweb(base64Content: Text; tableId: Integer; no: Text; fileName: Text; documentType: Integer): Boolean
+    var
+        DocumentAttachment: Record "Document Attachment";
+        RecRef: RecordRef;
+        TempBlob: Codeunit "Temp Blob";
+        OutStream: OutStream;
+        Base64Convert: Codeunit "Base64 Convert";
+
+    begin
+        if fileName = '' then
+            Error(ErrFileNameEmpty);
+
+        if not GetRecordRefForUpload(tableId, no, documentType, RecRef) then
+            Error(ErrRecordNotFound, tableId, no);
+
+        TempBlob.CreateOutStream(OutStream);
+        Base64Convert.FromBase64(base64Content, OutStream);
+
+        Clear(DocumentAttachment);
+        DocumentAttachment.SaveAttachment(RecRef, fileName, TempBlob);
+        exit(true);
+    end;
+
+    local procedure GetRecordRefForUpload(tableId: Integer; no: Text; documentType: Integer; var RecRef: RecordRef): Boolean
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        PurchaseCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        Customer: Record Customer;
+        Vendor: Record Vendor;
+        Contact: Record Contact;
+        Item: Record Item;
+        Job: Record Job;
+        GLAccount: Record "G/L Account";
+        FixedAsset: Record "Fixed Asset";
+        Employee: Record Employee;
+        BankAccount: Record "Bank Account";
+        Opportunity: Record Opportunity;
+    begin
+        case tableId of
+            Database::"Sales Header":
+                begin
+                    if not SalesHeader.Get(documentType, no) then exit(false);
+                    RecRef.GetTable(SalesHeader);
+                    exit(true);
+                end;
+            Database::"Purchase Header":
+                begin
+                    if not PurchaseHeader.Get(documentType, no) then exit(false);
+                    RecRef.GetTable(PurchaseHeader);
+                    exit(true);
+                end;
+            Database::"Sales Invoice Header":
+                begin
+                    if not SalesInvoiceHeader.Get(no) then exit(false);
+                    RecRef.GetTable(SalesInvoiceHeader);
+                    exit(true);
+                end;
+            Database::"Sales Cr.Memo Header":
+                begin
+                    if not SalesCrMemoHeader.Get(no) then exit(false);
+                    RecRef.GetTable(SalesCrMemoHeader);
+                    exit(true);
+                end;
+            Database::"Purch. Inv. Header":
+                begin
+                    if not PurchaseInvoiceHeader.Get(no) then exit(false);
+                    RecRef.GetTable(PurchaseInvoiceHeader);
+                    exit(true);
+                end;
+            Database::"Purch. Cr. Memo Hdr.":
+                begin
+                    if not PurchaseCrMemoHeader.Get(no) then exit(false);
+                    RecRef.GetTable(PurchaseCrMemoHeader);
+                    exit(true);
+                end;
+            Database::Customer:
+                begin
+                    if not Customer.Get(no) then exit(false);
+                    RecRef.GetTable(Customer);
+                    exit(true);
+                end;
+            Database::Vendor:
+                begin
+                    if not Vendor.Get(no) then exit(false);
+                    RecRef.GetTable(Vendor);
+                    exit(true);
+                end;
+            Database::Contact:
+                begin
+                    if not Contact.Get(no) then exit(false);
+                    RecRef.GetTable(Contact);
+                    exit(true);
+                end;
+            Database::Item:
+                begin
+                    if not Item.Get(no) then exit(false);
+                    RecRef.GetTable(Item);
+                    exit(true);
+                end;
+            Database::Job:
+                begin
+                    if not Job.Get(no) then exit(false);
+                    RecRef.GetTable(Job);
+                    exit(true);
+                end;
+            Database::"G/L Account":
+                begin
+                    if not GLAccount.Get(no) then exit(false);
+                    RecRef.GetTable(GLAccount);
+                    exit(true);
+                end;
+            Database::"Fixed Asset":
+                begin
+                    if not FixedAsset.Get(no) then exit(false);
+                    RecRef.GetTable(FixedAsset);
+                    exit(true);
+                end;
+            Database::Employee:
+                begin
+                    if not Employee.Get(no) then exit(false);
+                    RecRef.GetTable(Employee);
+                    exit(true);
+                end;
+            Database::"Bank Account":
+                begin
+                    if not BankAccount.Get(no) then exit(false);
+                    RecRef.GetTable(BankAccount);
+                    exit(true);
+                end;
+            Database::Opportunity:
+                begin
+                    if not Opportunity.Get(no) then exit(false);
+                    RecRef.GetTable(Opportunity);
+                    exit(true);
+                end;
+            else
+                Error(ErrTableNotSupported, tableId);
         end;
     end;
 

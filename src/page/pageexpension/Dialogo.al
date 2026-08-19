@@ -3,7 +3,7 @@
 /// </summary>
 page 95121 "Dialogo Dropbox"
 {
-    Caption = 'Dialogo';
+    Caption = 'Dialog';
     PageType = StandardDialog;
     layout
     {

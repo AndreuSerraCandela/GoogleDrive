@@ -634,13 +634,9 @@ codeunit 95104 "Strapi Manager"
 
     local procedure GetFileExtension(FileName: Text): Text
     var
-        DotPosition: Integer;
+        GoogleDriveManager: Codeunit "Google Drive Manager";
     begin
-        DotPosition := StrPos(FileName, '.');
-        if DotPosition > 0 then
-            exit(CopyStr(FileName, DotPosition + 1))
-        else
-            exit('');
+        exit(GoogleDriveManager.GetFileExtension(FileName));
     end;
 
 

@@ -10,7 +10,7 @@
             "environmentName": "sandbox",
             "breakOnError": "All",
             "launchBrowser": true,
-            "schemaUpdateMode": "Synchronize",
+            "schemaUpdateMode": "ForceSync",
             "enableLongRunningSqlStatements": true,
             "enableSqlInformationDebugger": true
         },

@@ -201,9 +201,17 @@ page 95112 "Drive Configuration"
                         ApplicationArea = All;
                         ToolTip = 'Specifies the ID of the OneDrive site.';
                     }
-                    field("Code Ondrive"; Rec."Code Ondrive")
+                    field(OneDriveAuthCode; OneDriveAuthCode)
                     {
                         ApplicationArea = All;
+                        Caption = 'OneDrive Code';
+                        ToolTip = 'Paste the full OAuth authorization code from the URL (the value after code= and before &state=). Stored as Blob so long codes are not truncated.';
+                        MultiLine = true;
+
+                        trigger OnValidate()
+                        begin
+                            Rec.SetCodeOndrive(OneDriveAuthCode);
+                        end;
                     }
                 }
 
@@ -467,6 +475,7 @@ page 95112 "Drive Configuration"
                     Caption = 'Get Token';
                     ToolTip = 'Completes the OAuth authentication process with the authorization code.';
                     Image = Approve;
+                    Visible = IsGoogleDrive;
 
                     trigger OnAction()
                     var
@@ -639,30 +648,11 @@ page 95112 "Drive Configuration"
                 Caption = 'OneDrive';
                 Visible = IsOneDrive;
 
-                action("OneDrive Test Connection")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Test Connection';
-                    ToolTip = 'Tests the connection with OneDrive using the current configuration.';
-                    Image = TestReport;
-
-                    trigger OnAction()
-                    var
-                        OneDriveManager: Codeunit "OneDrive Manager";
-                    begin
-                        OneDriveManager.Initialize();
-                        if OneDriveManager.Authenticate() then
-                            Message(OneDriveConnectionSuccessLbl)
-                        else
-                            Message(OneDriveConnectionErrorLbl);
-                    end;
-                }
-
                 action("OneDrive Start OAuth")
                 {
                     ApplicationArea = All;
                     Caption = 'Start OAuth';
-                    ToolTip = 'Starts the OAuth authentication process with OneDrive.';
+                    ToolTip = 'Starts the OAuth authentication process with OneDrive. Then paste the code from the URL into Code Ondrive and use Get Token.';
                     Image = Web;
 
                     trigger OnAction()
@@ -674,30 +664,79 @@ page 95112 "Drive Configuration"
                     end;
                 }
 
-                action("Actualizar OneDrive Token")
+                action("OneDrive Get Token")
                 {
                     ApplicationArea = All;
-                    Caption = 'Update Token';
-                    ToolTip = 'Update the access token using the refresh token.';
-                    Image = Refresh;
+                    Caption = 'Get Token';
+                    ToolTip = 'Exchanges the OneDrive authorization code (Code Ondrive) for access and refresh tokens. Do not use the Google Drive Get Token action.';
+                    Image = Approve;
+                    Visible = IsOneDrive;
 
                     trigger OnAction()
                     var
                         OneDriveManager: Codeunit "OneDrive Manager";
-                        DriveTokenManagement: Record "Drive Token Management";
                     begin
                         OneDriveManager.Initialize();
-                        If not DriveTokenManagement.Get(DriveTokenManagement."Storage Provider"::"OneDrive") then begin
-                            DriveTokenManagement.Init();
-                            DriveTokenManagement."Storage Provider" := DriveTokenManagement."Storage Provider"::"OneDrive";
-                            DriveTokenManagement.Insert();
-                        end;
-                        Rec.CalcFields("OneDrive Access Token");
-                        if Rec."OneDrive Access Token".HasValue = false Then begin
-                            OneDriveManager.ObtenerToken(Rec."Code Ondrive", DriveTokenManagement);
-                            Commit();
-                        end;
+                        OneDriveManager.GetTokenFromAuthorizationCode();
+                        OneDriveAuthCode := Rec.GetCodeOndrive();
+                        CurrPage.Update(false);
+                    end;
+                }
+
+                action("Actualizar OneDrive Token")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Refresh Token';
+                    ToolTip = 'Refreshes the access token using the stored refresh token.';
+                    Image = Refresh;
+                    Visible = IsOneDrive;
+
+                    trigger OnAction()
+                    var
+                        OneDriveManager: Codeunit "OneDrive Manager";
+                    begin
+                        OneDriveManager.Initialize();
                         OneDriveManager.RefreshAccessToken();
+                        CurrPage.Update(false);
+                    end;
+                }
+
+                action("OneDrive Test Token Validity")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Test Token Validity';
+                    ToolTip = 'Checks whether the stored OneDrive access token is still valid by expiration date.';
+                    Image = TestReport;
+
+                    trigger OnAction()
+                    var
+                        OneDriveManager: Codeunit "OneDrive Manager";
+                        MessageText: Text;
+                    begin
+                        OneDriveManager.Initialize();
+                        OneDriveManager.TestTokenValidity(MessageText);
+                        Message(MessageText);
+                    end;
+                }
+
+                action("OneDrive Test Connection")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Test Connection';
+                    ToolTip = 'Tests the connection with Microsoft Graph using the current OneDrive token (personal drive or configured site).';
+                    Image = TestFile;
+                    Visible = IsOneDrive;
+
+                    trigger OnAction()
+                    var
+                        OneDriveManager: Codeunit "OneDrive Manager";
+                        MessageText: Text;
+                    begin
+                        OneDriveManager.Initialize();
+                        if OneDriveManager.TestConnection(MessageText) then
+                            Message(MessageText)
+                        else
+                            Message(MessageText);
                     end;
                 }
 
@@ -705,18 +744,20 @@ page 95112 "Drive Configuration"
                 {
                     ApplicationArea = All;
                     Caption = 'Validate Configuration';
-                    ToolTip = 'Validates that all configuration fields are complete.';
+                    ToolTip = 'Validates credentials, tokens and site settings for OneDrive and shows a diagnostic summary.';
                     Image = ValidateEmailLoggingSetup;
+                    Visible = IsOneDrive;
 
                     trigger OnAction()
                     var
                         OneDriveManager: Codeunit "OneDrive Manager";
+                        DiagnosticInfo: Text;
                     begin
                         OneDriveManager.Initialize();
-                        if OneDriveManager.ValidateConfiguration() then
-                            Message(ConfigurationValidLbl)
+                        if OneDriveManager.ValidateConfigurationDetailed(DiagnosticInfo) then
+                            Message('%1\%2', ConfigurationValidLbl, DiagnosticInfo)
                         else
-                            Message(ConfigurationIncompleteLbl);
+                            Message('%1\%2', ConfigurationIncompleteLbl, DiagnosticInfo);
                     end;
                 }
 
@@ -993,7 +1034,10 @@ page 95112 "Drive Configuration"
         {
             actionref(FolderMappingSetupAction; "Folder Mapping Setup") { }
             actionref(TokenGoogleDriveAction; "Get Token") { }
+            actionref(TokenOneDriveGetAction; "OneDrive Get Token") { }
             actionref(TokenOneDriveAction; "Actualizar OneDrive Token") { }
+            actionref(OneDriveTestConnectionPromoted; "OneDrive Test Connection") { }
+            actionref(OneDriveValidatePromoted; "OneDrive Validate Configuration") { }
             actionref(TokenDropBoxAction; "Actualizar DropBox Token") { }
             actionref(CreaRootDriveAction; "Crea Root") { }
             //actionref(CreaRootOneDriveAction; "Crea Root One Drive") { }
@@ -1010,6 +1054,7 @@ page 95112 "Drive Configuration"
         IsStrapi: Boolean;
         IsSharePoint: Boolean;
         TokenDropBox: Text;
+        OneDriveAuthCode: Text;
         // Labels for messages
         GoogleDriveConnectionSuccessLbl: Label '✅ Google Drive connection successful.';
         GoogleDriveConnectionErrorLbl: Label '❌ Connection error. Check configuration.';
@@ -1050,6 +1095,7 @@ page 95112 "Drive Configuration"
         IsStrapi := Rec."Data Storage Provider" = Rec."Data Storage Provider"::Strapi;
         TokenDropBox := Rec.GetTokenDropbox();
         IsSharePoint := Rec."Data Storage Provider" = Rec."Data Storage Provider"::SharePoint;
+        OneDriveAuthCode := Rec.GetCodeOndrive();
     end;
 
     local procedure SetDefaultGoogleDriveSettings()
@@ -1148,6 +1194,20 @@ pageextension 95101 CompanyInfoExt extends "Company Information"
                     end;
                     Page.Run(Page::"Drive Configuration", Rec);
                 end;
+            }
+            action("Doc. Attachments to Upload")
+            {
+                ApplicationArea = All;
+                Caption = 'Attachments to upload to storage';
+                ToolTip = 'Opens the attachment list to filter and upload to Drive those that have content in Document Reference ID.';
+                RunObject = page "Doc. Attachments to Upload";
+            }
+            action("Incoming Docs. to Doc. Attach.")
+            {
+                ApplicationArea = All;
+                Caption = 'Incoming documents to Document Attachment';
+                ToolTip = 'Creates Document Attachments from incoming document attachments and uploads them to storage (without duplicating by name).';
+                RunObject = page "Incoming Docs. to Doc. Attach.";
             }
         }
         addlast(Promoted)

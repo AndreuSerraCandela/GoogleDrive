@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Manual: Configurar OneDrive en Business Central</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  body {
+    font-family: "Segoe UI", Calibri, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.4;
+    color: #1a1a1a;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 18pt;
+    border-bottom: 2px solid #0078d4;
+    padding-bottom: 6px;
+    color: #0078d4;
+    margin-top: 0;
+  }
+  h2 {
+    font-size: 13pt;
+    color: #0078d4;
+    margin-top: 18pt;
+    border-bottom: 1px solid #cce4f7;
+    padding-bottom: 3px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 11.5pt;
+    color: #323130;
+    margin-top: 12pt;
+    page-break-after: avoid;
+  }
+  h4 {
+    font-size: 10.5pt;
+    margin-top: 10pt;
+    page-break-after: avoid;
+  }
+  p, li { margin: 4pt 0; }
+  ul, ol { padding-left: 18pt; margin: 6pt 0; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 8pt 0 12pt 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #bbb;
+    padding: 5pt 7pt;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #e8f2fb;
+    font-weight: 600;
+  }
+  blockquote {
+    margin: 8pt 0;
+    padding: 8pt 12pt;
+    background: #fff8e1;
+    border-left: 4px solid #f9a825;
+    page-break-inside: avoid;
+  }
+  pre, code {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 8.5pt;
+  }
+  pre {
+    background: #f3f3f3;
+    border: 1px solid #ddd;
+    padding: 8pt 10pt;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    page-break-inside: avoid;
+  }
+  code {
+    background: #f3f3f3;
+    padding: 1pt 3pt;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 14pt 0;
+  }
+  .subtitle { color: #605e5c; margin-top: -4pt; margin-bottom: 14pt; }
+  .footer {
+    margin-top: 24pt;
+    font-size: 8.5pt;
+    color: #605e5c;
+    border-top: 1px solid #ddd;
+    padding-top: 6pt;
+  }
+</style>
+</head>
+<body>
+
+<h1>Manual: Configurar OneDrive en Business Central</h1>
+<p class="subtitle">Guía rápida para conectar <strong>OneDrive / SharePoint</strong> con la extensión de almacenamiento (E&amp;A GoogleDrive).</p>
+
+<h2>1. Requisitos previos</h2>
+<ul>
+  <li>Acceso al <strong>Azure Portal</strong> (App Registration).</li>
+  <li>Permisos de administrador en Business Central.</li>
+  <li>Extensión publicada con el campo <strong>OneDrive Code</strong> como Blob (para que el código OAuth quepa completo).</li>
+</ul>
+
+<h2>2. Configurar la aplicación en Azure Portal</h2>
+
+<h3>2.1 Crear o abrir la App Registration</h3>
+<ol>
+  <li>Entra en Azure Portal → <strong>Microsoft Entra ID</strong> → <strong>App registrations</strong>.</li>
+  <li>Abre tu aplicación (o crea una nueva).</li>
+  <li>Anota estos valores (los necesitarás en BC):</li>
+</ol>
+
+<table>
+  <tr><th>Campo en Azure</th><th>Campo en Business Central</th></tr>
+  <tr><td>Application (client) ID</td><td><strong>ID de Cliente de OneDrive</strong></td></tr>
+  <tr><td>Directory (tenant) ID</td><td><strong>ID del Inquilino de OneDrive</strong></td></tr>
+  <tr><td>Client secret (Valor)</td><td><strong>Secreto de Cliente de OneDrive</strong></td></tr>
+</table>
+
+<blockquote>Importante: copia el <strong>Valor</strong> del secreto, no el <em>Secret ID</em>.</blockquote>
+
+<h3>2.2 Redirect URI (URI de redirección)</h3>
+<ol>
+  <li>Ve a <strong>Authentication</strong> → <strong>Add a platform</strong>.</li>
+  <li>Elige <strong>Mobile and desktop applications</strong> (recomendado).</li>
+  <li>Añade o marca:</li>
+</ol>
+<pre>https://login.microsoftonline.com/common/oauth2/nativeclient</pre>
+<ol start="4">
+  <li>Opcional: activa <strong>Allow public client flows</strong> = <strong>Yes</strong>.</li>
+</ol>
+<blockquote>Si <code>nativeclient</code> está solo en plataforma <strong>Web</strong>, también puede funcionar, pero es más correcto en <strong>Mobile and desktop</strong>.</blockquote>
+
+<h3>2.3 Permisos de API (Microsoft Graph)</h3>
+<p>En <strong>API permissions</strong> → <strong>Add a permission</strong> → <strong>Microsoft Graph</strong> → <strong>Delegated</strong>:</p>
+<table>
+  <tr><th>Permiso</th><th>Para qué sirve</th></tr>
+  <tr><td><code>Files.ReadWrite.All</code></td><td>Leer y escribir archivos</td></tr>
+  <tr><td><code>offline_access</code></td><td>Obtener refresh token</td></tr>
+</table>
+<p>Pulsa <strong>Grant admin consent</strong> (consentimiento de administrador) si tu tenant lo exige.</p>
+
+<h2>3. Configurar OneDrive en Business Central</h2>
+<ol>
+  <li>Abre <strong>Información de la empresa</strong>.</li>
+  <li>Acción <strong>Configuración de almacenamiento</strong> (Storage Configuration).</li>
+  <li>En <strong>Proveedor de almacenamiento de Datos</strong>, elige <strong>OneDrive</strong>.</li>
+  <li>Rellena:</li>
+</ol>
+<table>
+  <tr><th>Campo</th><th>Valor</th></tr>
+  <tr><td>ID de Cliente de OneDrive</td><td>Application (client) ID de Azure</td></tr>
+  <tr><td>Secreto de Cliente de OneDrive</td><td>Valor del client secret</td></tr>
+  <tr><td>ID del Inquilino de OneDrive</td><td>Directory (tenant) ID</td></tr>
+  <tr><td>URL de API de OneDrive</td><td><code>https://graph.microsoft.com/v1.0</code> (por defecto)</td></tr>
+</table>
+<ol start="5">
+  <li>Si usas un <strong>sitio de SharePoint</strong> (recomendado para empresas):</li>
+</ol>
+<table>
+  <tr><th>Campo</th><th>Ejemplo</th></tr>
+  <tr><td>URL del Sitio de OneDrive</td><td><code>mallapalma.sharepoint.com:/sites/Prueba</code></td></tr>
+  <tr><td>ID del Sitio de OneDrive</td><td>Se obtiene con la acción <strong>Id Site</strong></td></tr>
+</table>
+<ol start="6">
+  <li>Guarda.</li>
+</ol>
+
+<h2>4. Obtener el token (OAuth)</h2>
+
+<h3>Paso A – Iniciar OAuth</h3>
+<ol>
+  <li>En la página <strong>Configuración de almacenamiento</strong>, con proveedor <strong>OneDrive</strong>.</li>
+  <li>Pulsa <strong>Start OAuth</strong> (grupo OneDrive).</li>
+  <li>Inicia sesión con la cuenta de Microsoft / Entra ID.</li>
+  <li>Acepta los permisos solicitados.</li>
+</ol>
+
+<h3>Paso B – “Capturar” el código (code)</h3>
+<p>Tras aceptar, el navegador te lleva a una página con un aviso tipo:</p>
+<blockquote><em>Por lo general, esta página no se muestra… podría ser un signo de phishing…</em></blockquote>
+<p><strong>Eso es normal.</strong> Significa que el login ha funcionado. El código está en la <strong>barra de direcciones</strong>.</p>
+
+<h4>Ejemplo de URL</h4>
+<pre>https://login.microsoftonline.com/common/oauth2/nativeclient?code=1.AU4AcATtLEaDJE-X2uwCnVbZg...LvXBiCKM&amp;state=12345&amp;session_state=006b4cda-...</pre>
+
+<h4>Qué copiar</h4>
+<p>Copia <strong>solo</strong> lo que va entre <code>code=</code> y <code>&amp;state=</code> (sin incluir <code>code=</code> ni <code>&amp;state=</code>):</p>
+<pre>1.AU4AcATtLEaDJE-X2uwCnVbZg...LvXBiCKM</pre>
+
+<h4>Qué NO copiar</h4>
+<table>
+  <tr><th>Incorrecto</th><th>Motivo</th></tr>
+  <tr><td>La URL completa</td><td>Incluye <code>state</code> y otros parámetros</td></tr>
+  <tr><td><code>code=1.AU4Ac...</code></td><td>No debe llevar el prefijo <code>code=</code></td></tr>
+  <tr><td><code>...CKM&amp;state=12345</code></td><td>No debe incluir <code>&amp;state</code> ni lo posterior</td></tr>
+  <tr><td>Código de Postman (<code>oauth.pstmn.io</code>)</td><td>Redirect distinto; fallará el canje</td></tr>
+</table>
+
+<h4>Cómo pegarlo en Business Central</h4>
+<ol>
+  <li>Vuelve a <strong>Configuración de almacenamiento</strong>.</li>
+  <li>En el campo <strong>OneDrive Code</strong> (multilínea), pega el código completo.</li>
+  <li>Comprueba que <strong>termina igual</strong> que en el navegador (por ejemplo <code>...LvXBiCKM</code>).</li>
+  <li>Si se corta a mitad, el campo debe ser Blob (ya corregido en la extensión).</li>
+</ol>
+<blockquote>El código caduca en pocos minutos y <strong>solo sirve una vez</strong>. Pégalo y canjéalo enseguida.</blockquote>
+
+<h3>Paso C – Canjear el código por token</h3>
+<ol>
+  <li>Pulsa <strong>Get Token</strong> del grupo <strong>OneDrive</strong> (no uses “Obtener token” de Google Drive).</li>
+  <li>Si todo va bien, verás un mensaje de éxito.</li>
+  <li>El campo <strong>OneDrive Code</strong> se limpia (el code ya no hace falta).</li>
+  <li>Deberían rellenarse <strong>Token de Acceso</strong> y <strong>Token de Renovación</strong> (internos).</li>
+</ol>
+
+<h2>5. Comprobar que está bien configurado</h2>
+<p>Usa estas acciones del grupo <strong>OneDrive</strong>:</p>
+<table>
+  <tr><th>Acción</th><th>Qué comprueba</th></tr>
+  <tr><td><strong>Validate Configuration</strong></td><td>Credenciales, tokens, caducidad, sitio</td></tr>
+  <tr><td><strong>Test Token Validity</strong></td><td>Si el access token sigue vigente por fecha</td></tr>
+  <tr><td><strong>Test Connection</strong></td><td>Llamada real a Microsoft Graph (<code>/me/drive</code> o drive del sitio)</td></tr>
+  <tr><td><strong>Id Site</strong></td><td>Rellena el Site ID a partir de la URL del sitio</td></tr>
+</table>
+<p>Orden recomendado tras Get Token:</p>
+<ol>
+  <li><strong>Validate Configuration</strong></li>
+  <li><strong>Test Connection</strong></li>
+  <li>Si usas sitio SharePoint: <strong>Id Site</strong> → otra vez <strong>Test Connection</strong></li>
+  <li>Opcional: <strong>Crea Root</strong> para crear/asignar carpeta raíz</li>
+</ol>
+
+<h2>6. Flujo resumido (checklist)</h2>
+<pre>Azure App Registration
+  ├─ Client ID / Tenant ID / Client Secret
+  ├─ Redirect: https://login.microsoftonline.com/common/oauth2/nativeclient
+  └─ Permisos Graph: Files.ReadWrite.All + offline_access (+ admin consent)
+
+Business Central
+  ├─ Proveedor = OneDrive
+  ├─ Pegar Client ID, Secret, Tenant ID
+  ├─ Start OAuth
+  ├─ Copiar code=... (hasta antes de &amp;state=)
+  ├─ Pegar en OneDrive Code (completo)
+  ├─ Get Token (OneDrive)
+  ├─ Validate Configuration
+  └─ Test Connection</pre>
+
+<h2>7. Errores frecuentes</h2>
+<table>
+  <tr><th>Error</th><th>Causa</th><th>Solución</th></tr>
+  <tr><td><code>invalid_grant</code> + redirect pstmn.io vs nativeclient</td><td>Code obtenido con Postman</td><td>Usar solo <strong>Start OAuth</strong> de BC</td></tr>
+  <tr><td><code>invalid_grant</code> / AADSTS9002313</td><td>Code truncado, caducado o mal pegado</td><td>Pegar code completo (Blob), code nuevo, solo valor de <code>code=</code></td></tr>
+  <tr><td>Página “phishing” en nativeclient</td><td>Comportamiento normal</td><td>Copiar el <code>code</code> de la URL y continuar</td></tr>
+  <tr><td><code>invalid_client</code></td><td>Client ID/Secret incorrectos o secret caducado</td><td>Revisar secret en Azure</td></tr>
+  <tr><td>Get Token de Google con proveedor OneDrive</td><td>Botón equivocado</td><td>Usar <strong>Get Token</strong> del grupo OneDrive</td></tr>
+  <tr><td>Test Connection falla sin token</td><td>Aún no hay access token</td><td>Completar Start OAuth → Get Token primero</td></tr>
+</table>
+
+<h2>8. Seguridad</h2>
+<ul>
+  <li>No compartas URLs con <code>code=</code> (el código es sensible).</li>
+  <li>No pegues el code en chats o tickets.</li>
+  <li>El client secret debe tratarse como contraseña.</li>
+  <li>Tras un Get Token correcto, el code se borra de la configuración.</li>
+</ul>
+
+<h2>9. Mantenimiento</h2>
+<ul>
+  <li>El <strong>access token</strong> caduca (normalmente ~1 hora). La extensión puede renovarlo con el <strong>refresh token</strong> (<strong>Refresh Token</strong>).</li>
+  <li>Si el refresh token deja de valer (revocación, cambio de secret, etc.), vuelve a ejecutar <strong>Start OAuth</strong> + <strong>Get Token</strong>.</li>
+</ul>
+
+<p class="footer">E&amp;A GoogleDrive — Manual de configuración OneDrive</p>
+
+</body>
+</html>

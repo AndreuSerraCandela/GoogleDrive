@@ -29,7 +29,7 @@ page 95143 "Pdf Viewer"
         {
             action(Ver)
             {
-                Caption = 'Ver';
+                Caption = 'View';
                 ApplicationArea = ALL;
                 Image = Find;
                 trigger OnAction()

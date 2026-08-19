@@ -6,7 +6,7 @@ page 95125 "JPG Viewer"
 {
     PageType = Worksheet;
     Extensible = true;
-    Caption = 'Visor Ocr JPG';
+    Caption = 'OCR JPG Viewer';
     layout
     {
         area(Content)

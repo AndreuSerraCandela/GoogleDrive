@@ -96,8 +96,8 @@ page 95105 "Google Drive List"
         {
             action("Select")
             {
-                CaptionML = ENU = 'Select',
-                            ESP = 'Seleccionar';
+                Caption = 'Select';
+                //         ESP = 'Seleccionar';
                 ApplicationArea = All;
                 Scope = Repeater;
                 Visible = (Not arChivo and Mueve);
@@ -111,8 +111,8 @@ page 95105 "Google Drive List"
             }
             action("Download File")
             {
-                CaptionML = ENU = 'Download File',
-                            ESP = 'Descargar Archivo';
+                Caption = 'Download File';
+                //         ESP = 'Descargar Archivo';
                 ApplicationArea = All;
                 Scope = Repeater;
                 Visible = (Archivo and Not Mueve);
@@ -290,8 +290,8 @@ page 95105 "Google Drive List"
             }
             action(Delete)
             {
-                CaptionML = ENU = 'Delete',
-                            ESP = 'Borrar';
+                Caption = 'Delete';
+                //         ESP = 'Borrar';
                 ApplicationArea = All;
                 Image = Delete;
                 Visible = not Mueve;
@@ -309,8 +309,8 @@ page 95105 "Google Drive List"
             }
             action("Upload File")
             {
-                CaptionML = ENU = 'Upload File',
-                            ESP = 'Subir Archivo';
+                Caption = 'Upload File';
+                //         ESP = 'Subir Archivo';
                 ApplicationArea = All;
                 Image = Import;
                 Visible = (not Mueve);
